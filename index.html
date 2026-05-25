@@ -523,6 +523,13 @@ body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
 .gl-item-row.gl-hidden { display:none; }
 .gl-search-highlight { background:var(--lemon-light); border-radius:3px; }
 
+/* ── Dinner Cuisine Selector ── */
+.cuisine-selector { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; padding-bottom:8px; border-bottom:1.5px solid var(--border); }
+.cuisine-chip { padding:3px 8px; border-radius:20px; border:1.5px solid var(--border2); background:var(--surface2); color:var(--text2); font-size:10px; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; font-family:'Plus Jakarta Sans',sans-serif; }
+.cuisine-chip:not([disabled]):hover { border-color:var(--green2); color:var(--green); background:var(--green-light); }
+.cuisine-chip.active { background:var(--green); color:#fff; border-color:var(--green); }
+.cuisine-chip[disabled] { cursor:default; opacity:0.75; }
+
 /* ── Searchable Meal Dropdown (Admin) ── */
 .meal-dd { position:relative; }
 .meal-dd-input { width:100%; padding:5px 7px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; cursor:text; outline:none; transition:border-color 0.15s; }
@@ -1042,6 +1049,37 @@ const DEFAULT_OPTS={
   d_salad:['Koshimbir','Kakdi Koshimbir','Carrot Koshimbir','Sprouts','Beet Salad','Tomato Onion','Radish Salad'],
   d_sides:['Papad','Lonche','Lemon Pickle','Mango Pickle','Mixed Pickle','Methamba','Mirchi Lonche','Dahi','Raita','Chutney'],
   lonche:['Lonche','Lemon Pickle','Mango Pickle','Mixed Pickle','Methamba','Mirchi Lonche','Lahsun Achaar'],
+  // ── Italian ──
+  ita_main:    ['Spaghetti Aglio e Olio','Penne Arrabbiata','Margherita Pizza','Pasta Carbonara','Lasagna','Risotto','Gnocchi','Fettuccine Alfredo','Ravioli','Tagliatelle Bolognese','Linguine Pesto'],
+  ita_sauce:   ['Marinara','Pesto','Alfredo','Arrabbiata','Bolognese','Vodka Sauce','Pomodoro'],
+  ita_bread:   ['Garlic Bread','Focaccia','Ciabatta','Bruschetta','Breadsticks'],
+  ita_salad:   ['Caesar Salad','Caprese Salad','Mixed Greens','Arugula Salad','Panzanella'],
+  ita_dessert: ['Tiramisu','Panna Cotta','Gelato','Cannoli','Juice','Water','Wine','Sparkling Water'],
+  // ── Continental ──
+  con_soup:    ['Tomato Soup','Mushroom Soup','Clear Soup','Cream of Corn','French Onion Soup','Minestrone','Pumpkin Soup'],
+  con_main:    ['Grilled Chicken','Fish Fillet','Lamb Chops','Roast Chicken','Baked Salmon','Grilled Paneer','Stuffed Mushrooms','Shepherd\'s Pie'],
+  con_starch:  ['Mashed Potatoes','Steamed Rice','Pasta','Baked Potato','Couscous','Polenta','Roasted Veggies'],
+  con_bread:   ['Dinner Rolls','Garlic Bread','Toast','Baguette','Sourdough'],
+  con_salad:   ['Caesar Salad','Garden Salad','Coleslaw','Greek Salad','Waldorf Salad'],
+  con_dessert: ['Chocolate Mousse','Cheesecake','Ice Cream','Fruit Salad','Brownie','Pudding','Crème Brûlée'],
+  // ── Asian / Chinese ──
+  asi_soup:    ['Hot & Sour Soup','Manchow Soup','Sweet Corn Soup','Wonton Soup','Tom Yum','Miso Soup','Ramen Broth'],
+  asi_main:    ['Veg Fried Rice','Chicken Fried Rice','Hakka Noodles','Pad Thai','Chow Mein','Szechuan Noodles','Udon','Ramen'],
+  asi_starter: ['Spring Rolls','Dim Sum','Gyoza','Veg Momos','Chicken Momos','Crispy Corn','Edamame'],
+  asi_side:    ['Manchurian','Chilli Paneer','Kung Pao Tofu','Teriyaki Chicken','Stir-Fry Veggies','Bok Choy'],
+  asi_drink:   ['Green Tea','Jasmine Tea','Lemon Iced Tea','Lychee Juice','Bubble Tea','Barley Water'],
+  // ── Rice-based ──
+  rice_dish:   ['Veg Biryani','Chicken Biryani','Mutton Biryani','Pulao','Matar Pulao','Tahiri','Egg Biryani','Prawn Biryani'],
+  rice_curry:  ['Dal Makhani','Paneer Butter Masala','Chicken Curry','Rajma','Chole','Kadai Paneer','Egg Curry','Soya Curry'],
+  rice_raita:  ['Boondi Raita','Cucumber Raita','Mix Veg Raita','Plain Curd','Onion Raita','Pineapple Raita'],
+  rice_side:   ['Papad','Fryums','Onion Salad','Sev','Masala Papad'],
+  rice_pickle: ['Mango Pickle','Mixed Pickle','Lime Pickle','Garlic Pickle','Methamba'],
+  // ── Mexican ──
+  mex_main:    ['Tacos','Burritos','Enchiladas','Fajitas','Quesadilla','Nachos','Tostadas','Tacos al Pastor','Chimichangas'],
+  mex_beans:   ['Refried Beans','Black Beans','Guacamole','Salsa Dip','Pinto Beans','Queso Dip'],
+  mex_bread:   ['Corn Tortilla','Flour Tortilla','Nachos','Taco Shell','Sopapillas'],
+  mex_salsa:   ['Pico de Gallo','Guacamole Salad','Corn Salsa','Coleslaw','Mango Salsa'],
+  mex_side:    ['Spanish Rice','Mexican Rice','Elote (Corn)','Jalapeño Corn','Sour Cream'],
 };
 
 const DEFAULT_ESSENTIALS={categories:[
@@ -1468,6 +1506,8 @@ function initState(){
   const s=loadData();
   if(s){
     opts=s.opts||JSON.parse(JSON.stringify(DEFAULT_OPTS));
+    // Merge any new DEFAULT_OPTS keys that didn't exist when data was last saved
+    Object.keys(DEFAULT_OPTS).forEach(k=>{if(!opts[k])opts[k]=JSON.parse(JSON.stringify(DEFAULT_OPTS[k]));});
     essentials=(s.essentials&&s.essentials.categories)?s.essentials:JSON.parse(JSON.stringify(DEFAULT_ESSENTIALS));
     weeks=s.weeks||buildEmptyWeeks();
     groceryList=mergeGroceryList(s.groceryList||JSON.parse(JSON.stringify(DEFAULT_GL_CATS)));
@@ -1491,6 +1531,69 @@ function initState(){
 }
 function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',chutney:'',drink:'',sabji:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
 initState();
+
+// ── Dinner Cuisine Schemas ──────────────────────────
+const DINNER_CUISINES={
+  indian:     {emoji:'🍛',label:'Indian',       labelMr:'भारतीय',       fields:[
+    {key:'d_sabji',    label:'Sabji',            labelMr:'भाजी'},
+    {key:'d_bread',    label:'Bread',            labelMr:'भाकरी'},
+    {key:'d_dal',      label:'Dal',              labelMr:'डाळ'},
+    {key:'d_rice',     label:'Rice',             labelMr:'भात'},
+    {key:'d_salad',    label:'Salad',            labelMr:'कोशिंबीर'},
+    {key:'d_sides',    label:'Sides',            labelMr:'इतर'},
+    {key:'lonche',     label:'Lonche',           labelMr:'लोणचे'},
+  ]},
+  italian:    {emoji:'🍝',label:'Italian',      labelMr:'इटालियन',      fields:[
+    {key:'ita_main',   label:'Pasta / Pizza',    labelMr:'पास्ता / पिझ्झा'},
+    {key:'ita_sauce',  label:'Sauce',            labelMr:'सॉस'},
+    {key:'ita_bread',  label:'Garlic Bread',     labelMr:'गार्लिक ब्रेड'},
+    {key:'ita_salad',  label:'Salad',            labelMr:'सॅलड'},
+    {key:'ita_dessert',label:'Dessert / Drink',  labelMr:'मिठाई / पेय'},
+  ]},
+  continental:{emoji:'🥩',label:'Continental',  labelMr:'कॉन्टिनेंटल',  fields:[
+    {key:'con_soup',   label:'Soup',             labelMr:'सूप'},
+    {key:'con_main',   label:'Main Course',      labelMr:'मुख्य जेवण'},
+    {key:'con_starch', label:'Rice / Pasta',     labelMr:'भात / पास्ता'},
+    {key:'con_bread',  label:'Bread / Rolls',    labelMr:'ब्रेड'},
+    {key:'con_salad',  label:'Salad',            labelMr:'सॅलड'},
+    {key:'con_dessert',label:'Dessert',          labelMr:'मिठाई'},
+  ]},
+  asian:      {emoji:'🍜',label:'Asian',         labelMr:'चायनीज / आशियाई',fields:[
+    {key:'asi_soup',   label:'Soup',             labelMr:'सूप'},
+    {key:'asi_main',   label:'Noodles / Fried Rice',labelMr:'नूडल्स / फ्राईड राईस'},
+    {key:'asi_starter',label:'Starter / Dim Sum',labelMr:'स्टार्टर'},
+    {key:'asi_side',   label:'Main Dish',        labelMr:'मुख्य पदार्थ'},
+    {key:'asi_drink',  label:'Drink',            labelMr:'पेय'},
+  ]},
+  ricebased:  {emoji:'🍚',label:'Rice-based',   labelMr:'भात केंद्रित', fields:[
+    {key:'rice_dish',  label:'Rice Dish / Biryani',labelMr:'बिर्याणी / भात'},
+    {key:'rice_curry', label:'Curry / Gravy',    labelMr:'ग्रेव्ही / करी'},
+    {key:'rice_raita', label:'Raita / Side',     labelMr:'रायता'},
+    {key:'rice_side',  label:'Papad / Extra',    labelMr:'पापड / इतर'},
+    {key:'rice_pickle',label:'Pickle',           labelMr:'लोणचे'},
+  ]},
+  mexican:    {emoji:'🌮',label:'Mexican',       labelMr:'मेक्सिकन',     fields:[
+    {key:'mex_main',   label:'Tacos / Burritos', labelMr:'टॅकोस / बुरिटोस'},
+    {key:'mex_beans',  label:'Beans / Dip',      labelMr:'बीन्स / डिप'},
+    {key:'mex_bread',  label:'Tortilla / Nachos',labelMr:'टॉर्टिला'},
+    {key:'mex_salsa',  label:'Salsa / Salad',    labelMr:'सालसा / सॅलड'},
+    {key:'mex_side',   label:'Rice / Side',      labelMr:'भात / साईड'},
+  ]},
+};
+function buildDinnerCell(day,s){
+  const cuisine=s.d_cuisine||'indian';
+  const schema=DINNER_CUISINES[cuisine];
+  const safeDay=day.replace(/'/g,"\\'");
+  const chips=Object.entries(DINNER_CUISINES).map(([k,c])=>`<button class="cuisine-chip${k===cuisine?' active':''}"${isAdmin?` onclick="updateDinnerCuisine('${safeDay}','${k}')"`:' disabled'}>${c.emoji} ${isMarathi?c.labelMr:c.label}</button>`).join('');
+  const fields=schema.fields.map(f=>`<div class="sub-label">${isMarathi?f.labelMr:f.label}</div>${mkSel(f.key,s[f.key]||'',day,f.key)}`).join('');
+  return`<div class="cuisine-selector">${chips}</div>${fields}`;
+}
+function updateDinnerCuisine(day,cuisine){
+  if(!weeks[curWeek][day])weeks[curWeek][day]={};
+  weeks[curWeek][day].d_cuisine=cuisine;
+  saveToStorage(false);
+  renderPlanner();
+}
 
 function renderPlanner(){
   curWeek=getWeekOfMonth();
@@ -1524,7 +1627,7 @@ function renderPlanner(){
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('breakfast',s.breakfast,day,'breakfast')}<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney,day,'chutney')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||''  ,day,'drink')}</td>
       <td><div class="sub-label"><span class="en">Sabji</span><span class="mr">भाजी</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
-      <td><div class="sub-label"><span class="en">Sabji</span><span class="mr">भाजी</span></div>${mkSel('d_sabji',s.d_sabji,day,'d_sabji')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी</span></div>${mkSel('d_bread',s.d_bread,day,'d_bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('d_dal',s.d_dal,day,'d_dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('d_rice',s.d_rice,day,'d_rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('d_salad',s.d_salad,day,'d_salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('d_sides',s.d_sides,day,'d_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('lonche',s.lonche,day,'lonche')}</td>
+      <td>${buildDinnerCell(day,s)}</td>
     </tr>`;
   });
   tbl.innerHTML=html+'</tbody>';
