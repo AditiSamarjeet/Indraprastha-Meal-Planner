@@ -308,8 +308,8 @@ select.meal-select:focus { border-color:var(--green2); }
 .add-item-row input::placeholder { color:var(--text3); }
 
 /* Essentials — column category view (all modes) */
-#ess-cat-grid { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; align-items:start; }
-.ess-col-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+#ess-cat-grid { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1px; align-items:start; background:var(--border2); border:1px solid var(--border2); border-radius:12px; overflow:hidden; }
+.ess-col-card { background:var(--surface); border:none; border-radius:0; overflow:hidden; box-shadow:none; }
 .ess-col-hd { padding:10px 12px 8px; display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--border); }
 .ess-col-title { font-size:13px; font-weight:700; }
 .ess-col-cnt { font-size:11px; color:var(--text3); }
@@ -2028,8 +2028,78 @@ const CAT_MR_MAP={
   'Eggs':'अंडी','Meat':'मांस','Fish':'मासे',
   'Cleaning':'साफसफाई','Pooja':'पूजा साहित्य',
   'Personal Care':'वैयक्तिक काळजी','Home Care':'घरगुती काळजी',
+  // User-created custom essentials categories
+  'Pulses and Dal':'कडधान्ये व डाळी','Pulses & Dal':'कडधान्ये व डाळी',
+  'Whole Spices':'संपूर्ण मसाले','Spice':'मसाला',
+  'Salad Vegetables':'सॅलड भाज्या','Salad Veggies':'सॅलड भाज्या',
+  'Breakfast Staples':'न्याहारीच्या वस्तू','Breakfast Items':'न्याहारीच्या वस्तू',
+  'Drink Mixes':'पेये मिश्रण','Beverages & Drinks':'पेये',
+  'Pantry Essentials':'साठवणुकीच्या वस्तू','Pantry':'साठवणुकीच्या वस्तू',
+  'Seeds':'बी','Edible Nuts':'खाण्याचे बी',
+  'Non Vegetarian':'मांसाहार','Non-Vegetarian':'मांसाहार','Nonveg':'मांसाहार',
+  'Cleaning and Household':'सफाई व घरगुती','Household':'घरगुती वस्तू',
+  'Puja Essentials':'पूजा साहित्य','Puja Items':'पूजा साहित्य','Devghar':'देवघर साहित्य',
+  'Frozen':'गोठवलेले पदार्थ','Frozen Food':'गोठवलेले पदार्थ',
 };
 function mrCat(name){ return (isMarathi && CAT_MR_MAP[name]) || name; }
+// ── Extend MR_MAP with additional item translations ────────────────────────
+Object.assign(MR_MAP,{
+  // Short / alternate names for items already in MR_MAP under longer keys
+  'Toor Dal':'तूर डाळ','Urad Dal':'उडीद डाळ','Moong':'मूग','Vatana':'वाटाणे',
+  'Green Moong Dal':'हिरवी मूग डाळ','Yellow Moong Dal':'पिवळी मूग डाळ',
+  'Masoor Dal':'मसूर डाळ','Chana Dal':'चना डाळ','Lobia':'चवळी',
+  'Wheat Flour':'गव्हाचे पीठ','Besan Flour':'बेसन','Cornflour':'कॉर्नफ्लोअर',
+  'Maida':'मैदा','Thalipeeth Flour':'थालीपीठ पीठ','Sabudana':'साबुदाणा','Dalia':'दलिया',
+  'Salt':'मीठ','Jaggery':'गूळ','Turmeric Powder':'हळद पावडर',
+  'Red Chilli Powder':'लाल मिरची पावडर','Coriander Powder':'धणे पावडर',
+  // Spices
+  'Hing':'हिंग','Ajwain':'ओवा','Black Pepper':'काळी मिरी','Cloves':'लवंग',
+  'Cinnamon':'दालचिनी','Bay Leaf':'तमालपत्र','Cardamom':'वेलची',
+  'Star Anise':'चक्रफूल','Mace':'जायपत्री','Nutmeg':'जायफळ',
+  'Fennel Seeds':'बडीशेप','Sesame Seeds':'तीळ','Poppy Seeds':'खसखस',
+  // Salad vegetables
+  'Cucumber':'काकडी','Beet':'बीट','Raddish':'मुळा','Mooli':'मुळा',
+  // Breakfast
+  'Sada Rava':'रवा','Barik Rava':'बारीक रवा','Idli Rava':'इडली रवा',
+  'Oats':'ओट्स','Vermicelli':'शेवया','Cornflakes':'कॉर्नफ्लेक्स','Muesli':'म्यूसली',
+  // Drinks
+  'Coffee':'कॉफी','Green Tea':'ग्रीन टी','Cocoa Powder':'कोकाओ पावडर',
+  'Milk Powder':'दूध पावडर','Kokam Mix':'कोकम मिक्स','Lemon Mix':'लिंबू मिक्स',
+  'Khus Mix':'खस मिक्स','Tea Powder':'चहा पावडर','Coffee Powder':'कॉफी पावडर',
+  'Chocolate Mix/Bournvita':'बॉर्नव्हिटा','Bournvita':'बॉर्नव्हिटा','Horlicks':'हॉर्लिक्स',
+  'Chai':'चहा','Black Tea':'काळा चहा','Herbal Tea':'हर्बल चहा',
+  // Pantry
+  'Whole Coconut':'नारळ','Dry Coconut':'सुका खोबरा','Desiccated Coconut':'किसलेले खोबरे',
+  'Tamarind':'चिंच','Kokum Rinds':'कोकम','Kokum':'कोकम',
+  'Vinegar':'व्हिनेगर','Baking Soda':'बेकिंग सोडा','Baking Powder':'बेकिंग पावडर',
+  // Snacks
+  'Biscuits':'बिस्किटे','Bakery':'बेकरी पदार्थ','Chivada':'चिवडा',
+  'Chumura':'चुरमुरे','Aloo Bhujia':'आलू भुजिया','Instant Noodles':'इन्स्टंट नूडल्स',
+  'Dry Fruits':'सुका मेवा','Salted/Coated Nuts':'खारे काजू / शेंगदाणे',
+  'Farsan':'फरसाण','Popcorn':'पॉपकॉर्न','Chakli':'चकली',
+  // Non-veg
+  'Fried Food':'तळलेले पदार्थ','Chicken':'कोंबडी','Mutton':'मटण','Fish':'मासे',
+  'Prawn':'कोळंबी','Egg':'अंडे',
+  // Frozen / Packaged
+  'Green Peas Packet':'हिरव्या वाटाण्याचे पाकीट','Frozen Peas':'फ्रोझन वाटाणे',
+  // Cleaning
+  'Dishwash Liquid':'भांडे घासण्याचे द्रव','Dishwash Bar':'भांडे घासण्याचा साबण',
+  'Scrub Pad':'स्क्रब पॅड','Scrubber':'स्क्रबर',
+  'Detergent powder and liquid':'डिटर्जंट पावडर व द्रव',
+  'Floor Cleaner':'फरशी साफ करणारे','Toilet Cleaner':'टॉयलेट क्लीनर',
+  'Handwash':'हात साफ करण्याचे द्रव','Hand Wash':'हात साफ करण्याचे द्रव',
+  'Soap':'साबण','Toothpaste':'टूथपेस्ट','Toothbrush':'टूथब्रश',
+  'Tissue Paper':'टिशू पेपर','Toilet Paper':'टॉयलेट पेपर',
+  'Phenyl':'फिनेल','Lizol':'लिझोल','Colin':'कोलिन',
+  // Puja items
+  'Dhoop Cups':'धूप कप','Dhoop Powder':'धूप पावडर','Incense':'अगरबत्ती',
+  'Incense Sticks':'अगरबत्ती','Kumkum':'कुंकू','Gulal':'गुलाल','Bukka':'बुक्का',
+  'Match Boxes':'काड्यांची पेटी','Matchbox':'काडेपेटी',
+  'Ghee Wicks':'तुपाच्या वाती','Camphor':'कापूर','Camphot':'कापूर',
+  'Akdhata':'अक्षता','Akshat':'अक्षता','Rangoli':'रांगोळी',
+  'Citric Acid':'सायट्रिक आम्ल','Haldi':'हळद','Kunku':'कुंकू',
+  'Nirmalya Bag':'निर्माल्य पिशवी','Pooja Thali':'पूजेचे ताट',
+});
 
 // ══════════════════════════════════════════════════
 // LIVE HEADER CLOCK
