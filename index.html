@@ -2416,6 +2416,28 @@ function handleAdminClick(){openAdminPin();}
 // ══════════════════════════════════════════════════
 initState();
 carryOverTasks();
+
+// ── Seed specific calendar festivals (idempotent) ──
+(function seedCalendarFestivals(){
+  const seeds={
+    '2026-05-28':['🌙 बकरी ईद (Bakri Eid / Eid ul-Adha)'],
+    '2026-05-29':['🇮🇳 सावरकर जयंती (Savarkar Jayanti)'],
+    '2026-05-31':['🏛️ गोपा राज्य दिन (Gopa Rajya Din)'],
+  };
+  // Remove wrongly-placed Bakri Eid from May 27
+  const badKey='2026-05-27';
+  if(rcalData[badKey]&&rcalData[badKey].festivals){
+    rcalData[badKey].festivals=rcalData[badKey].festivals.filter(f=>!/bakri|eid/i.test(f));
+  }
+  let changed=false;
+  Object.entries(seeds).forEach(([k,fests])=>{
+    if(!rcalData[k])rcalData[k]={};
+    if(!rcalData[k].festivals)rcalData[k].festivals=[];
+    fests.forEach(f=>{if(!rcalData[k].festivals.includes(f)){rcalData[k].festivals.push(f);changed=true;}});
+  });
+  if(changed)saveToStorage(false);
+})();
+
 saveToStorage(false);
 hdtUpdate();
 setInterval(hdtUpdate,1000);
