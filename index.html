@@ -307,7 +307,21 @@ select.meal-select:focus { border-color:var(--green2); }
 .add-item-row input:focus { border-color:var(--green2); }
 .add-item-row input::placeholder { color:var(--text3); }
 
-/* Essentials */
+/* Essentials — column category view (all modes) */
+#ess-cat-grid { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; align-items:start; }
+.ess-col-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+.ess-col-hd { padding:10px 12px 8px; display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--border); }
+.ess-col-title { font-size:13px; font-weight:700; }
+.ess-col-cnt { font-size:11px; color:var(--text3); }
+.ess-col-body { padding:6px 12px 10px; }
+.ess-item-row { display:flex; align-items:center; gap:7px; padding:4px 0; font-size:13px; color:var(--text); }
+.ess-item-row + .ess-item-row { border-top:1px solid var(--border); }
+.ess-item-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; display:inline-block; }
+.ess-item-nm { flex:1; }
+.ess-item-rm { border:none; background:none; color:var(--text3); cursor:pointer; font-size:15px; padding:0 2px; line-height:1; flex-shrink:0; }
+.ess-item-rm:hover { color:var(--tomato); }
+.ess-empty-msg { font-size:11px; color:var(--text3); font-style:italic; padding:4px 0; }
+/* Keep old .ess-card/ess-grid names for backward compat */
 .ess-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
 .ess-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow); }
 .ess-card-header { padding:11px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
@@ -456,11 +470,11 @@ body.marathi-mode .en { display:none; }
 .bl-qty-sel { padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;cursor:pointer;min-width:90px; }
 .bl-qty-sel:focus { border-color:var(--green2); }
 .bl-qty-warn { border-color:var(--tomato) !important;background:#FFF0F0 !important;color:var(--tomato); }
-/* ── Grocery grid ── */
-.gl-cat-grid { columns:3;column-gap:18px;margin-bottom:28px; }
-@media(max-width:1100px){ .gl-cat-grid { columns:2; } }
-@media(max-width:680px) { .gl-cat-grid { columns:1; } }
-.gl-cat-card { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s;break-inside:avoid;margin-bottom:18px;display:inline-block;width:100%; }
+/* ── Grocery grid (all modes use CSS grid — no column gaps) ── */
+.gl-cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:28px; align-items:start; }
+@media(max-width:1100px){ .gl-cat-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:680px) { .gl-cat-grid { grid-template-columns:1fr; } }
+.gl-cat-card { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s; }
 /* ── Today's Menu ── */
 .tm-date-banner { background:linear-gradient(130deg,var(--green) 0%,var(--green2) 100%);border-radius:var(--radius-xl);padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-md); }
 .tm-today-date { font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff; }
@@ -545,11 +559,6 @@ body.marathi-mode #view-grocery .gl-progress-label,
 body.marathi-mode #view-grocery .gl-progress-wrap,
 body.marathi-mode #view-grocery .gl-search-bar,
 body.marathi-mode #view-grocery .view-hero-right { display:none !important; }
-
-/* ── Helper grocery: CSS grid so no empty column gaps ── */
-body.marathi-mode .gl-cat-grid { columns:unset !important; display:grid !important; grid-template-columns:repeat(3,1fr); align-items:start; }
-@media(max-width:1100px){ body.marathi-mode .gl-cat-grid { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:680px)  { body.marathi-mode .gl-cat-grid { grid-template-columns:1fr; } }
 
 /* ── Grocery card body: tighten bottom spacing ── */
 .gl-cat-body { padding:12px 16px 0; }
@@ -1049,6 +1058,9 @@ const DEFAULT_OPTS={
   d_salad:['Koshimbir','Kakdi Koshimbir','Carrot Koshimbir','Sprouts','Beet Salad','Tomato Onion','Radish Salad'],
   d_sides:['Papad','Lonche','Lemon Pickle','Mango Pickle','Mixed Pickle','Methamba','Mirchi Lonche','Dahi','Raita','Chutney'],
   lonche:['Lonche','Lemon Pickle','Mango Pickle','Mixed Pickle','Methamba','Mirchi Lonche','Lahsun Achaar'],
+  // ── Lunch additions ──
+  l_sides:['Papad','Fryums','Masala Papad','Raita','Dahi','Boondi Raita','Chutney','Sev','Onion Salad'],
+  l_lonche:['Lonche','Lemon Pickle','Mango Pickle','Mixed Pickle','Methamba','Mirchi Lonche','Lahsun Achaar'],
   // ── Italian ──
   ita_main:    ['Spaghetti Aglio e Olio','Penne Arrabbiata','Margherita Pizza','Pasta Carbonara','Lasagna','Risotto','Gnocchi','Fettuccine Alfredo','Ravioli','Tagliatelle Bolognese','Linguine Pesto'],
   ita_sauce:   ['Marinara','Pesto','Alfredo','Arrabbiata','Bolognese','Vodka Sauce','Pomodoro'],
@@ -1529,7 +1541,7 @@ function initState(){
     keys.forEach((k,i)=>{if(weeks[1]['Monday'][k]!==undefined)weeks[1]['Monday'][k]=seed[i];});
   }
 }
-function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',chutney:'',drink:'',sabji:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
+function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',chutney:'',drink:'',sabji:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
 initState();
 
 // ── Dinner Cuisine Schemas ──────────────────────────
@@ -1625,7 +1637,7 @@ function renderPlanner(){
     html+=`<tr${_isToday?' style="background:var(--green-light)"':''}>
       <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span></td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('breakfast',s.breakfast,day,'breakfast')}<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney,day,'chutney')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||''  ,day,'drink')}</td>
-      <td><div class="sub-label"><span class="en">Sabji</span><span class="mr">भाजी</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}</td>
+      <td><div class="sub-label"><span class="en">Sabji</span><span class="mr">भाजी</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
     </tr>`;
@@ -1680,7 +1692,7 @@ function updateMeal(day,field,val){weeks[curWeek][day][field]=val;renderMealDeri
 function renderEssentialsBar(){
   const bar=document.getElementById('essentials-bar');
   const all=essentials.categories.flatMap(c=>c.items);
-  bar.innerHTML=`<span class="essentials-label">🌿 Daily essentials</span>`+all.map(e=>`<span class="pill">${e}</span>`).join('');
+  bar.innerHTML=`<span class="essentials-label">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</span>`+all.map(e=>`<span class="pill">${isMarathi?mr(e):e}</span>`).join('');
 }
 
 function renderMealDerived(){
@@ -1704,6 +1716,23 @@ function renderMealDerived(){
     <div class="summary-card"><div class="sc-emoji">⭐</div><div class="label">Essentials</div><div class="value">${essentials.categories.flatMap(c=>c.items).length}</div><div class="sub">${essentials.categories.length} categories</div></div>`;
 }
 
+// ── Grocery category priority order ──────────────────
+const GL_CAT_PRIORITY=[
+  'Fruits & Vegetables','Dairy & Eggs','Grains & Flour','Pulses & Lentils',
+  'Spices & Masalas','Oils & Condiments','Snacks & Biscuits','Beverages',
+  'Kitchen Essentials','Pooja Items (Devghar)','Ready-to-Eat & Frozen Foods',
+  'Edible Seeds','Miscellaneous',
+  'Personal Care & Toiletries','Home Cleaning & Utility','Disposables',
+];
+function glSortedCats(list){
+  return list.map((cat,i)=>({cat,i}))
+    .sort((a,b)=>{
+      const ai=GL_CAT_PRIORITY.indexOf(a.cat.name);
+      const bi=GL_CAT_PRIORITY.indexOf(b.cat.name);
+      return(ai===-1?999:ai)-(bi===-1?999:bi);
+    });
+}
+
 function renderGroceryList(){
   if(currentMode==='helper'){ renderGroceryListHelper(); return; }
   const grid=document.getElementById('gl-cat-grid');
@@ -1711,7 +1740,7 @@ function renderGroceryList(){
     grid.innerHTML=`<div class="gl-new-cat-card" onclick="openGlCatModal()"><div style="font-size:36px">🛒</div><div>Add your first category</div></div>`;
     updateGroceryProgress(); return;
   }
-  grid.innerHTML=groceryList.map((cat,ci)=>{
+  grid.innerHTML=glSortedCats(groceryList).map(({cat,i:ci})=>{
     const icon=getCatIcon(cat.name);
     const doneCount=cat.items.filter(i=>i.checked).length;
     const itemsHtml=cat.items.length===0
@@ -1755,7 +1784,7 @@ function renderGroceryListHelper(){
     grid.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3);font-size:14px">🛒 कोणतीही वस्तू नाही</div>`;
     return;
   }
-  grid.innerHTML=groceryList.filter(cat=>cat.items.length>0).map(cat=>{
+  grid.innerHTML=glSortedCats(groceryList).filter(({cat})=>cat.items.length>0).map(({cat})=>{
     const icon=getCatIcon(cat.name);
     const itemsHtml=cat.items.map((item,idx,arr)=>`
       <div style="padding:8px 0;${idx<arr.length-1?'border-bottom:1px solid var(--border);':''}font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px">
@@ -1853,18 +1882,26 @@ function removeOpt(key,item){
 
 function renderEssentialsCats(){
   document.getElementById('ess-cat-grid').innerHTML=essentials.categories.map((cat,ci)=>`
-    <div class="ess-card">
-      <div class="ess-card-header" style="background:${cat.color}18">
-        <span class="ess-cat-title"><span class="ess-cat-stripe" style="background:${cat.color}"></span>${escHtml(mrCat(cat.name))}<span style="font-size:11px;color:var(--text3);font-weight:400">${cat.items.length}</span></span>
-        <button class="btn btn-sm btn-danger admin-only" onclick="deleteEssCat(${ci})" style="padding:3px 8px;font-size:11px">✕</button>
+    <div class="ess-col-card">
+      <div class="ess-col-hd" style="border-left:4px solid ${cat.color};background:${cat.color}12">
+        <span class="ess-col-title" style="color:${cat.color}">${escHtml(mrCat(cat.name))}</span>
+        <span class="ess-col-cnt">${cat.items.length}</span>
+        <button class="btn btn-sm btn-danger admin-only" onclick="deleteEssCat(${ci})" style="padding:2px 7px;font-size:10px;margin-left:auto">✕</button>
       </div>
-      <div class="ess-card-body">
-        <div class="tag-list" style="margin-bottom:8px;min-height:24px">
-          ${cat.items.map(item=>`<span class="tag" style="border-color:${cat.color}44;background:${cat.color}12;color:${cat.color}">${escHtml(item)}<button class="tag-remove admin-only" style="color:${cat.color}" onclick="removeEssentialItem(${ci},'${item.replace(/'/g,"\\'")}')">×</button></span>`).join('')}
-          ${cat.items.length===0?'<span style="font-size:11px;color:var(--text3);font-style:italic"><span class="en">No items yet</span><span class="mr">अजून काही नाही</span></span>':''}
+      <div class="ess-col-body">
+        ${cat.items.length===0?`<div class="ess-empty-msg">${isMarathi?'अजून काही नाही':'No items yet'}</div>`:''}
+        ${cat.items.map(item=>`
+          <div class="ess-item-row">
+            <span class="ess-item-dot" style="background:${cat.color}"></span>
+            <span class="ess-item-nm">${escHtml(isMarathi?mr(item):item)}</span>
+            <button class="ess-item-rm admin-only" onclick="removeEssentialItem(${ci},'${item.replace(/'/g,"\\'")}')">×</button>
+          </div>`).join('')}
+        <div class="add-item-row admin-only-block" style="display:none">
+          <input type="text" id="ess-input-${ci}" placeholder="${isMarathi?'वस्तू जोडा…':'Add item…'}" onkeydown="if(event.key==='Enter')addEssentialItem(${ci})">
+          <button class="btn btn-sm" style="background:${cat.color};color:#fff;border-color:${cat.color}" onclick="addEssentialItem(${ci})"><span class="en">Add</span><span class="mr">जोडा</span></button>
         </div>
-        <div class="add-item-row admin-only-block" style="display:none"><input type="text" id="ess-input-${ci}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addEssentialItem(${ci})"><button class="btn btn-sm" style="background:${cat.color};color:#fff;border-color:${cat.color}" onclick="addEssentialItem(${ci})"><span class="en">Add</span><span class="mr">जोडा</span></button></div>
-      </div></div>`).join('');
+      </div>
+    </div>`).join('');
   renderEssentialsBar();
 }
 function addEssentialItem(ci){const input=document.getElementById('ess-input-'+ci);const val=input.value.trim();if(!val)return;if(essentials.categories.flatMap(c=>c.items).includes(val)){showToast('⚠️ Already exists');return;}essentials.categories[ci].items.push(val);input.value='';saveToStorage(false);renderEssentialsCats();showToast('✅ "'+val+'" added');}
