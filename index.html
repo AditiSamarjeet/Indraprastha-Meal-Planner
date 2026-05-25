@@ -208,15 +208,15 @@ select.meal-select {
 }
 select.meal-select:focus { border-color:var(--green2); }
 
-/* Essentials bar */
-.essentials {
-  margin-top:16px; padding:12px 18px; background:var(--green-light);
-  border-radius:var(--radius); border:1.5px solid var(--green-mid);
-  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-}
-.essentials-label { font-size:12px; font-weight:600; color:var(--green); white-space:nowrap; margin-right:4px; }
+/* Essentials bar — column view */
+.essentials { margin-top:16px; background:var(--green-light); border-radius:var(--radius); border:1.5px solid var(--green-mid); overflow:hidden; }
+.ess-bar-header { padding:8px 16px 6px; font-size:12px; font-weight:700; color:var(--green); border-bottom:1px solid var(--green-mid); }
+.ess-bar-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:1px; background:var(--green-mid); }
+.ess-bar-col { background:var(--green-light); padding:8px 10px; }
+.ess-bar-col-hd { font-size:11px; font-weight:700; padding-bottom:5px; margin-bottom:4px; border-bottom:1.5px solid; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ess-bar-item { font-size:11px; color:var(--text2); padding:1px 0; line-height:1.5; }
+/* keep .pill for any legacy usage */
 .pill { padding:3px 11px; border-radius:20px; font-size:11px; background:var(--surface); border:1px solid var(--green-mid); color:var(--green); font-weight:500; }
-.ess-bar-cat { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; border:1.5px solid; white-space:nowrap; margin-left:6px; margin-right:2px; }
 
 /* Summary cards */
 .summary-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
@@ -1693,13 +1693,13 @@ function updateMeal(day,field,val){weeks[curWeek][day][field]=val;renderMealDeri
 function renderEssentialsBar(){
   const bar=document.getElementById('essentials-bar');
   const cats=essentials.categories.filter(c=>c.items.length>0);
-  const label=`<span class="essentials-label">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</span>`;
-  if(!cats.length){ bar.innerHTML=label; return; }
-  const groups=cats.map(c=>
-    `<span class="ess-bar-cat" style="background:${c.color}22;border-color:${c.color}66;color:${c.color}">${escHtml(mrCat(c.name))}</span>`
-    +c.items.map(e=>`<span class="pill">${escHtml(isMarathi?mr(e):e)}</span>`).join('')
-  ).join('');
-  bar.innerHTML=label+groups;
+  if(!cats.length){ bar.innerHTML=`<div class="ess-bar-header">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</div>`; return; }
+  const cols=cats.map(c=>`
+    <div class="ess-bar-col">
+      <div class="ess-bar-col-hd" style="color:${c.color};border-color:${c.color}66">${escHtml(mrCat(c.name))}</div>
+      ${c.items.map(e=>`<div class="ess-bar-item">${escHtml(isMarathi?mr(e):e)}</div>`).join('')}
+    </div>`).join('');
+  bar.innerHTML=`<div class="ess-bar-header">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</div><div class="ess-bar-grid">${cols}</div>`;
 }
 
 function renderMealDerived(){
