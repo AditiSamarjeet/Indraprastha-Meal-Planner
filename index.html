@@ -1691,16 +1691,22 @@ function ddPick(opt,e){
 // Close dropdowns on outside click
 document.addEventListener('click',e=>{if(!e.target.closest('.meal-dd'))document.querySelectorAll('.meal-dd-list.open').forEach(l=>l.classList.remove('open'));});
 function updateMeal(day,field,val){weeks[curWeek][day][field]=val;renderMealDerived();saveToStorage(false);}
-function renderEssentialsBar(){
-  const bar=document.getElementById('essentials-bar');
+function buildEssentialsBarHTML(forceMr){
+  // forceMr=true → always render in Marathi (used by Today's Menu helper view)
+  const useMr=forceMr||isMarathi;
   const cats=essentials.categories.filter(c=>c.items.length>0);
-  if(!cats.length){ bar.innerHTML=`<div class="ess-bar-header">⭐ ${isMarathi?'रोजची गरज':'Daily Essentials'}</div>`; return; }
+  const title=useMr?'रोजची गरज':'Daily Essentials';
+  if(!cats.length) return `<div class="ess-bar-header">⭐ ${title}</div>`;
   const cols=cats.map(c=>`
     <div class="ess-bar-col">
-      <div class="ess-bar-col-hd"><span class="ess-bar-col-hd-dot" style="background:${c.color}"></span>${escHtml(mrCat(c.name))}</div>
-      ${c.items.map(e=>`<div class="ess-bar-item">${escHtml(isMarathi?mr(e):e)}</div>`).join('')}
+      <div class="ess-bar-col-hd"><span class="ess-bar-col-hd-dot" style="background:${c.color}"></span>${escHtml(useMr?mrCat(c.name):c.name)}</div>
+      ${c.items.map(e=>`<div class="ess-bar-item">${escHtml(useMr?mr(e):e)}</div>`).join('')}
     </div>`).join('');
-  bar.innerHTML=`<div class="ess-bar-header">⭐ ${isMarathi?'रोजची गरज':'Daily Essentials'}</div><div class="ess-bar-grid">${cols}</div>`;
+  return `<div class="ess-bar-header">⭐ ${title}</div><div class="ess-bar-grid">${cols}</div>`;
+}
+function renderEssentialsBar(){
+  const bar=document.getElementById('essentials-bar');
+  if(bar) bar.innerHTML=buildEssentialsBarHTML();
 }
 
 function renderMealDerived(){
@@ -2349,6 +2355,14 @@ function renderTodayMenu(){
   body.innerHTML=weekBar+dateBanner+'<div class="tm-week-grid">'+cards+'</div>';
   if(window._tmCI)clearInterval(window._tmCI);
   window._tmCI=setInterval(()=>{const n=new Date();const ce=document.getElementById('tm-clock');if(ce)ce.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');},1000);
+  // Daily Essentials section at bottom of helper Today's Menu
+  if(isH){
+    const essSection=document.createElement('div');
+    essSection.className='essentials';
+    essSection.style.cssText='margin-top:20px';
+    essSection.innerHTML=buildEssentialsBarHTML(true);
+    body.appendChild(essSection);
+  }
   // Task summary banner for admin
   if(body&&currentMode==='admin'){
     const summary=getTaskSummary();
