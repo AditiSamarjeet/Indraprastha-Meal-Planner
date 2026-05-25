@@ -523,6 +523,26 @@ body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
 .gl-item-row.gl-hidden { display:none; }
 .gl-search-highlight { background:var(--lemon-light); border-radius:3px; }
 
+/* ── Searchable Meal Dropdown (Admin) ── */
+.meal-dd { position:relative; }
+.meal-dd-input { width:100%; padding:5px 7px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; cursor:text; outline:none; transition:border-color 0.15s; }
+.meal-dd-input:focus { border-color:var(--green2); }
+.meal-dd-list { display:none; position:absolute; z-index:200; background:var(--surface); border:1.5px solid var(--border2); border-radius:8px; box-shadow:var(--shadow-md); max-height:200px; overflow-y:auto; width:max-content; min-width:100%; top:calc(100% + 2px); left:0; }
+.meal-dd-list.open { display:block; }
+.meal-dd-opt { padding:6px 12px; font-size:12px; cursor:pointer; color:var(--text); white-space:nowrap; }
+.meal-dd-opt:hover, .meal-dd-opt.focused { background:var(--green-light); color:var(--green); }
+.meal-dd-opt.hidden { display:none; }
+
+/* ── Helper mode grocery: hide actions & progress ── */
+body.marathi-mode #view-grocery .gl-progress-label,
+body.marathi-mode #view-grocery .gl-progress-wrap,
+body.marathi-mode #view-grocery .gl-search-bar,
+body.marathi-mode #view-grocery .view-hero-right { display:none !important; }
+
+/* ── Grocery card body: tight bottom spacing ── */
+.gl-cat-body { padding:12px 16px 0 !important; }
+.gl-add-row { padding-bottom:12px; }
+
 /* ── History View ── */
 .history-week-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); overflow:hidden; margin-bottom:20px; }
 .history-week-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:var(--surface2); border-bottom:1px solid var(--border); }
@@ -650,12 +670,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn btn-sm admin-only" onclick="archiveWeekToHistory()">📖 <span class="en">Archive week</span><span class="mr">आठवडा जतन करा</span></button>
         </div>
       </div>
-      <div class="week-bar">
-        <button class="week-tab active" onclick="switchWeek(1,this)">🌱 <span class="en">Week 1</span><span class="mr">आठवडा १</span></button>
-        <button class="week-tab" onclick="switchWeek(2,this)">🌿 <span class="en">Week 2</span><span class="mr">आठवडा २</span></button>
-        <button class="week-tab" onclick="switchWeek(3,this)">🍃 <span class="en">Week 3</span><span class="mr">आठवडा ३</span></button>
-        <button class="week-tab" onclick="switchWeek(4,this)">🌾 <span class="en">Week 4</span><span class="mr">आठवडा ४</span></button>
-      </div>
+      <div id="planner-week-badge" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;padding:6px 16px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green)"></div>
       <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
       <div class="essentials" id="essentials-bar"></div>
     </div>
@@ -1429,7 +1444,8 @@ const DEFAULT_GL_CATS=[
 
 const CAT_COLORS=['#1F7A4A','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
-let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], curWeek=1, currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=1;
+function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
+let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=1;
 
 function loadData(){try{const d=localStorage.getItem('indraprastha-v2');return d?JSON.parse(d):null;}catch(e){return null;}}
 function mergeGroceryList(saved){
@@ -1472,6 +1488,9 @@ function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach
 initState();
 
 function renderPlanner(){
+  curWeek=getWeekOfMonth();
+  const badge=document.getElementById('planner-week-badge');
+  if(badge){const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][new Date().getMonth()];badge.innerHTML='🗓 Week '+curWeek+' &nbsp;·&nbsp; '+mn+' '+new Date().getFullYear();}
   const tbl=document.getElementById('meal-table');
   const W=weeks[curWeek];
   let html=`<thead><tr>
@@ -1508,11 +1527,47 @@ function renderPlanner(){
 }
 function mkSel(k,val,day,field){
   const o=opts[k]||[];
-  const disabled=isAdmin?'':'disabled';
-  const style=isAdmin?'':'opacity:0.85;cursor:default;background:var(--surface2);';
   const placeholder=isMarathi?'— निवडा —':'— Select —';
-  return`<select class="meal-select" style="${style}" ${disabled} onchange="updateMeal('${day}','${field}',this.value)">${['',...o].map(v=>`<option value="${v}"${v===val?' selected':''}>${v||placeholder}</option>`).join('')}</select>`;
+  if(isAdmin){
+    const safeDay=day.replace(/'/g,"\\'");const safeField=field.replace(/'/g,"\\'");
+    const optHtml=['',  ...o].map(v=>`<div class="meal-dd-opt" data-val="${escHtml(v)}" onmousedown="ddPick(this,event)">${escHtml(v)||`<span style="color:var(--text3)">${placeholder}</span>`}</div>`).join('');
+    return`<div class="meal-dd" data-day="${escHtml(day)}" data-field="${escHtml(field)}"><input type="text" class="meal-dd-input" value="${escHtml(val)}" placeholder="${placeholder}" oninput="ddFilter(this)" onfocus="ddOpen(this)" onblur="ddBlur(this,event)"><div class="meal-dd-list">${optHtml}</div></div>`;
+  }
+  return`<select class="meal-select" style="opacity:0.85;cursor:default;background:var(--surface2);" disabled><option>${escHtml(val)||placeholder}</option></select>`;
 }
+// ── Searchable dropdown helpers ──
+function ddOpen(inp){
+  document.querySelectorAll('.meal-dd-list.open').forEach(l=>l.classList.remove('open'));
+  const list=inp.nextElementSibling; list.classList.add('open');
+  ddFilter(inp);
+}
+function ddBlur(inp,e){
+  setTimeout(()=>{
+    const list=inp.nextElementSibling; list.classList.remove('open');
+    list.querySelectorAll('.meal-dd-opt').forEach(o=>o.classList.remove('hidden'));
+    const dd=inp.closest('.meal-dd');
+    const day=dd.dataset.day; const field=dd.dataset.field;
+    const saved=(weeks[curWeek]&&weeks[curWeek][day]&&weeks[curWeek][day][field])||'';
+    inp.value=saved;
+  },200);
+}
+function ddFilter(inp){
+  const term=inp.value.toLowerCase();
+  inp.nextElementSibling.querySelectorAll('.meal-dd-opt').forEach(opt=>{
+    opt.classList.toggle('hidden', term!==''&&!opt.dataset.val.toLowerCase().includes(term));
+  });
+}
+function ddPick(opt,e){
+  if(e)e.preventDefault();
+  const dd=opt.closest('.meal-dd');
+  const inp=dd.querySelector('.meal-dd-input');
+  const val=opt.dataset.val;
+  inp.value=val;
+  opt.closest('.meal-dd-list').classList.remove('open');
+  updateMeal(dd.dataset.day, dd.dataset.field, val);
+}
+// Close dropdowns on outside click
+document.addEventListener('click',e=>{if(!e.target.closest('.meal-dd'))document.querySelectorAll('.meal-dd-list.open').forEach(l=>l.classList.remove('open'));});
 function updateMeal(day,field,val){weeks[curWeek][day][field]=val;renderMealDerived();saveToStorage(false);}
 function renderEssentialsBar(){
   const bar=document.getElementById('essentials-bar');
@@ -1542,6 +1597,7 @@ function renderMealDerived(){
 }
 
 function renderGroceryList(){
+  if(currentMode==='helper'){ renderGroceryListHelper(); return; }
   const grid=document.getElementById('gl-cat-grid');
   if(!groceryList||groceryList.length===0){
     grid.innerHTML=`<div class="gl-new-cat-card" onclick="openGlCatModal()"><div style="font-size:36px">🛒</div><div>Add your first category</div></div>`;
@@ -1582,6 +1638,33 @@ function renderGroceryList(){
     </div>`;
   }).join('');
   updateGroceryProgress();
+}
+
+// ── Helper: read-only Marathi grocery view ──
+function renderGroceryListHelper(){
+  const grid=document.getElementById('gl-cat-grid');
+  if(!groceryList||groceryList.length===0){
+    grid.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3);font-size:14px">🛒 कोणतीही वस्तू नाही</div>`;
+    return;
+  }
+  grid.innerHTML=groceryList.filter(cat=>cat.items.length>0).map(cat=>{
+    const icon=getCatIcon(cat.name);
+    const itemsHtml=cat.items.map(item=>`
+      <div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px">
+        <span style="width:6px;height:6px;border-radius:50%;background:${cat.color};flex-shrink:0;display:inline-block"></span>
+        ${escHtml(mr(item.name))}
+      </div>`).join('');
+    return`<div class="gl-cat-card">
+      <div class="gl-cat-top-stripe" style="background:${cat.color}"></div>
+      <div class="gl-cat-header">
+        <span class="gl-cat-title"><span class="gl-cat-icon">${icon}</span>${escHtml(cat.name)}</span>
+        <span class="gl-cat-count">${cat.items.length}</span>
+      </div>
+      <div class="gl-cat-body" style="padding-bottom:8px">
+        ${itemsHtml}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
