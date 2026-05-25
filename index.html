@@ -209,12 +209,13 @@ select.meal-select {
 select.meal-select:focus { border-color:var(--green2); }
 
 /* Essentials bar — column view */
-.essentials { margin-top:16px; background:var(--green-light); border-radius:var(--radius); border:1.5px solid var(--green-mid); overflow:hidden; }
-.ess-bar-header { padding:8px 16px 6px; font-size:12px; font-weight:700; color:var(--green); border-bottom:1px solid var(--green-mid); }
-.ess-bar-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:1px; background:var(--green-mid); }
-.ess-bar-col { background:var(--green-light); padding:8px 10px; }
-.ess-bar-col-hd { font-size:11px; font-weight:700; padding-bottom:5px; margin-bottom:4px; border-bottom:1.5px solid; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ess-bar-item { font-size:11px; color:var(--text2); padding:1px 0; line-height:1.5; }
+.essentials { margin-top:16px; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border2); overflow:hidden; box-shadow:var(--shadow); }
+.ess-bar-header { padding:11px 18px 9px; font-size:14px; font-weight:700; color:var(--text); border-bottom:1.5px solid var(--border2); letter-spacing:0.3px; }
+.ess-bar-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1px; background:var(--border); }
+.ess-bar-col { background:var(--bg); padding:14px 16px; }
+.ess-bar-col-hd { font-size:13px; font-weight:700; color:var(--text); padding-bottom:7px; margin-bottom:7px; border-bottom:2px solid var(--border2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ess-bar-col-hd-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; flex-shrink:0; vertical-align:middle; margin-top:-1px; }
+.ess-bar-item { font-size:13px; color:var(--text2); padding:3px 0; line-height:1.55; }
 /* keep .pill for any legacy usage */
 .pill { padding:3px 11px; border-radius:20px; font-size:11px; background:var(--surface); border:1px solid var(--green-mid); color:var(--green); font-weight:500; }
 
@@ -1693,13 +1694,13 @@ function updateMeal(day,field,val){weeks[curWeek][day][field]=val;renderMealDeri
 function renderEssentialsBar(){
   const bar=document.getElementById('essentials-bar');
   const cats=essentials.categories.filter(c=>c.items.length>0);
-  if(!cats.length){ bar.innerHTML=`<div class="ess-bar-header">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</div>`; return; }
+  if(!cats.length){ bar.innerHTML=`<div class="ess-bar-header">⭐ ${isMarathi?'रोजची गरज':'Daily Essentials'}</div>`; return; }
   const cols=cats.map(c=>`
     <div class="ess-bar-col">
-      <div class="ess-bar-col-hd" style="color:${c.color};border-color:${c.color}66">${escHtml(mrCat(c.name))}</div>
+      <div class="ess-bar-col-hd"><span class="ess-bar-col-hd-dot" style="background:${c.color}"></span>${escHtml(mrCat(c.name))}</div>
       ${c.items.map(e=>`<div class="ess-bar-item">${escHtml(isMarathi?mr(e):e)}</div>`).join('')}
     </div>`).join('');
-  bar.innerHTML=`<div class="ess-bar-header">🌿 ${isMarathi?'रोजची गरज':'Daily essentials'}</div><div class="ess-bar-grid">${cols}</div>`;
+  bar.innerHTML=`<div class="ess-bar-header">⭐ ${isMarathi?'रोजची गरज':'Daily Essentials'}</div><div class="ess-bar-grid">${cols}</div>`;
 }
 
 function renderMealDerived(){
