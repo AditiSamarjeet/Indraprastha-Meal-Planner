@@ -207,6 +207,9 @@ select.meal-select {
   background-repeat:no-repeat; background-position:right 6px center; padding-right:22px;
 }
 select.meal-select:focus { border-color:var(--green2); }
+.meal-text-input { width:100%; padding:6px 10px; border:1.5px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:2px; }
+.meal-text-input:focus { border-color:var(--green2); }
+.meal-text-input:disabled { opacity:0.75; cursor:default; background:var(--surface2); }
 
 /* Breakfast — 3-dish table with headcount */
 .bf-section { background:var(--surface2); border-radius:8px; padding:8px 10px 6px; margin-bottom:6px; border:1px solid var(--border); }
@@ -1112,6 +1115,12 @@ const DEFAULT_OPTS={
   mex_bread:   ['Corn Tortilla','Flour Tortilla','Nachos','Taco Shell','Sopapillas'],
   mex_salsa:   ['Pico de Gallo','Guacamole Salad','Corn Salsa','Coleslaw','Mango Salsa'],
   mex_side:    ['Spanish Rice','Mexican Rice','Elote (Corn)','Jalapeño Corn','Sour Cream'],
+  // ── Chinese ──
+  chi_soup:    ['Hot & Sour Soup','Manchow Soup','Sweet Corn Soup','Lemon Coriander Soup','Wonton Soup','Tom Yum','Cream of Corn Soup'],
+  chi_main:    ['Hakka Noodles','Veg Fried Rice','Chicken Fried Rice','Chow Mein','Szechuan Noodles','Schezwan Fried Rice','Lo Mein','Egg Fried Rice','Pad Thai'],
+  chi_starter: ['Veg Momos','Chicken Momos','Paneer Momos','Spring Rolls','Veg Manchurian Dry','Chilli Paneer Dry','Crispy Corn','Veg Dim Sum','Gyoza'],
+  chi_gravy:   ['Veg Manchurian Gravy','Chilli Paneer Gravy','Kung Pao Tofu','Baby Corn Masala','Schezwan Paneer','Chilli Mushroom','Stir-Fry Veggies'],
+  chi_drink:   ['Green Tea','Jasmine Tea','Lemon Iced Tea','Lychee Juice','Bubble Tea','Barley Water','Iced Lemon Tea'],
 };
 
 const DEFAULT_ESSENTIALS={categories:[
@@ -1561,7 +1570,7 @@ function initState(){
     keys.forEach((k,i)=>{if(weeks[1]['Monday'][k]!==undefined)weeks[1]['Monday'][k]=seed[i];});
   }
 }
-function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
+function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});}return w;}
 initState();
 
 // ── Dinner Cuisine Schemas ──────────────────────────
@@ -1611,13 +1620,37 @@ const DINNER_CUISINES={
     {key:'mex_salsa',  label:'Salsa / Salad',    labelMr:'सालसा / सॅलड'},
     {key:'mex_side',   label:'Rice / Side',      labelMr:'भात / साईड'},
   ]},
+  chinese:    {emoji:'🥢',label:'Chinese',       labelMr:'चायनीज',       fields:[
+    {key:'chi_soup',   label:'Soup',             labelMr:'सूप'},
+    {key:'chi_main',   label:'Noodles / Fried Rice',labelMr:'नूडल्स / फ्राईड राईस'},
+    {key:'chi_starter',label:'Starter / Momos',  labelMr:'स्टार्टर / मोमोज'},
+    {key:'chi_gravy',  label:'Gravy / Side',     labelMr:'ग्रेव्ही / साईड'},
+    {key:'chi_drink',  label:'Drink',            labelMr:'पेय'},
+  ]},
+  custom:     {emoji:'🍽️',label:'Custom / Mix',  labelMr:'मिश्र / कस्टम', fields:[
+    {key:'cus_item1',  label:'Item 1',           labelMr:'वस्तू १',   type:'text'},
+    {key:'cus_item2',  label:'Item 2',           labelMr:'वस्तू २',   type:'text'},
+    {key:'cus_side',   label:'Side',             labelMr:'साईड',      type:'text'},
+    {key:'cus_soup',   label:'Soup',             labelMr:'सूप',       type:'text'},
+    {key:'cus_drink',  label:'Drink',            labelMr:'पेय',       type:'text'},
+    {key:'cus_notes',  label:'Notes',            labelMr:'नोंद',      type:'text'},
+  ]},
 };
 function buildDinnerCell(day,s){
   const cuisine=s.d_cuisine||'indian';
   const schema=DINNER_CUISINES[cuisine];
   const safeDay=day.replace(/'/g,"\\'");
   const chips=Object.entries(DINNER_CUISINES).map(([k,c])=>`<button class="cuisine-chip${k===cuisine?' active':''}"${isAdmin?` onclick="updateDinnerCuisine('${safeDay}','${k}')"`:' disabled'}>${c.emoji} ${isMarathi?c.labelMr:c.label}</button>`).join('');
-  const fields=schema.fields.map(f=>`<div class="sub-label">${isMarathi?f.labelMr:f.label}</div>${mkSel(f.key,s[f.key]||'',day,f.key)}`).join('');
+  const fields=schema.fields.map(f=>{
+    const lbl=`<div class="sub-label">${isMarathi?f.labelMr:f.label}</div>`;
+    if(f.type==='text'){
+      const ph=isMarathi?'येथे लिहा…':'Type here…';
+      return lbl+(isAdmin
+        ?`<input type="text" class="meal-text-input" value="${escHtml(s[f.key]||'')}" placeholder="${ph}" oninput="updateMeal('${safeDay}','${escHtml(f.key)}',this.value)">`
+        :`<input type="text" class="meal-text-input" value="${escHtml(s[f.key]||'')}" placeholder="${ph}" disabled>`);
+    }
+    return lbl+mkSel(f.key,s[f.key]||'',day,f.key);
+  }).join('');
   return`<div class="cuisine-selector">${chips}</div>${fields}`;
 }
 function updateDinnerCuisine(day,cuisine){
@@ -1625,6 +1658,11 @@ function updateDinnerCuisine(day,cuisine){
   weeks[curWeek][day].d_cuisine=cuisine;
   saveToStorage(false);
   renderPlanner();
+}
+// Returns a comma-joined string of all filled dinner fields for the active cuisine
+function dinnerSummary(s,translate){
+  const schema=DINNER_CUISINES[s.d_cuisine||'indian']||DINNER_CUISINES.indian;
+  return schema.fields.map(f=>s[f.key]||'').filter(Boolean).map(v=>translate?mr(v):v).join(', ');
 }
 
 function renderPlanner(){
@@ -1765,7 +1803,7 @@ function renderMealDerived(){
     const s=W[day]; const items=[]; const seen=new Set();
     const add=(v,cat)=>{if(v&&!seen.has(v)){items.push({v,cat});all.add(v);seen.add(v);}};
     add(s.breakfast,'b');add(s.bf2,'b');add(s.bf3,'b');add(s.chutney,'b');add(s.sabji,'l');add(s.sabji2,'l');add(s.bread,'l');add(s.dal,'l');add(s.rice,'l');add(s.salad,'l');
-    add(s.snack,'s');add(s.snack2,'s');add(s.d_sabji,'d');add(s.d_bread,'d');add(s.d_dal,'d');add(s.d_rice,'d');add(s.d_salad,'d');add(s.d_sides,'d');add(s.lonche,'d');
+    add(s.snack,'s');add(s.snack2,'s');(DINNER_CUISINES[s.d_cuisine||'indian']||DINNER_CUISINES.indian).fields.forEach(f=>{if(s[f.key])add(s[f.key],'d');});
     total+=items.length;
     const li=items.length?items.map(i=>`<li><span class="dot ${i.cat==='b'?'dot-b':i.cat==='l'?'dot-l':i.cat==='s'?'dot-s':'dot-d'}"></span>${i.v}</li>`).join(''):`<li><span class="grocery-empty">Nothing planned</span></li>`;
     return`<div class="grocery-card"><div class="grocery-day">${DAY_EMOJI[day]||''} ${day}</div><ul class="grocery-items">${li}</ul></div>`;
@@ -1996,9 +2034,9 @@ function showView(name,el){
 }
 
 function switchWeek(w,btn){curWeek=w;document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderPlanner();renderMealDerived();}
-function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
+function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
 function saveToStorage(toast=true){try{localStorage.setItem('indraprastha-v2',JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes}));if(toast)showToast('💾 Saved!');}catch(e){showToast('⚠️ Storage full');}}
-function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=[s.d_sabji,s.d_bread,s.d_dal,s.d_rice,s.d_salad,s.d_sides,s.lonche].filter(Boolean).join(', ');text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
+function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
 
@@ -2391,7 +2429,7 @@ function renderTodayMenu(){
     const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
     const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const sn=[s.snack,s.snack2].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
-    const di=[s.d_sabji,s.d_bread,s.d_dal,s.d_rice,s.d_sides,s.lonche].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
+    const di=dinnerSummary(s,isH);
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
     const calE=rcalData[dateKey]||{};const calM=calE.menu||'';
     const calRow=calM?'<div class="tm-meal-row" style="background:var(--green-light);border-radius:6px;padding:5px 8px;margin-top:4px"><span class="tm-meal-icon">📌</span><div><div class="tm-meal-label">'+(isH?'विशेष':'Special')+'</div><div class="tm-meal-val">'+escHtml(calM)+'</div></div></div>':'';
@@ -2594,7 +2632,7 @@ function updateCopyPreview(){
     ['🌅 Breakfast', [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ')],
     ['🥘 Lunch',     [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ')],
     ['🍊 Snacks',    [s.snack, s.snack2].filter(Boolean).join(', ')],
-    ['🌙 Dinner',    [s.d_sabji, s.d_bread, s.d_dal, s.d_rice, s.d_sides, s.lonche].filter(Boolean).join(', ')],
+    ['🌙 Dinner',    dinnerSummary(s,false)],
   ];
   document.getElementById('copy-preview').innerHTML = fields.map(([l,v]) =>
     `<div class="cp-row"><span class="cp-label">${l}</span><span>${v || '<em style="color:var(--text3)">empty</em>'}</span></div>`
@@ -2645,7 +2683,7 @@ function renderHistory(){
       const bf = [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ');
       const lu = [s.sabji, s.sabji2, s.bread, s.dal, s.rice].filter(Boolean).join(', ');
       const sn = [s.snack, s.snack2].filter(Boolean).join(', ');
-      const di = [s.d_sabji, s.d_bread, s.d_dal, s.d_rice].filter(Boolean).join(', ');
+      const di = dinnerSummary(s,false);
       return `<div class="history-day-cell">
         <div class="history-day-name">${DAY_EMOJI[day]||''} ${day}</div>
         ${bf ? `<div class="history-meal-row">🌅 ${escHtml(bf)}</div>` : ''}
@@ -2869,7 +2907,7 @@ function whatsappTodayMenu(){
   const bf  = [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ');
   const lu  = [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ');
   const sn  = [s.snack, s.snack2].filter(Boolean).join(', ');
-  const di  = [s.d_sabji, s.d_bread, s.d_dal, s.d_rice, s.d_sides, s.lonche].filter(Boolean).join(', ');
+  const di  = dinnerSummary(s,false);
   const date = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
   let text = `🏠 *Indraprastha — ${date}*\n\n`;
   if(bf)  text += `🌅 *Breakfast:* ${bf}\n`;
