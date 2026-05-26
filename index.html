@@ -208,6 +208,17 @@ select.meal-select {
 }
 select.meal-select:focus { border-color:var(--green2); }
 
+/* Breakfast people-counter */
+.bf-dish-block { margin-bottom:6px; }
+.bf-dish-num { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.4px; margin:7px 0 2px; }
+.bf-dish-num:first-child { margin-top:0; }
+.bf-cnt-row { display:flex; align-items:center; gap:5px; margin-top:3px; }
+.bf-cnt-btn { width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border2); background:var(--surface2); color:var(--text); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; flex-shrink:0; }
+.bf-cnt-btn:hover { border-color:var(--green2); color:var(--green); }
+.bf-cnt-num { min-width:18px; text-align:center; font-size:12px; font-weight:600; color:var(--text); }
+.bf-cnt-label { font-size:10px; color:var(--text3); }
+.bf-total { font-size:11px; color:var(--text3); margin-top:6px; padding-top:5px; border-top:1px solid var(--border); font-weight:500; }
+
 /* Essentials bar — column view */
 .essentials { margin-top:16px; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border2); overflow:hidden; box-shadow:var(--shadow); }
 .ess-bar-header { padding:11px 18px 9px; font-size:14px; font-weight:700; color:var(--text); border-bottom:1.5px solid var(--border2); letter-spacing:0.3px; }
@@ -695,7 +706,6 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       </div>
       <div id="planner-week-badge" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;padding:6px 16px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green)"></div>
       <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
-      <div class="essentials" id="essentials-bar"></div>
     </div>
 
     <!-- GROCERY LIST -->
@@ -1046,8 +1056,11 @@ const DEFAULT_OPTS={
   drink:['Milk','Chai','Black Tea','Green Tea','Coffee','Lemon Water','Coconut Water','Fresh Juice','Smoothie','Buttermilk','Lassi','Protein Shake','Herbal Tea','Hot Chocolate'],
   snack_drink:['Chai','Lemon Juice','Coconut Water','Buttermilk','Lassi','Milkshake','Smoothie','Fruit Juice','Soda','Cold Coffee','Shikanji','Aam Panna','Sol Kadhi','Kokum Sharbat'],
   breakfast:['Idli','Poha','Upma','Sabudana Khichdi','Dosa','Uttapam','Sheera','Bread Toast','Thepla','Methi Thepla','Aloo Paratha','Moong Dal Cheela','Pesarattu','Rava Dosa','Set Dosa','Thalipeeth'],
+  bf2:['Idli','Poha','Upma','Sabudana Khichdi','Dosa','Uttapam','Sheera','Bread Toast','Thepla','Methi Thepla','Aloo Paratha','Moong Dal Cheela','Pesarattu','Rava Dosa','Set Dosa','Thalipeeth'],
+  bf3:['Idli','Poha','Upma','Sabudana Khichdi','Dosa','Uttapam','Sheera','Bread Toast','Thepla','Methi Thepla','Aloo Paratha','Moong Dal Cheela','Pesarattu','Rava Dosa','Set Dosa','Thalipeeth'],
   chutney:['Coconut Chutney','Tomato Chutney','Green Chutney','Peanut Chutney','Sambar','Curd','Shengdana Chutney'],
   sabji:['Cauliflower','Batata Bhaji','Vanga','Bhendi','Matki','Palak','Shimla Mirch','Tondli','Karela','Dudhi','Kanda Batata','Vangyache Bharit','Chole','Rajma','Pithla','Val','Chawli','Kobi','Gajar','Matar Paneer','Dum Aloo','Katachi Amti','Bharleli Vange','Zunka'],
+  sabji2:['Cauliflower','Batata Bhaji','Vanga','Bhendi','Matki','Palak','Shimla Mirch','Tondli','Karela','Dudhi','Kanda Batata','Vangyache Bharit','Chole','Rajma','Pithla','Val','Chawli','Kobi','Gajar','Matar Paneer','Dum Aloo','Katachi Amti','Bharleli Vange','Zunka'],
   bread:['Bhakari','Chapati','Puri','Paratha','Rice Bhakari','Loni Bhakari','Rumali Roti','Naan','Methi Paratha'],
   dal:['Varan','Amti','Tur Dal','Moong Dal','Masoor Dal','Chana Dal','Mixed Dal','Kolhapuri Amti','Katachi Amti','Dal Tadka'],
   rice:['Rice','Jeera Rice','Masala Bhat','Pulao','Khichdi','Curd Rice','Lemon Rice','Methi Rice'],
@@ -1543,7 +1556,7 @@ function initState(){
     keys.forEach((k,i)=>{if(weeks[1]['Monday'][k]!==undefined)weeks[1]['Monday'][k]=seed[i];});
   }
 }
-function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',chutney:'',drink:'',sabji:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
+function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});}return w;}
 initState();
 
 // ── Dinner Cuisine Schemas ──────────────────────────
@@ -1638,14 +1651,34 @@ function renderPlanner(){
     const _isToday=day===_todayDayName;
     html+=`<tr${_isToday?' style="background:var(--green-light)"':''}>
       <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span></td>
-      <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('breakfast',s.breakfast,day,'breakfast')}<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney,day,'chutney')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||''  ,day,'drink')}</td>
-      <td><div class="sub-label"><span class="en">Sabji</span><span class="mr">भाजी</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}</td>
+      <td>${buildBreakfastCell(day,s)}</td>
+      <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji2',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
     </tr>`;
   });
   tbl.innerHTML=html+'</tbody>';
-  renderEssentialsBar();
+}
+function buildBreakfastCell(day,s){
+  const sd=day.replace(/'/g,"\\'");
+  const c1=s.bf1_cnt||0,c2=s.bf2_cnt||0,c3=s.bf3_cnt||0;
+  const total=c1+c2+c3;
+  const cntRow=(key,cnt)=>isAdmin
+    ?`<div class="bf-cnt-row"><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',-1)">−</button><span class="bf-cnt-num">${cnt}</span><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',1)">+</button><span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`
+    :(cnt>0?`<div class="bf-cnt-row"><span class="bf-cnt-num">${cnt}</span><span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`:'');
+  return `<div class="bf-dish-num"><span class="en">Dish 1</span><span class="mr">पदार्थ १</span></div>${mkSel('breakfast',s.breakfast||'',day,'breakfast')}${cntRow('bf1_cnt',c1)}`
+    +`<div class="bf-dish-num"><span class="en">Dish 2</span><span class="mr">पदार्थ २</span></div>${mkSel('bf2',s.bf2||'',day,'bf2')}${cntRow('bf2_cnt',c2)}`
+    +`<div class="bf-dish-num"><span class="en">Dish 3</span><span class="mr">पदार्थ ३</span></div>${mkSel('bf3',s.bf3||'',day,'bf3')}${cntRow('bf3_cnt',c3)}`
+    +(total>0?`<div class="bf-total">👥 ${isMarathi?'एकूण':'Total'}: ${total} ${isMarathi?'जण':'people'}</div>`:'')
+    +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}`
+    +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`;
+}
+function bfCnt(day,key,delta){
+  if(!weeks[curWeek][day])weeks[curWeek][day]={};
+  const cur=parseInt(weeks[curWeek][day][key]||0);
+  weeks[curWeek][day][key]=Math.max(0,cur+delta);
+  saveToStorage(false);
+  renderPlanner();
 }
 function mkSel(k,val,day,field){
   const o=opts[k]||[];
@@ -1716,7 +1749,7 @@ function renderMealDerived(){
   const cards=DAYS.map(day=>{
     const s=W[day]; const items=[]; const seen=new Set();
     const add=(v,cat)=>{if(v&&!seen.has(v)){items.push({v,cat});all.add(v);seen.add(v);}};
-    add(s.breakfast,'b');add(s.chutney,'b');add(s.sabji,'l');add(s.bread,'l');add(s.dal,'l');add(s.rice,'l');add(s.salad,'l');
+    add(s.breakfast,'b');add(s.bf2,'b');add(s.bf3,'b');add(s.chutney,'b');add(s.sabji,'l');add(s.sabji2,'l');add(s.bread,'l');add(s.dal,'l');add(s.rice,'l');add(s.salad,'l');
     add(s.snack,'s');add(s.snack2,'s');add(s.d_sabji,'d');add(s.d_bread,'d');add(s.d_dal,'d');add(s.d_rice,'d');add(s.d_salad,'d');add(s.d_sides,'d');add(s.lonche,'d');
     total+=items.length;
     const li=items.length?items.map(i=>`<li><span class="dot ${i.cat==='b'?'dot-b':i.cat==='l'?'dot-l':i.cat==='s'?'dot-s':'dot-d'}"></span>${i.v}</li>`).join(''):`<li><span class="grocery-empty">Nothing planned</span></li>`;
@@ -1948,9 +1981,9 @@ function showView(name,el){
 }
 
 function switchWeek(w,btn){curWeek=w;document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderPlanner();renderMealDerived();}
-function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',chutney:'',drink:'',sabji:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
+function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
 function saveToStorage(toast=true){try{localStorage.setItem('indraprastha-v2',JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes}));if(toast)showToast('💾 Saved!');}catch(e){showToast('⚠️ Storage full');}}
-function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=[s.d_sabji,s.d_bread,s.d_dal,s.d_rice,s.d_salad,s.d_sides,s.lonche].filter(Boolean).join(', ');text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
+function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=[s.d_sabji,s.d_bread,s.d_dal,s.d_rice,s.d_salad,s.d_sides,s.lonche].filter(Boolean).join(', ');text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
 
@@ -2229,7 +2262,8 @@ function rcalRenderPanel(){
     +mkRow(RL.chutney,'chutney','chutney')
     +mkRow(RL.drink,'drink','drink')
     +mkHead('🥘',RL.lunch)
-    +mkRow(RL.sabji,'sabji','sabji')
+    +mkRow(isMarathi?'भाजी १':'Sabji 1','sabji','sabji')
+    +mkRow(isMarathi?'भाजी २':'Sabji 2','sabji2','sabji2')
     +mkRow(RL.bread,'bread','bread')
     +mkRow(RL.dal,'dal','dal')
     +mkRow(RL.rice,'rice','rice')
@@ -2339,8 +2373,8 @@ function renderTodayMenu(){
     const s=W[day]||{};const dt=new Date(monday);dt.setDate(monday.getDate()+idx);
     const dateKey=tdKey(dt);const isToday=day===todayDayName;
     const dayLabel=isH?DAYS_MR[day]:day;const dateStr=dt.toLocaleDateString(isH?'mr-IN':'en-IN',{day:'numeric',month:'short'});
-    const bf=[s.breakfast,s.chutney].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
-    const lu=[s.sabji,s.bread,s.dal,s.rice,s.salad].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
+    const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
+    const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const sn=[s.snack,s.snack2].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const di=[s.d_sabji,s.d_bread,s.d_dal,s.d_rice,s.d_sides,s.lonche].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
@@ -2542,8 +2576,8 @@ function updateCopyPreview(){
   const s  = weeks[fw] && weeks[fw][fd];
   if(!s){ document.getElementById('copy-preview').innerHTML = '<em>No data</em>'; return; }
   const fields = [
-    ['🌅 Breakfast', [s.breakfast, s.chutney].filter(Boolean).join(' + ')],
-    ['🥘 Lunch',     [s.sabji, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ')],
+    ['🌅 Breakfast', [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ')],
+    ['🥘 Lunch',     [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ')],
     ['🍊 Snacks',    [s.snack, s.snack2].filter(Boolean).join(', ')],
     ['🌙 Dinner',    [s.d_sabji, s.d_bread, s.d_dal, s.d_rice, s.d_sides, s.lonche].filter(Boolean).join(', ')],
   ];
@@ -2593,8 +2627,8 @@ function renderHistory(){
     const arDate = new Date(entry.archivedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     const dayCards = DAYS.map(day => {
       const s = entry.data[day] || {};
-      const bf = [s.breakfast, s.chutney].filter(Boolean).join(' + ');
-      const lu = [s.sabji, s.bread, s.dal, s.rice].filter(Boolean).join(', ');
+      const bf = [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ');
+      const lu = [s.sabji, s.sabji2, s.bread, s.dal, s.rice].filter(Boolean).join(', ');
       const sn = [s.snack, s.snack2].filter(Boolean).join(', ');
       const di = [s.d_sabji, s.d_bread, s.d_dal, s.d_rice].filter(Boolean).join(', ');
       return `<div class="history-day-cell">
@@ -2817,8 +2851,8 @@ function whatsappTodayMenu(){
   const todayDay = DAYS[todayDow === 0 ? 6 : todayDow - 1];
   const s = weeks[tmCurWeek] && weeks[tmCurWeek][todayDay];
   if(!s){ showToast('⚠️ No meals for today'); return; }
-  const bf  = [s.breakfast, s.chutney].filter(Boolean).join(' + ');
-  const lu  = [s.sabji, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ');
+  const bf  = [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ');
+  const lu  = [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ');
   const sn  = [s.snack, s.snack2].filter(Boolean).join(', ');
   const di  = [s.d_sabji, s.d_bread, s.d_dal, s.d_rice, s.d_sides, s.lonche].filter(Boolean).join(', ');
   const date = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
