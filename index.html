@@ -208,16 +208,21 @@ select.meal-select {
 }
 select.meal-select:focus { border-color:var(--green2); }
 
-/* Breakfast people-counter */
-.bf-dish-block { margin-bottom:6px; }
-.bf-dish-num { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.4px; margin:7px 0 2px; }
-.bf-dish-num:first-child { margin-top:0; }
-.bf-cnt-row { display:flex; align-items:center; gap:5px; margin-top:3px; }
-.bf-cnt-btn { width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border2); background:var(--surface2); color:var(--text); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; flex-shrink:0; }
+/* Breakfast — 3-dish table with headcount */
+.bf-section { background:var(--surface2); border-radius:8px; padding:8px 10px 6px; margin-bottom:6px; border:1px solid var(--border); }
+.bf-section-hd { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+.bf-col-hds { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:600; color:var(--text3); margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid var(--border); }
+.bf-col-hds .bfch-name { flex:1; }
+.bf-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.bf-row-num { width:14px; font-size:11px; font-weight:700; color:var(--text3); flex-shrink:0; text-align:center; }
+.bf-row .meal-dd, .bf-row select.meal-select { flex:1; min-width:0; }
+.bf-cnt-wrap { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+.bf-cnt-btn { width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border2); background:var(--surface); color:var(--text); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; flex-shrink:0; }
 .bf-cnt-btn:hover { border-color:var(--green2); color:var(--green); }
-.bf-cnt-num { min-width:18px; text-align:center; font-size:12px; font-weight:600; color:var(--text); }
-.bf-cnt-label { font-size:10px; color:var(--text3); }
-.bf-total { font-size:11px; color:var(--text3); margin-top:6px; padding-top:5px; border-top:1px solid var(--border); font-weight:500; }
+.bf-cnt-num { min-width:20px; text-align:center; font-size:12px; font-weight:600; color:var(--text); }
+.bf-cnt-label { font-size:10px; color:var(--text3); flex-shrink:0; }
+.bf-total-row { display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding-top:5px; border-top:1px solid var(--border); font-size:12px; color:var(--text2); }
+.bf-total-val { font-weight:700; color:var(--text); }
 
 /* Essentials bar — column view */
 .essentials { margin-top:16px; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border2); overflow:hidden; box-shadow:var(--shadow); }
@@ -1663,13 +1668,23 @@ function buildBreakfastCell(day,s){
   const sd=day.replace(/'/g,"\\'");
   const c1=s.bf1_cnt||0,c2=s.bf2_cnt||0,c3=s.bf3_cnt||0;
   const total=c1+c2+c3;
-  const cntRow=(key,cnt)=>isAdmin
-    ?`<div class="bf-cnt-row"><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',-1)">−</button><span class="bf-cnt-num">${cnt}</span><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',1)">+</button><span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`
-    :(cnt>0?`<div class="bf-cnt-row"><span class="bf-cnt-num">${cnt}</span><span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`:'');
-  return `<div class="bf-dish-num"><span class="en">Dish 1</span><span class="mr">पदार्थ १</span></div>${mkSel('breakfast',s.breakfast||'',day,'breakfast')}${cntRow('bf1_cnt',c1)}`
-    +`<div class="bf-dish-num"><span class="en">Dish 2</span><span class="mr">पदार्थ २</span></div>${mkSel('bf2',s.bf2||'',day,'bf2')}${cntRow('bf2_cnt',c2)}`
-    +`<div class="bf-dish-num"><span class="en">Dish 3</span><span class="mr">पदार्थ ३</span></div>${mkSel('bf3',s.bf3||'',day,'bf3')}${cntRow('bf3_cnt',c3)}`
-    +(total>0?`<div class="bf-total">👥 ${isMarathi?'एकूण':'Total'}: ${total} ${isMarathi?'जण':'people'}</div>`:'')
+  const cntWrap=(key,cnt)=>isAdmin
+    ?`<div class="bf-cnt-wrap"><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',-1)">−</button><span class="bf-cnt-num">${cnt}</span><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',1)">+</button></div>`
+    :`<div class="bf-cnt-wrap"><span class="bf-cnt-num">${cnt}</span></div>`;
+  const dishRow=(num,selKey,val,cntKey,cnt)=>
+    `<div class="bf-row"><span class="bf-row-num">${num}</span>${mkSel(selKey,val,day,selKey)}${cntWrap(cntKey,cnt)}<span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`;
+  const ppl=isMarathi?'जणांची संख्या':'No. of people';
+  const nm=isMarathi?'पदार्थाचे नाव':'Dish name';
+  const totalLine=total>0
+    ?`<div class="bf-total-row"><span>${isMarathi?'एकूण नियोजन:':'Total planning for'}</span><span class="bf-total-val">${total} ${isMarathi?'जण':'people'}</span></div>`:'';
+  return `<div class="bf-section">`
+    +`<div class="bf-section-hd">🌅 ${isMarathi?'न्याहारी — मुख्य पदार्थ':'Breakfast — Main Dishes'}</div>`
+    +`<div class="bf-col-hds"><span class="bfch-name">${nm}</span><span>${ppl}</span></div>`
+    +dishRow(1,'breakfast',s.breakfast||'','bf1_cnt',c1)
+    +dishRow(2,'bf2',s.bf2||'','bf2_cnt',c2)
+    +dishRow(3,'bf3',s.bf3||'','bf3_cnt',c3)
+    +totalLine
+    +`</div>`
     +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}`
     +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`;
 }
