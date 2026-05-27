@@ -1111,6 +1111,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
     <button class="mmode-btn" id="mmode-admin"  onclick="setMode('admin')">🔐 Admin</button>
   </div>
   <div id="mode-status-bar" style="font-size:11px;color:var(--text3)"></div>
+  <button id="modebar-export-btn" onclick="exportData()" style="display:none;padding:5px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">💾 Export</button>
 </div>
 <!-- ── Admin PIN Modal ── -->
 <div id="admin-pin-bg" style="display:none;position:fixed;inset:0;background:rgba(20,18,14,0.6);z-index:300;align-items:center;justify-content:center;">
@@ -2698,9 +2699,15 @@ function applyMode(mode){
   showView(startView,null);
   // Highlight first nav item
   const firstNav=document.querySelector('nav.sidebar .nav-item');if(firstNav)firstNav.classList.add('active');
+  // Show/hide mode-bar Export button (admin only)
+  const modeExportBtn=document.getElementById('modebar-export-btn');
+  if(modeExportBtn)modeExportBtn.style.display=mode==='admin'?'inline-block':'none';
+  // On mobile, auto-open the sidebar so user can navigate after mode switch
+  if(window.innerWidth<=768){setTimeout(()=>toggleMobileSidebar(),150);}
   const msgs={admin:'🔓 Admin mode enabled',family:'👨‍👩‍👧 Family mode',helper:'🧑‍🍳 Helper mode — मराठी'};
   showToast(msgs[mode]||'');
 }
+function exportData(){exportBackup();}
 function openAdminPin(){['ap0','ap1','ap2','ap3'].forEach(id=>{document.getElementById(id).value='';});document.getElementById('apin-error').textContent='';document.getElementById('admin-pin-bg').style.display='flex';setTimeout(()=>document.getElementById('ap0').focus(),80);}
 function closeAdminPin(){document.getElementById('admin-pin-bg').style.display='none';}
 function apinNext(i){const v=document.getElementById('ap'+i).value;if(v&&i<3)document.getElementById('ap'+(i+1)).focus();if(i===3&&v)submitAdminPin();}
