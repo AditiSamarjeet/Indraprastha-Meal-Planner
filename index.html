@@ -137,7 +137,7 @@ body::before { display: none; }
 .nav-emoji { font-size:16px; flex-shrink:0; }
 
 /* Main */
-.main { flex:1; padding:28px; overflow-y:auto; max-width:1180px; }
+.main { flex:1; padding:28px; padding-bottom:80px; overflow-y:auto; max-width:1180px; }
 
 /* View hero banner */
 .view-hero {
@@ -2599,10 +2599,11 @@ function renderTodayMenu(){
       const taskBlock='<div class="hlpr-meal-block"><div class="tm-tasks-title" style="margin-bottom:6px">📋 '+wLbl+'</div>'+dWorkHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWId+'" placeholder="काम लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'task\');this.value=\'\';}"><button class="tm-add-btn" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addWId+'\').value,\'task\');document.getElementById(\''+addWId+'\').value=\'\'">+ जोडा</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky);margin-bottom:6px">🛒 '+bLbl+'</div>'+dBuyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBId+'" placeholder="वस्तू लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'buy\');this.value=\'\';}"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addBId+'\').value,\'buy\');document.getElementById(\''+addBId+'\').value=\'\'">+ जोडा</button></div></div>';
       return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
     };
-    body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
+    // Essentials shown FIRST so it's immediately visible (day cards are very tall on mobile)
+    const essHtml=buildEssentialsBarHTML(true);
+    body.innerHTML=dateBanner+'<div class="essentials" style="margin-bottom:20px">'+essHtml+'</div>'+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
     if(window._tmCI)clearInterval(window._tmCI);
     window._tmCI=setInterval(()=>{const n=new Date();const ce=document.getElementById('tm-clock');if(ce)ce.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');},1000);
-    const essSection=document.createElement('div');essSection.className='essentials';essSection.style.cssText='margin-top:20px';essSection.innerHTML=buildEssentialsBarHTML(true);body.appendChild(essSection);
     return;
   }
   // ── FAMILY / ADMIN: full week grid ──────────────────────────────────
