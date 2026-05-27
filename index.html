@@ -428,29 +428,40 @@ select.meal-select:focus { border-color:var(--green2); }
 .sidebar-overlay.visible { display:block; }
 
 @media (max-width:768px) {
-  /* Header */
-  .hamburger-btn { display:flex; }
+  /* Header — hamburger replaced by mobile nav bar */
+  .hamburger-btn { display:none !important; }
   .header { padding:0 14px; gap:10px; }
   .header-datetime { display:none; }
   .header-actions .btn:not(#dark-toggle):not(.btn-white) { display:none; }
 
-  /* Sidebar — slide-in drawer instead of always-visible */
-  .sidebar {
-    display:flex !important;
+  /* Sidebar — hidden on mobile; mobile nav bar handles navigation */
+  .sidebar { display:none !important; }
+  .sidebar-overlay { display:none !important; }
+
+  /* Mobile nav tab bar — scrollable pill row inside mode bar */
+  .mobile-nav-bar {
+    display:flex;
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    gap:6px;
+    padding:2px 2px 4px;
+    scrollbar-width:none;
+    border-bottom:1px solid var(--border);
+    padding-bottom:8px;
+    margin-bottom:2px;
+  }
+  .mobile-nav-bar::-webkit-scrollbar { display:none; }
+
+  /* Mode bar stacks into two rows on mobile */
+  .mode-bar {
     flex-direction:column;
-    position:fixed;
-    top:68px; left:0;
-    height:calc(100vh - 68px);
-    width:260px;
-    z-index:150;
-    transform:translateX(-260px);
-    transition:transform 0.26s cubic-bezier(0.4,0,0.2,1);
-    box-shadow:none;
+    align-items:stretch;
+    padding:8px 14px 10px;
+    gap:4px;
   }
-  .sidebar.mobile-open {
-    transform:translateX(0);
-    box-shadow:6px 0 24px rgba(0,0,0,0.3);
-  }
+  .mode-tabs { justify-content:center; }
+  #mode-status-bar { display:none; }
 
   /* Main content */
   .main { padding:14px; }
@@ -459,13 +470,13 @@ select.meal-select:focus { border-color:var(--green2); }
   .gl-item-row { grid-template-columns:1fr 80px; }
   .gl-brand-input { display:none; }
 
-  /* Layout bottom padding for mode bar */
-  .layout { padding-bottom:60px; }
+  /* Layout bottom padding — taller two-row mode bar */
+  .layout { padding-bottom:118px; }
 
-  /* Today's Menu week grid — single column on small screens */
+  /* Today's Menu week grid — single column */
   .tm-week-grid { grid-template-columns:1fr !important; }
 
-  /* Planner table — already has overflow-x:auto via .grid-wrap, boost touch */
+  /* Planner table — boost touch scrolling */
   .grid-wrap { -webkit-overflow-scrolling:touch; }
 }
 
@@ -526,6 +537,15 @@ body.marathi-mode .en { display:none; }
 .mmode-btn.active-family { background:#2E6FA8;color:#fff;border-color:#2E6FA8; }
 .mmode-btn.active-helper { background:#E07B2A;color:#fff;border-color:#E07B2A; }
 .mmode-btn.active-admin  { background:var(--green);color:#fff;border-color:var(--green); }
+/* ── Mobile nav pill ── */
+.mobile-nav-bar { display:none; }
+.mnav-pill {
+  flex-shrink:0; padding:5px 13px; border-radius:20px; font-size:12px; font-weight:500;
+  border:1.5px solid var(--border2); background:var(--surface); color:var(--text2);
+  cursor:pointer; white-space:nowrap; font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all 0.15s;
+}
+.mnav-pill:hover { background:var(--surface2); }
 /* ── Real-time Calendar ── */
 .rcal-wrap { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px; }
 .rcal-topbar { display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0;flex-wrap:wrap;gap:10px; }
@@ -1104,14 +1124,17 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
 <!-- ── Mode Bar ── -->
 <div class="mode-bar">
-  <div class="mode-tabs">
-    <span class="mode-bar-label">View as:</span>
-    <button class="mmode-btn" id="mmode-family" onclick="setMode('family')">👨‍👩‍👧 Family</button>
-    <button class="mmode-btn" id="mmode-helper" onclick="setMode('helper')">🧑‍🍳 Helper</button>
-    <button class="mmode-btn" id="mmode-admin"  onclick="setMode('admin')">🔐 Admin</button>
+  <div id="mobile-nav-bar" class="mobile-nav-bar"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+    <div class="mode-tabs">
+      <span class="mode-bar-label">View as:</span>
+      <button class="mmode-btn" id="mmode-family" onclick="setMode('family')">👨‍👩‍👧 Family</button>
+      <button class="mmode-btn" id="mmode-helper" onclick="setMode('helper')">🧑‍🍳 Helper</button>
+      <button class="mmode-btn" id="mmode-admin"  onclick="setMode('admin')">🔐 Admin</button>
+    </div>
+    <div id="mode-status-bar" style="font-size:11px;color:var(--text3)"></div>
+    <button id="modebar-export-btn" onclick="exportData()" style="display:none;padding:5px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">💾 Export</button>
   </div>
-  <div id="mode-status-bar" style="font-size:11px;color:var(--text3)"></div>
-  <button id="modebar-export-btn" onclick="exportData()" style="display:none;padding:5px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">💾 Export</button>
 </div>
 <!-- ── Admin PIN Modal ── -->
 <div id="admin-pin-bg" style="display:none;position:fixed;inset:0;background:rgba(20,18,14,0.6);z-index:300;align-items:center;justify-content:center;">
@@ -2137,9 +2160,35 @@ function toggleMobileSidebar(){
   document.getElementById('hamburger-btn').textContent=open?'✕':'☰';
 }
 function closeMobileSidebar(){
-  document.querySelector('nav.sidebar').classList.remove('mobile-open');
-  document.getElementById('sidebar-overlay').classList.remove('visible');
+  const sb=document.querySelector('nav.sidebar');if(sb)sb.classList.remove('mobile-open');
+  const ov=document.getElementById('sidebar-overlay');if(ov)ov.classList.remove('visible');
   const hb=document.getElementById('hamburger-btn');if(hb)hb.textContent='☰';
+}
+function renderMobileNavBar(mode,activeView){
+  const bar=document.getElementById('mobile-nav-bar');
+  if(!bar)return;
+  const tabs=MODE_TABS[mode]||[];
+  const isH=mode==='helper';
+  const short={
+    todaymenu:isH?'🏠 आजचा':'🏠 Today',
+    planner:'📅 Planner',
+    rcalendar:isH?'📆 कॅलेंडर':'📆 Calendar',
+    grocery:isH?'🛒 किराणा':'🛒 Grocery',
+    buyinglist:isH?'🧾 खरेदी':'🧾 Buy List',
+    mealderived:'📋 Summary',
+    customise:'✏️ Customise',
+    essentials:isH?'⭐ गरज':'⭐ Essentials',
+    history:'📖 History',
+    recipes:'📝 Recipes',
+    backup:'💾 Backup',
+  };
+  const ac=mode==='helper'?'#E07B2A':mode==='admin'?'#1F7A4A':'#2E6FA8';
+  bar.innerHTML=tabs.map(id=>{
+    const active=id===activeView;
+    const style=active?`background:${ac};color:#fff;border-color:${ac};`:'';
+    return `<button class="mnav-pill${active?' active':''}" style="${style}" onclick="showView('${id}',null)">${short[id]||id}</button>`;
+  }).join('');
+  setTimeout(()=>{const a=bar.querySelector('.mnav-pill.active');if(a)a.scrollIntoView({inline:'nearest',behavior:'smooth'});},60);
 }
 function showView(name,el){
   closeMobileSidebar();
@@ -2147,6 +2196,7 @@ function showView(name,el){
   const ve=document.getElementById('view-'+name);if(ve)ve.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
+  renderMobileNavBar(currentMode,name);
   if(name==='planner')    renderPlanner();
   if(name==='grocery')    renderGroceryList();
   if(name==='mealderived')renderMealDerived();
@@ -2702,8 +2752,6 @@ function applyMode(mode){
   // Show/hide mode-bar Export button (admin only)
   const modeExportBtn=document.getElementById('modebar-export-btn');
   if(modeExportBtn)modeExportBtn.style.display=mode==='admin'?'inline-block':'none';
-  // On mobile, auto-open the sidebar so user can navigate after mode switch
-  if(window.innerWidth<=768){setTimeout(()=>toggleMobileSidebar(),150);}
   const msgs={admin:'🔓 Admin mode enabled',family:'👨‍👩‍👧 Family mode',helper:'🧑‍🍳 Helper mode — मराठी'};
   showToast(msgs[mode]||'');
 }
