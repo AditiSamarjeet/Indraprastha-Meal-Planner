@@ -715,7 +715,13 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn btn-sm admin-only" onclick="archiveWeekToHistory()">📖 <span class="en">Archive week</span><span class="mr">आठवडा जतन करा</span></button>
         </div>
       </div>
-      <div id="planner-week-badge" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;padding:6px 16px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green)"></div>
+      <div class="week-bar" id="planner-week-bar">
+        <button class="week-tab active" onclick="switchWeek(1,this)"><span class="en">Week 1</span><span class="mr">आठवडा १</span></button>
+        <button class="week-tab" onclick="switchWeek(2,this)"><span class="en">Week 2</span><span class="mr">आठवडा २</span></button>
+        <button class="week-tab" onclick="switchWeek(3,this)"><span class="en">Week 3</span><span class="mr">आठवडा ३</span></button>
+        <button class="week-tab" onclick="switchWeek(4,this)"><span class="en">Week 4</span><span class="mr">आठवडा ४</span></button>
+        <div id="planner-week-badge" style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green)"></div>
+      </div>
       <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
     </div>
 
@@ -1670,6 +1676,9 @@ function dinnerSummary(s,translate){
 
 function renderPlanner(){
   // curWeek is managed globally (set on load and by switchWeek/applyMode) — do NOT reset here
+  // Sync week tab active state
+  const wbar=document.getElementById('planner-week-bar');
+  if(wbar){wbar.querySelectorAll('.week-tab').forEach((t,i)=>t.classList.toggle('active',i+1===curWeek));}
   const badge=document.getElementById('planner-week-badge');
   if(badge){const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][new Date().getMonth()];badge.innerHTML='🗓 Week '+curWeek+' &nbsp;·&nbsp; '+mn+' '+new Date().getFullYear();}
   const tbl=document.getElementById('meal-table');
@@ -2477,9 +2486,9 @@ const ADMIN_PIN='1234';
 const MODE_TABS={
   admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','customise','essentials'],
   family:['planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
-  helper:['todaymenu','rcalendar','grocery','buyinglist','essentials'],
+  helper:['todaymenu','planner','rcalendar','grocery','buyinglist','essentials'],
 };
-const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
+const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',planner:'📅 साप्ताहिक जेवण',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
 const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup'};
 const ADMIN_LABELS=Object.assign({},FAMILY_LABELS);
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
@@ -2501,7 +2510,7 @@ function applyMode(mode){
     const ps=document.createElement('div');ps.className='sidebar-section';
     ps.innerHTML=mode==='helper'?'<span>नियोजन</span>':'<span class="en">Plan</span><span class="mr">नियोजन</span>';
     nav.appendChild(ps);
-    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','rcalendar','grocery','buyinglist'];
+    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','planner','rcalendar','grocery','buyinglist'];
     planTabs.forEach(id=>{if(!tabs.includes(id))return;const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
     // Settings section
     const setTabs=mode==='admin'?['customise','essentials','recipes','backup']:['essentials'];
