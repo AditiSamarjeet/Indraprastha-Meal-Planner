@@ -2437,11 +2437,11 @@ function carryOverTasks(){
   const todayKey=tdKey(new Date());
   Object.keys(dailyTasks).filter(k=>k<todayKey).sort().forEach(pk=>{
     const undone=(dailyTasks[pk]||[]).filter(t=>!t.done);
-    if(undone.length){if(!dailyTasks[todayKey])dailyTasks[todayKey]=[];undone.forEach(t=>{if(!dailyTasks[todayKey].some(x=>x.text===t.text))dailyTasks[todayKey].push({id:Date.now()+'_'+Math.random(),text:t.text,done:false});});}
+    if(undone.length){if(!dailyTasks[todayKey])dailyTasks[todayKey]=[];undone.forEach(t=>{if(!dailyTasks[todayKey].some(x=>x.text===t.text))dailyTasks[todayKey].push({id:Date.now()+'_'+Math.random(),text:t.text,done:false,type:t.type||'task'});});}
     delete dailyTasks[pk];
   });
 }
-function addTask(dateKey,text){if(!text.trim())return;if(!dailyTasks[dateKey])dailyTasks[dateKey]=[];dailyTasks[dateKey].push({id:Date.now()+'_'+Math.random(),text:text.trim(),done:false});saveToStorage(false);renderTodayMenu();}
+function addTask(dateKey,text,type){if(!text.trim())return;if(!dailyTasks[dateKey])dailyTasks[dateKey]=[];dailyTasks[dateKey].push({id:Date.now()+'_'+Math.random(),text:text.trim(),done:false,type:type||'task'});saveToStorage(false);renderTodayMenu();}
 function toggleTask(dateKey,taskId,done){if(!dailyTasks[dateKey])return;const t=dailyTasks[dateKey].find(x=>x.id===taskId);if(t){t.done=done;saveToStorage(false);renderTodayMenu();}}
 function deleteTask(dateKey,taskId){if(!dailyTasks[dateKey])return;dailyTasks[dateKey]=dailyTasks[dateKey].filter(x=>x.id!==taskId);saveToStorage(false);renderTodayMenu();}
 
@@ -2502,7 +2502,18 @@ function renderTodayMenu(){
       const cuisine=s.d_cuisine||'indian';const cSchema=DINNER_CUISINES[cuisine]||DINNER_CUISINES.indian;
       const diItems=cSchema.fields.map(f=>{const v=s[f.key]||'';return v?mkSide(f.labelMr||f.label,v):''}).filter(Boolean).join('');
       const diBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌙 रात्रीचे जेवण &mdash; <span style="font-weight:500;text-transform:none;letter-spacing:0">'+escHtml(cSchema.labelMr||cSchema.label)+'</span></div>'+(diItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
-      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+bfBlock+luBlock+snBlock+diBlock+'</div>';
+      // tasks & to-buy for this day
+      const dKey=tdKey(date);
+      const dayTasks=dailyTasks[dKey]||[];
+      const dWorkItems=dayTasks.filter(t=>(t.type||'task')==='task');
+      const dBuyItems=dayTasks.filter(t=>t.type==='buy');
+      const mkDRow=(t)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dKey+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(t.text)+'</span><button class="tm-task-del" onclick="deleteTask(\''+dKey+'\',\''+t.id+'\')">✕</button></div>';
+      const dWorkHtml=dWorkItems.length?dWorkItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">काम नाही</div>';
+      const dBuyHtml=dBuyItems.length?dBuyItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">वस्तू नाही</div>';
+      const wLbl=isToday?'आजचे काम':'उद्याचे काम';const bLbl=isToday?'आज आणायचे':'उद्या आणायचे';
+      const addWId='htw-'+dKey;const addBId='htb-'+dKey;
+      const taskBlock='<div class="hlpr-meal-block"><div class="tm-tasks-title" style="margin-bottom:6px">📋 '+wLbl+'</div>'+dWorkHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWId+'" placeholder="काम लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'task\');this.value=\'\';}"><button class="tm-add-btn" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addWId+'\').value,\'task\');document.getElementById(\''+addWId+'\').value=\'\'">+ जोडा</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky);margin-bottom:6px">🛒 '+bLbl+'</div>'+dBuyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBId+'" placeholder="वस्तू लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'buy\');this.value=\'\';}"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addBId+'\').value,\'buy\');document.getElementById(\''+addBId+'\').value=\'\'">+ जोडा</button></div></div>';
+      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
     };
     body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
     if(window._tmCI)clearInterval(window._tmCI);
@@ -2531,9 +2542,13 @@ function renderTodayMenu(){
     const calE=rcalData[dateKey]||{};const calM=calE.menu||'';
     const calRow=calM?'<div class="tm-meal-row" style="background:var(--green-light);border-radius:6px;padding:5px 8px;margin-top:4px"><span class="tm-meal-icon">📌</span><div><div class="tm-meal-label">'+(isH?'विशेष':'Special')+'</div><div class="tm-meal-val">'+escHtml(calM)+'</div></div></div>':'';
     const tasks=dailyTasks[dateKey]||[];
-    const taskHtml=tasks.length?tasks.map(t=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dateKey+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(t.text)+'</span><button class="tm-task-del" onclick="deleteTask(\''+dateKey+'\',\''+t.id+'\')">✕</button></div>').join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'काम नाही':'No tasks')+'</div>';
-    const addId='tmi-'+dateKey;
-    const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'कामे':'Tasks & To-buy')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addId+'" placeholder="'+(isH?'काम किंवा वस्तू जोडा…':'Add task or item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value);this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addId+'\').value);document.getElementById(\''+addId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
+    const taskItems=tasks.filter(t=>(t.type||'task')==='task');
+    const buyItems=tasks.filter(t=>t.type==='buy');
+    const mkTRow=(t,dk)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dk+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(t.text)+'</span><button class="tm-task-del" onclick="deleteTask(\''+dk+'\',\''+t.id+'\')">✕</button></div>';
+    const taskHtml=taskItems.length?taskItems.map(t=>mkTRow(t,dateKey)).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'काम नाही':'No tasks')+'</div>';
+    const buyHtml=buyItems.length?buyItems.map(t=>mkTRow(t,dateKey)).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'वस्तू नाही':'Nothing to buy')+'</div>';
+    const addWorkId='tmw-'+dateKey;const addBuyId='tmb-'+dateKey;
+    const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'आजचे काम':'Tasks')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWorkId+'" placeholder="'+(isH?'काम लिहा…':'Add task…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'task\');this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addWorkId+'\').value,\'task\');document.getElementById(\''+addWorkId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky)">🛒 '+(isH?'आज आणायचे':'To Buy')+'</div>'+buyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBuyId+'" placeholder="'+(isH?'वस्तू लिहा…':'Add item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'buy\');this.value=\'\';}\"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addBuyId+'\').value,\'buy\');document.getElementById(\''+addBuyId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
     return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div><div class="tm-meals">'+mealRows+calRow+taskSec+'</div></div>';
   }).join('');
   body.innerHTML=weekBar+dateBanner+'<div class="tm-week-grid">'+cards+'</div>';
@@ -2552,7 +2567,8 @@ function renderTodayMenu(){
     const summary=getTaskSummary();
     if(summary.total>0){
       const banner=document.createElement('div');banner.className='task-summary-banner';
-      banner.innerHTML='<div class="task-summary-stat"><div class="task-summary-num">'+summary.total+'</div><div class="task-summary-label">Total</div></div>'
+      banner.innerHTML='<div class="task-summary-stat"><div class="task-summary-num">'+summary.workTotal+'</div><div class="task-summary-label">📋 Tasks</div></div>'
+        +'<div class="task-summary-stat"><div class="task-summary-num" style="color:var(--sky)">'+summary.buyTotal+'</div><div class="task-summary-label">🛒 To Buy</div></div>'
         +'<div class="task-summary-stat"><div class="task-summary-num" style="color:var(--green)">'+summary.done+'</div><div class="task-summary-label">Done ✓</div></div>'
         +'<div class="task-summary-stat"><div class="task-summary-num" style="color:var(--carrot)">'+summary.pending+'</div><div class="task-summary-label">Pending</div></div>'
         +'<div style="flex:1;text-align:right"><button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="whatsappTodayMenu()">💬 Share Today</button></div>';
@@ -2568,7 +2584,7 @@ function tmSwitchWeek(w){tmCurWeek=w;renderTodayMenu();}
 const ADMIN_PIN='1234';
 const MODE_TABS={
   admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','customise','essentials'],
-  family:['planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
+  family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
   helper:['todaymenu','rcalendar','grocery','buyinglist','essentials'],
 };
 const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
@@ -3012,12 +3028,18 @@ function whatsappTodayMenu(){
   if(lu)  text += `🥘 *Lunch:* ${lu}\n`;
   if(sn)  text += `🍊 *Snacks:* ${sn}\n`;
   if(di)  text += `🌙 *Dinner:* ${di}\n`;
-  // tasks for today
+  // tasks & to-buy for today
   const todayKey = tdKey(now);
-  const tasks = (dailyTasks[todayKey] || []).filter(t => !t.done);
-  if(tasks.length){
-    text += `\n📋 *Pending tasks:*\n`;
-    tasks.forEach(t => text += `  ☐ ${t.text}\n`);
+  const allPending = (dailyTasks[todayKey] || []).filter(t => !t.done);
+  const pendingWork = allPending.filter(t => (t.type||'task')==='task');
+  const pendingBuy  = allPending.filter(t => t.type==='buy');
+  if(pendingWork.length){
+    text += `\n📋 *Today's Tasks:*\n`;
+    pendingWork.forEach(t => text += `  ☐ ${t.text}\n`);
+  }
+  if(pendingBuy.length){
+    text += `\n🛒 *To Buy Today:*\n`;
+    pendingBuy.forEach(t => text += `  ☐ ${t.text}\n`);
   }
   text += `\n_Sent from Indraprastha Meal Planner_`;
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
@@ -3084,7 +3106,13 @@ function exportCalendarPDF(){
 function getTaskSummary(){
   const todayKey = tdKey(new Date());
   const tasks = dailyTasks[todayKey] || [];
-  return { total: tasks.length, done: tasks.filter(t => t.done).length, pending: tasks.filter(t => !t.done).length };
+  const work  = tasks.filter(t => (t.type||'task')==='task');
+  const buy   = tasks.filter(t => t.type==='buy');
+  return {
+    total: tasks.length, done: tasks.filter(t=>t.done).length, pending: tasks.filter(t=>!t.done).length,
+    workTotal: work.length, workDone: work.filter(t=>t.done).length,
+    buyTotal: buy.length,  buyDone:  buy.filter(t=>t.done).length
+  };
 }
 
 // ══════════════════════════════════════════════════════
