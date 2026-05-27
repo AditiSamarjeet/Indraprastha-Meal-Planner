@@ -1735,7 +1735,7 @@ function renderPlanner(){
     html+=`<tr${_isToday?' style="background:var(--green-light)"':''}>
       <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span></td>
       <td>${buildBreakfastCell(day,s)}</td>
-      <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji2',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
+      <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
     </tr>`;
@@ -1749,8 +1749,8 @@ function buildBreakfastCell(day,s){
   const cntWrap=(key,cnt)=>isAdmin
     ?`<div class="bf-cnt-wrap"><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',-1)">−</button><span class="bf-cnt-num">${cnt}</span><button class="bf-cnt-btn" onclick="bfCnt('${sd}','${key}',1)">+</button></div>`
     :`<div class="bf-cnt-wrap"><span class="bf-cnt-num">${cnt}</span></div>`;
-  const dishRow=(num,selKey,val,cntKey,cnt)=>
-    `<div class="bf-row"><span class="bf-row-num">${num}</span>${mkSel(selKey,val,day,selKey)}${cntWrap(cntKey,cnt)}<span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`;
+  const dishRow=(num,optsKey,selKey,val,cntKey,cnt)=>
+    `<div class="bf-row"><span class="bf-row-num">${num}</span>${mkSel(optsKey,val,day,selKey)}${cntWrap(cntKey,cnt)}<span class="bf-cnt-label">${isMarathi?'जण':'people'}</span></div>`;
   const ppl=isMarathi?'जणांची संख्या':'No. of people';
   const nm=isMarathi?'पदार्थाचे नाव':'Dish name';
   const totalLine=total>0
@@ -1758,9 +1758,9 @@ function buildBreakfastCell(day,s){
   return `<div class="bf-section">`
     +`<div class="bf-section-hd">🌅 ${isMarathi?'न्याहारी — मुख्य पदार्थ':'Breakfast — Main Dishes'}</div>`
     +`<div class="bf-col-hds"><span class="bfch-name">${nm}</span><span>${ppl}</span></div>`
-    +dishRow(1,'breakfast',s.breakfast||'','bf1_cnt',c1)
-    +dishRow(2,'bf2',s.bf2||'','bf2_cnt',c2)
-    +dishRow(3,'bf3',s.bf3||'','bf3_cnt',c3)
+    +dishRow(1,'breakfast','breakfast',s.breakfast||'','bf1_cnt',c1)
+    +dishRow(2,'breakfast','bf2',s.bf2||'','bf2_cnt',c2)
+    +dishRow(3,'breakfast','bf3',s.bf3||'','bf3_cnt',c3)
     +totalLine
     +`</div>`
     +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}`
@@ -2018,7 +2018,10 @@ function addOpt(key){
 }
 function removeOpt(key,item){
   opts[key]=(opts[key]||[]).filter(v=>v!==item);
-  for(let w=1;w<=4;w++) DAYS.forEach(d=>{if(weeks[w][d][key]===item)weeks[w][d][key]='';});
+  // also clear aliased fields that share the same options list
+  const ALIASES={breakfast:['bf2','bf3'],sabji:['sabji2']};
+  const fieldKeys=[key,...(ALIASES[key]||[])];
+  for(let w=1;w<=4;w++) DAYS.forEach(d=>{fieldKeys.forEach(fk=>{if(weeks[w][d][fk]===item)weeks[w][d][fk]='';});});
   saveToStorage(false);renderCustomise();renderPlanner();showToast('🗑 "'+item+'" removed');
 }
 
@@ -2358,7 +2361,7 @@ function rcalRenderPanel(){
     +mkRow(RL.drink,'drink','drink')
     +mkHead('🥘',RL.lunch)
     +mkRow(isMarathi?'भाजी १':'Sabji 1','sabji','sabji')
-    +mkRow(isMarathi?'भाजी २':'Sabji 2','sabji2','sabji2')
+    +mkRow(isMarathi?'भाजी २':'Sabji 2','sabji','sabji2')
     +mkRow(RL.bread,'bread','bread')
     +mkRow(RL.dal,'dal','dal')
     +mkRow(RL.rice,'rice','rice')
