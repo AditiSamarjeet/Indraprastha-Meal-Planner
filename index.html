@@ -432,56 +432,90 @@ select.meal-select:focus { border-color:var(--green2); }
 .mobile-nav-bar { display:none; }
 
 @media (max-width:768px) {
-  /* Header — hamburger replaced by mobile nav bar */
+  /* ── Header ── */
   .hamburger-btn { display:none !important; }
   .header { padding:0 14px; gap:10px; }
   .header-datetime { display:none; }
   .header-actions .btn:not(#dark-toggle):not(.btn-white) { display:none; }
 
-  /* Sidebar — hidden on mobile; mobile nav bar handles navigation */
+  /* ── Sidebar — hidden; mobile nav bar takes over ── */
   .sidebar { display:none !important; }
   .sidebar-overlay { display:none !important; }
 
-  /* Mobile nav tab bar — scrollable pill row inside mode bar */
+  /* ── Mobile nav tab bar ── */
   .mobile-nav-bar {
-    display:flex;
-    width:100%;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    gap:6px;
-    padding:2px 2px 4px;
-    scrollbar-width:none;
-    border-bottom:1px solid var(--border);
-    padding-bottom:8px;
-    margin-bottom:2px;
+    display:flex; width:100%; overflow-x:auto;
+    -webkit-overflow-scrolling:touch; gap:6px;
+    scrollbar-width:none; border-bottom:1px solid var(--border);
+    padding:2px 2px 8px; margin-bottom:2px;
   }
   .mobile-nav-bar::-webkit-scrollbar { display:none; }
 
-  /* Mode bar stacks into two rows on mobile */
-  .mode-bar {
-    flex-direction:column;
-    align-items:stretch;
-    padding:8px 14px 10px;
-    gap:4px;
-  }
+  /* ── Mode bar — two rows ── */
+  .mode-bar { flex-direction:column; align-items:stretch; padding:8px 14px 10px; gap:4px; }
   .mode-tabs { justify-content:center; }
+  .mmode-btn { padding:5px 10px; font-size:11px; }
   #mode-status-bar { display:none; }
 
-  /* Main content */
-  .main { padding:14px; }
-  .view-hero { padding:14px; }
+  /* ── Layout & Main ── */
+  .layout { padding-bottom:118px; }
+  .main { padding:12px 14px; }
+
+  /* ── View hero — stack vertically on mobile ── */
+  .view-hero {
+    padding:14px 16px; flex-direction:column;
+    align-items:flex-start; gap:10px; margin-bottom:16px;
+  }
+  .view-hero-title { font-size:17px; }
+  .view-hero-sub { font-size:11.5px; }
+  .view-hero-right { width:100%; flex-wrap:wrap; gap:6px; }
+  .view-hero-right .btn { font-size:11px; padding:5px 10px; }
+
+  /* ── Week tabs ── */
+  .week-tabs { flex-wrap:wrap; gap:4px; }
+  .week-tab { font-size:11px; padding:5px 12px; }
+
+  /* ── Grocery list ── */
   .gl-cat-grid { columns:1; }
+  /* Fix column header to match item row (2-col) for ALL modes on mobile */
+  .gl-col-labels { grid-template-columns:1fr 80px; }
+  .gl-col-labels .gl-col-label:last-child { display:none; }
   .gl-item-row { grid-template-columns:1fr 80px; }
   .gl-brand-input { display:none; }
+  .gl-search-bar { padding:8px 12px; }
+  .gl-add-row { flex-wrap:wrap; }
 
-  /* Layout bottom padding — taller two-row mode bar */
-  .layout { padding-bottom:118px; }
+  /* ── Buying list — horizontal scroll ── */
+  .bl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .bl-table { min-width:400px; }
+  .bl-table th, .bl-table td { padding:8px 12px; font-size:12px; }
 
-  /* Today's Menu week grid — single column */
+  /* ── Meal-derived / Summary — smaller cards on mobile ── */
+  .grocery-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+  .grocery-card { padding:10px 12px; }
+
+  /* ── Real-time Calendar — compact cells ── */
+  .rcal-cell { min-height:48px; padding:3px 4px; }
+  .rcal-dnum { font-size:10px; }
+  .rcal-menu-chip { font-size:8px; padding:1px 3px; }
+  #rcal-title { font-size:15px; min-width:0; text-align:center; }
+  .rcal-topbar { padding:10px 12px 0; }
+
+  /* ── Today's Menu ── */
   .tm-week-grid { grid-template-columns:1fr !important; }
+  .tm-date-banner { padding:14px 16px; }
+  .tm-today-date { font-size:22px; }
+  .tm-time-big { font-size:20px; }
 
-  /* Planner table — boost touch scrolling */
-  .grid-wrap { -webkit-overflow-scrolling:touch; }
+  /* ── Planner table ── */
+  .grid-wrap { -webkit-overflow-scrolling:touch; overflow-x:auto; }
+
+  /* ── Daily Essentials ── */
+  .ess-bar-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); }
+
+  /* ── Modals — full width ── */
+  .modal-box { width:calc(100vw - 28px) !important; max-width:none !important; padding:22px 18px; }
+  .pin-box { width:calc(100vw - 28px) !important; max-width:none !important; }
 }
 
 /* ── Mode bar (bottom of screen) ── */
