@@ -309,7 +309,8 @@ select.meal-select:focus { border-color:var(--green2); }
 .gl-item-row:last-child { border-bottom:none; }
 .gl-item-row:hover { background:#F6F2EA; border-radius:6px; }
 .item-checked .gl-item-text { text-decoration:line-through; color:var(--text3); }
-.gl-item-name { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; }
+.gl-item-name { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; min-width:0; overflow:hidden; }
+.gl-item-text { min-width:0; overflow-wrap:break-word; }
 .gl-check { width:17px; height:17px; border:2px solid var(--border2); border-radius:5px; flex-shrink:0; cursor:pointer; appearance:none; background:var(--bg); transition:all 0.15s; position:relative; }
 .gl-check:checked { background:var(--green); border-color:var(--green); }
 .gl-check:checked::after { content:''; position:absolute; left:3px; top:1px; width:8px; height:5px; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(-45deg); }
@@ -691,6 +692,12 @@ body.marathi-mode #view-grocery .gl-progress-label,
 body.marathi-mode #view-grocery .gl-progress-wrap,
 body.marathi-mode #view-grocery .gl-search-bar,
 body.marathi-mode #view-grocery .view-hero-right { display:none !important; }
+
+/* ── Family & Helper mode grocery: 2-column layout (Item + Qty only, no Brand) ── */
+body:not(.admin-mode) #view-grocery .gl-brand-input { display:none !important; }
+body:not(.admin-mode) #view-grocery .gl-item-row { grid-template-columns:1fr 90px; }
+body:not(.admin-mode) #view-grocery .gl-col-labels { grid-template-columns:1fr 90px; }
+body:not(.admin-mode) #view-grocery .gl-col-labels .gl-col-label:last-child { display:none; }
 
 /* ── Grocery card body: tighten bottom spacing ── */
 .gl-cat-body { padding:12px 16px 0; }
