@@ -516,11 +516,11 @@ body.marathi-mode .en { display:none; }
 .bl-qty-sel { padding:4px 8px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;cursor:pointer;min-width:90px; }
 .bl-qty-sel:focus { border-color:var(--green2); }
 .bl-qty-warn { border-color:var(--tomato) !important;background:#FFF0F0 !important;color:var(--tomato); }
-/* ── Grocery grid (all modes use CSS grid — no column gaps) ── */
-.gl-cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:28px; align-items:start; }
-@media(max-width:1100px){ .gl-cat-grid { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:680px) { .gl-cat-grid { grid-template-columns:1fr; } }
-.gl-cat-card { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s; }
+/* ── Grocery grid — masonry columns so cards fill gaps naturally ── */
+.gl-cat-grid { columns:3; column-gap:18px; margin-bottom:28px; }
+@media(max-width:1100px){ .gl-cat-grid { columns:2; } }
+@media(max-width:680px) { .gl-cat-grid { columns:1; } }
+.gl-cat-card { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.2s,transform 0.2s; break-inside:avoid; margin-bottom:18px; display:inline-block; width:100%; }
 /* ── Today's Menu ── */
 .tm-date-banner { background:linear-gradient(130deg,var(--green) 0%,var(--green2) 100%);border-radius:var(--radius-xl);padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-md); }
 .tm-today-date { font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff; }
