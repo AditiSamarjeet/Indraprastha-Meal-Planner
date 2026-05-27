@@ -207,6 +207,9 @@ select.meal-select {
   background-repeat:no-repeat; background-position:right 6px center; padding-right:22px;
 }
 select.meal-select:focus { border-color:var(--green2); }
+/* Read-only meal display for Family / Helper modes */
+.meal-ro-val { display:block; padding:6px 10px; border-radius:var(--radius); background:var(--surface); border:1.5px solid var(--border); font-size:13px; color:var(--text); font-weight:500; margin-bottom:2px; min-height:32px; box-sizing:border-box; }
+.meal-ro-empty { display:block; padding:6px 10px; border-radius:var(--radius); background:var(--surface2); border:1.5px solid var(--border); font-size:12px; color:var(--text3); font-style:italic; margin-bottom:2px; min-height:32px; box-sizing:border-box; }
 .meal-text-input { width:100%; padding:6px 10px; border:1.5px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; outline:none; box-sizing:border-box; margin-bottom:2px; }
 .meal-text-input:focus { border-color:var(--green2); }
 .meal-text-input:disabled { opacity:0.75; cursor:default; background:var(--surface2); }
@@ -1529,7 +1532,7 @@ const DEFAULT_GL_CATS=[
 const CAT_COLORS=['#1F7A4A','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
 function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
-let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=1;
+let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
 
 function loadData(){try{const d=localStorage.getItem('indraprastha-v2');return d?JSON.parse(d):null;}catch(e){return null;}}
 function mergeGroceryList(saved){
@@ -1647,7 +1650,7 @@ function buildDinnerCell(day,s){
       const ph=isMarathi?'येथे लिहा…':'Type here…';
       return lbl+(isAdmin
         ?`<input type="text" class="meal-text-input" value="${escHtml(s[f.key]||'')}" placeholder="${ph}" oninput="updateMeal('${safeDay}','${escHtml(f.key)}',this.value)">`
-        :`<input type="text" class="meal-text-input" value="${escHtml(s[f.key]||'')}" placeholder="${ph}" disabled>`);
+        :(s[f.key] ? `<div class="meal-ro-val">${escHtml(s[f.key])}</div>` : `<div class="meal-ro-empty">${ph}</div>`));
     }
     return lbl+mkSel(f.key,s[f.key]||'',day,f.key);
   }).join('');
@@ -1666,7 +1669,7 @@ function dinnerSummary(s,translate){
 }
 
 function renderPlanner(){
-  curWeek=getWeekOfMonth();
+  // curWeek is managed globally (set on load and by switchWeek/applyMode) — do NOT reset here
   const badge=document.getElementById('planner-week-badge');
   if(badge){const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][new Date().getMonth()];badge.innerHTML='🗓 Week '+curWeek+' &nbsp;·&nbsp; '+mn+' '+new Date().getFullYear();}
   const tbl=document.getElementById('meal-table');
@@ -1741,7 +1744,9 @@ function mkSel(k,val,day,field){
     const optHtml=['',  ...o].map(v=>`<div class="meal-dd-opt" data-val="${escHtml(v)}" onmousedown="ddPick(this,event)">${escHtml(v)||`<span style="color:var(--text3)">${placeholder}</span>`}</div>`).join('');
     return`<div class="meal-dd" data-day="${escHtml(day)}" data-field="${escHtml(field)}"><input type="text" class="meal-dd-input" value="${escHtml(val)}" placeholder="${placeholder}" oninput="ddFilter(this)" onfocus="ddOpen(this)" onblur="ddBlur(this,event)"><div class="meal-dd-list">${optHtml}</div></div>`;
   }
-  return`<select class="meal-select" style="opacity:0.85;cursor:default;background:var(--surface2);" disabled><option>${escHtml(val)||placeholder}</option></select>`;
+  return val
+    ? `<div class="meal-ro-val">${escHtml(val)}</div>`
+    : `<div class="meal-ro-empty">${placeholder}</div>`;
 }
 // ── Searchable dropdown helpers ──
 function ddOpen(inp){
@@ -2480,6 +2485,7 @@ const ADMIN_LABELS=Object.assign({},FAMILY_LABELS);
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
 function applyMode(mode){
   currentMode=mode;isAdmin=(mode==='admin');isMarathi=(mode==='helper');
+  curWeek=getWeekOfMonth(); tmCurWeek=getWeekOfMonth(); // always land on current calendar week
   document.body.classList.toggle('admin-mode',isAdmin);
   document.body.classList.toggle('marathi-mode',isMarathi);
   ['family','helper','admin'].forEach(m=>{const b=document.getElementById('mmode-'+m);if(b){b.classList.remove('active-family','active-helper','active-admin');if(m===mode)b.classList.add('active-'+m);}});
