@@ -427,6 +427,9 @@ select.meal-select:focus { border-color:var(--green2); }
 }
 .sidebar-overlay.visible { display:block; }
 
+/* Mobile nav bar: hidden on desktop, shown inside media query below */
+.mobile-nav-bar { display:none; }
+
 @media (max-width:768px) {
   /* Header — hamburger replaced by mobile nav bar */
   .hamburger-btn { display:none !important; }
@@ -538,7 +541,6 @@ body.marathi-mode .en { display:none; }
 .mmode-btn.active-helper { background:#E07B2A;color:#fff;border-color:#E07B2A; }
 .mmode-btn.active-admin  { background:var(--green);color:#fff;border-color:var(--green); }
 /* ── Mobile nav pill ── */
-.mobile-nav-bar { display:none; }
 .mnav-pill {
   flex-shrink:0; padding:5px 13px; border-radius:20px; font-size:12px; font-weight:500;
   border:1.5px solid var(--border2); background:var(--surface); color:var(--text2);
@@ -2709,7 +2711,7 @@ function tmSwitchWeek(w){tmCurWeek=w;renderTodayMenu();}
 // ══════════════════════════════════════════════════
 const ADMIN_PIN='1234';
 const MODE_TABS={
-  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','customise','essentials'],
+  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup'],
   family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
   helper:['todaymenu','rcalendar','grocery','buyinglist','essentials'],
 };
