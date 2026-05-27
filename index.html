@@ -2524,8 +2524,8 @@ function renderTodayMenu(){
     const dateKey=tdKey(dt);const isToday=day===todayDayName;
     const dayLabel=isH?DAYS_MR[day]:day;const dateStr=dt.toLocaleDateString(isH?'mr-IN':'en-IN',{day:'numeric',month:'short'});
     const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
-    const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
-    const sn=[s.snack,s.snack2].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
+    const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad,s.l_sides,s.l_lonche,s.l_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
+    const sn=[s.snack,s.snack2,s.snack_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const di=dinnerSummary(s,isH);
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
     const calE=rcalData[dateKey]||{};const calM=calE.menu||'';
