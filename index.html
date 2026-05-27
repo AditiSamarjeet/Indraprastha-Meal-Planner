@@ -230,6 +230,35 @@ select.meal-select:focus { border-color:var(--green2); }
 .bf-total-row { display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding-top:5px; border-top:1px solid var(--border); font-size:12px; color:var(--text2); }
 .bf-total-val { font-weight:700; color:var(--text); }
 
+/* ── Helper: Today + Tomorrow focused view ── */
+.hlpr-day-card { background:var(--surface); border:1.5px solid var(--border2); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:20px; box-shadow:var(--shadow); }
+.hlpr-day-hd { padding:14px 18px 13px; display:flex; align-items:center; gap:12px; }
+.hlpr-day-hd.today-hd { background:var(--green-light); border-bottom:2px solid var(--green-mid); }
+.hlpr-day-hd.tmrw-hd { background:var(--carrot-light); border-bottom:2px solid #F5C89A; }
+.hlpr-day-hd-text { flex:1; }
+.hlpr-day-hd-name { font-size:17px; font-weight:700; color:var(--text); line-height:1.3; }
+.hlpr-day-hd-date { font-size:12px; color:var(--text2); margin-top:3px; }
+.hlpr-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+.hlpr-badge.today { background:var(--green); color:#fff; }
+.hlpr-badge.tmrw { background:var(--carrot); color:#fff; }
+.hlpr-meal-block { padding:12px 18px; border-top:1px solid var(--border); }
+.hlpr-meal-title { font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+.hlpr-bf-row { display:flex; align-items:center; gap:10px; padding:6px 0; }
+.hlpr-bf-row+.hlpr-bf-row { border-top:1px dotted var(--border); }
+.hlpr-bf-num { width:18px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); flex-shrink:0; }
+.hlpr-bf-dish { flex:1; font-size:14px; font-weight:600; color:var(--text); }
+.hlpr-bf-dish.empty { color:var(--text3); font-style:italic; font-weight:400; font-size:12px; }
+.hlpr-bf-pill { font-size:12px; font-weight:700; padding:3px 12px; border-radius:20px; flex-shrink:0; }
+.hlpr-bf-pill.has-cnt { background:var(--green-light); border:1.5px solid var(--green-mid); color:var(--green); }
+.hlpr-bf-pill.zero-cnt { color:var(--text3); background:var(--surface2); border:1.5px solid var(--border); }
+.hlpr-bf-total { display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:2px solid var(--green-mid); }
+.hlpr-bf-total-lbl { font-size:12px; color:var(--text2); font-weight:500; }
+.hlpr-bf-total-val { font-size:17px; font-weight:700; color:var(--green); }
+.hlpr-side-row { display:flex; gap:8px; align-items:baseline; padding:3px 0; font-size:13px; }
+.hlpr-side-key { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.3px; min-width:80px; flex-shrink:0; }
+.hlpr-side-val { color:var(--text); font-weight:500; }
+.hlpr-meal-empty { font-size:12px; color:var(--text3); font-style:italic; }
+
 /* Essentials bar — column view */
 .essentials { margin-top:16px; background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--border2); overflow:hidden; box-shadow:var(--shadow); }
 .ess-bar-header { padding:11px 18px 9px; font-size:14px; font-weight:700; color:var(--text); border-bottom:1.5px solid var(--border2); letter-spacing:0.3px; }
@@ -2428,8 +2457,63 @@ function renderTodayMenu(){
   const isH=(currentMode==='helper');const labels=isH?ML_MR:ML_EN;
   const heroT=document.getElementById('tm-hero-title');const heroS=document.getElementById('tm-hero-sub');
   if(heroT)heroT.textContent=isH?'आजचा मेनू':"Today's Menu";
-  if(heroS)heroS.textContent=isH?'संपूर्ण आठवड्याचे जेवण':'Full week plan & daily tasks';
-  const weekBar='<div class="tm-week-bar">'+[1,2,3,4].map(w=>'<button class="tm-week-btn'+(tmCurWeek===w?' active':'')+'" onclick="tmSwitchWeek('+w+')">'+(isH?'आठवडा':'Week')+' '+w+'</button>').join('')+'</div>';
+
+  // ── HELPER: Today + Tomorrow focused view ──────────────────────────
+  if(isH){
+    if(heroS)heroS.textContent='आजचा आणि उद्याचा मेनू';
+    const now=new Date();
+    const todayDow=now.getDay();
+    const todayIdx=todayDow===0?6:todayDow-1;
+    const tomorrowIdx=todayDow%7;
+    const todayName=DAYS[todayIdx];
+    const tomorrowName=DAYS[tomorrowIdx];
+    const W=weeks[tmCurWeek]||{};
+    const tmrwWeek=(todayDow===0)?Math.min(tmCurWeek+1,4):tmCurWeek;
+    const TW=weeks[tmrwWeek]||{};
+    const sToday=W[todayName]||{};
+    const sTomorrow=TW[tomorrowName]||{};
+    const tomorrowDate=new Date(now);tomorrowDate.setDate(now.getDate()+1);
+    // clock banner
+    const todayKey=tdKey(now);
+    const af=rcalAutoFest(todayKey);const te=rcalData[todayKey]||{};const fest=(te.festivals&&te.festivals.length)?te.festivals[0]:af;
+    const hh=String(now.getHours()).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');
+    const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+now.toLocaleDateString('mr-IN',{month:'long'})+'</div><div class="tm-today-sub">'+now.toLocaleDateString('mr-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+hh+':'+mm+':'+ss+'</div></div></div>';
+    // helper to build one day card
+    const buildCard=(s,dayName,date,isToday)=>{
+      const dayMr=DAYS_MR[dayName]||dayName;
+      const dateStr=date.toLocaleDateString('mr-IN',{day:'numeric',month:'long'});
+      const hdrCls=isToday?'today-hd':'tmrw-hd';
+      const badge=isToday?'<span class="hlpr-badge today">आज</span>':'<span class="hlpr-badge tmrw">उद्या</span>';
+      const subLbl=isToday?'':'<span style="font-size:12px;color:var(--carrot);font-weight:500;display:block;margin-top:2px">उद्याची तयारी</span>';
+      // breakfast rows
+      const c1=s.bf1_cnt||0,c2=s.bf2_cnt||0,c3=s.bf3_cnt||0;
+      const bfTotal=c1+c2+c3;
+      const bfRow=(num,dish,cnt)=>{const d=dish?mr(dish):'';return'<div class="hlpr-bf-row"><span class="hlpr-bf-num">'+num+'</span>'+(d?'<span class="hlpr-bf-dish">'+escHtml(d)+'</span>':'<span class="hlpr-bf-dish empty">— नाही —</span>')+(d?'<span class="hlpr-bf-pill '+(cnt>0?'has-cnt':'zero-cnt')+'">'+cnt+' जण</span>':'')+'</div>';};
+      const bfTotalRow=bfTotal>0?'<div class="hlpr-bf-total"><span class="hlpr-bf-total-lbl">एकूण नियोजन</span><span class="hlpr-bf-total-val">'+bfTotal+' जण</span></div>':'';
+      const mkSide=(lbl,val)=>val?'<div class="hlpr-side-row"><span class="hlpr-side-key">'+lbl+'</span><span class="hlpr-side-val">'+escHtml(mr(val))+'</span></div>':'';
+      const bfSides=[mkSide('चटणी',s.chutney),mkSide('ज्यूस/पेय',s.drink)].filter(Boolean).join('');
+      const bfBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌅 न्याहारी</div>'+bfRow(1,s.breakfast,c1)+bfRow(2,s.bf2,c2)+bfRow(3,s.bf3,c3)+bfTotalRow+(bfSides?'<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'+bfSides+'</div>':'')+'</div>';
+      // lunch
+      const luItems=[mkSide('भाजी १',s.sabji),mkSide('भाजी २',s.sabji2),mkSide('भाकरी',s.bread),mkSide('डाळ',s.dal),mkSide('भात',s.rice),mkSide('कोशिंबीर',s.salad),mkSide('इतर',s.l_sides),mkSide('लोणचे',s.l_lonche)].filter(Boolean).join('');
+      const luBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🥘 दुपारचे जेवण</div>'+(luItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
+      // snacks
+      const snItems=[mkSide('मुख्य नाश्ता',s.snack),mkSide('इतर',s.snack2),mkSide('पेय',s.snack_drink)].filter(Boolean).join('');
+      const snBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🍊 संध्याकाळचा नाश्ता</div>'+(snItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
+      // dinner
+      const cuisine=s.d_cuisine||'indian';const cSchema=DINNER_CUISINES[cuisine]||DINNER_CUISINES.indian;
+      const diItems=cSchema.fields.map(f=>{const v=s[f.key]||'';return v?mkSide(f.labelMr||f.label,v):''}).filter(Boolean).join('');
+      const diBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌙 रात्रीचे जेवण &mdash; <span style="font-weight:500;text-transform:none;letter-spacing:0">'+escHtml(cSchema.labelMr||cSchema.label)+'</span></div>'+(diItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
+      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+bfBlock+luBlock+snBlock+diBlock+'</div>';
+    };
+    body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
+    if(window._tmCI)clearInterval(window._tmCI);
+    window._tmCI=setInterval(()=>{const n=new Date();const ce=document.getElementById('tm-clock');if(ce)ce.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');},1000);
+    const essSection=document.createElement('div');essSection.className='essentials';essSection.style.cssText='margin-top:20px';essSection.innerHTML=buildEssentialsBarHTML(true);body.appendChild(essSection);
+    return;
+  }
+  // ── FAMILY / ADMIN: full week grid ──────────────────────────────────
+  if(heroS)heroS.textContent='Full week plan & daily tasks';
+  const weekBar='<div class="tm-week-bar">'+[1,2,3,4].map(w=>'<button class="tm-week-btn'+(tmCurWeek===w?' active':'')+'" onclick="tmSwitchWeek('+w+')">Week '+w+'</button>').join('')+'</div>';
   const now=new Date();const todayKey=tdKey(now);
   const af=rcalAutoFest(todayKey);const te=rcalData[todayKey]||{};const fest=(te.festivals&&te.festivals.length)?te.festivals[0]:af;
   const h=String(now.getHours()).padStart(2,'0'),mn=String(now.getMinutes()).padStart(2,'0'),sc=String(now.getSeconds()).padStart(2,'0');
@@ -2486,9 +2570,9 @@ const ADMIN_PIN='1234';
 const MODE_TABS={
   admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','customise','essentials'],
   family:['planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
-  helper:['todaymenu','planner','rcalendar','grocery','buyinglist','essentials'],
+  helper:['todaymenu','rcalendar','grocery','buyinglist','essentials'],
 };
-const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',planner:'📅 साप्ताहिक जेवण',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
+const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
 const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup'};
 const ADMIN_LABELS=Object.assign({},FAMILY_LABELS);
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
@@ -2510,7 +2594,7 @@ function applyMode(mode){
     const ps=document.createElement('div');ps.className='sidebar-section';
     ps.innerHTML=mode==='helper'?'<span>नियोजन</span>':'<span class="en">Plan</span><span class="mr">नियोजन</span>';
     nav.appendChild(ps);
-    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','planner','rcalendar','grocery','buyinglist'];
+    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','rcalendar','grocery','buyinglist'];
     planTabs.forEach(id=>{if(!tabs.includes(id))return;const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
     // Settings section
     const setTabs=mode==='admin'?['customise','essentials','recipes','backup']:['essentials'];
