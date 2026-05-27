@@ -399,13 +399,74 @@ select.meal-select:focus { border-color:var(--green2); }
 .modal-input { width:100%; margin-bottom:16px; padding:9px 12px; border:1.5px solid var(--border); border-radius:var(--radius); font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; color:var(--text); background:var(--bg); outline:none; transition:border-color 0.15s; }
 .modal-input:focus { border-color:var(--green2); }
 
+/* ── Mobile hamburger ── */
+.hamburger-btn {
+  display:none;
+  background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.3);
+  color:#fff;
+  font-size:20px;
+  width:38px; height:38px;
+  border-radius:10px;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  transition:background 0.15s;
+}
+.hamburger-btn:hover { background:rgba(255,255,255,0.25); }
+
+/* ── Mobile sidebar overlay ── */
+.sidebar-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  top:68px;
+  background:rgba(0,0,0,0.45);
+  z-index:149;
+}
+.sidebar-overlay.visible { display:block; }
+
 @media (max-width:768px) {
-  .sidebar { display:none; }
-  .main { padding:16px; }
+  /* Header */
+  .hamburger-btn { display:flex; }
+  .header { padding:0 14px; gap:10px; }
+  .header-datetime { display:none; }
+  .header-actions .btn:not(#dark-toggle):not(.btn-white) { display:none; }
+
+  /* Sidebar — slide-in drawer instead of always-visible */
+  .sidebar {
+    display:flex !important;
+    flex-direction:column;
+    position:fixed;
+    top:68px; left:0;
+    height:calc(100vh - 68px);
+    width:260px;
+    z-index:150;
+    transform:translateX(-260px);
+    transition:transform 0.26s cubic-bezier(0.4,0,0.2,1);
+    box-shadow:none;
+  }
+  .sidebar.mobile-open {
+    transform:translateX(0);
+    box-shadow:6px 0 24px rgba(0,0,0,0.3);
+  }
+
+  /* Main content */
+  .main { padding:14px; }
+  .view-hero { padding:14px; }
   .gl-cat-grid { columns:1; }
   .gl-item-row { grid-template-columns:1fr 80px; }
   .gl-brand-input { display:none; }
-  .view-hero { padding:16px; }
+
+  /* Layout bottom padding for mode bar */
+  .layout { padding-bottom:60px; }
+
+  /* Today's Menu week grid — single column on small screens */
+  .tm-week-grid { grid-template-columns:1fr !important; }
+
+  /* Planner table — already has overflow-x:auto via .grid-wrap, boost touch */
+  .grid-wrap { -webkit-overflow-scrolling:touch; }
 }
 
 /* ── Mode bar (bottom of screen) ── */
@@ -675,6 +736,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 <body>
 
 <header class="header">
+  <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Menu">☰</button>
   <div class="header-brand">
     <div class="logo-mark">🌿</div>
     <div>
@@ -705,6 +767,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
   </div>
 </header>
 
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 <div class="layout">
   <nav class="sidebar">
     <div class="sidebar-banner">
@@ -2065,7 +2128,20 @@ function selectColor(c,el){selectedColor=c;document.querySelectorAll('#color-pic
 function confirmAddCat(){const name=document.getElementById('new-cat-name').value.trim();if(!name){showToast('⚠️ Enter a name');return;}essentials.categories.push({id:name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now(),name,color:selectedColor,items:[]});saveToStorage(false);closeCatModal();renderEssentialsCats();showToast('🎉 "'+name+'" created');}
 document.getElementById('cat-modal-bg').addEventListener('click',function(e){if(e.target===this)closeCatModal();});
 
+function toggleMobileSidebar(){
+  const sb=document.querySelector('nav.sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const open=sb.classList.toggle('mobile-open');
+  ov.classList.toggle('visible',open);
+  document.getElementById('hamburger-btn').textContent=open?'✕':'☰';
+}
+function closeMobileSidebar(){
+  document.querySelector('nav.sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
+  const hb=document.getElementById('hamburger-btn');if(hb)hb.textContent='☰';
+}
 function showView(name,el){
+  closeMobileSidebar();
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   const ve=document.getElementById('view-'+name);if(ve)ve.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
