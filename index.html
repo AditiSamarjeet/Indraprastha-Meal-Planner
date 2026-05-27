@@ -2525,7 +2525,7 @@ function renderTodayMenu(){
     return;
   }
   // ── FAMILY / ADMIN: full week grid ──────────────────────────────────
-  if(heroS)heroS.textContent='Full week plan & daily tasks';
+  if(heroS)heroS.textContent=isAdmin?'Full week plan & daily tasks':'Full week plan — meals, tasks & to-buy';
   const weekBar='<div class="tm-week-bar">'+[1,2,3,4].map(w=>'<button class="tm-week-btn'+(tmCurWeek===w?' active':'')+'" onclick="tmSwitchWeek('+w+')">Week '+w+'</button>').join('')+'</div>';
   const now=new Date();const todayKey=tdKey(now);
   const af=rcalAutoFest(todayKey);const te=rcalData[todayKey]||{};const fest=(te.festivals&&te.festivals.length)?te.festivals[0]:af;
@@ -2565,8 +2565,8 @@ function renderTodayMenu(){
     essSection.innerHTML=buildEssentialsBarHTML(true);
     body.appendChild(essSection);
   }
-  // Task summary banner for admin
-  if(body&&currentMode==='admin'){
+  // Task summary banner for admin and family
+  if(body&&(currentMode==='admin'||currentMode==='family')){
     const summary=getTaskSummary();
     if(summary.total>0){
       const banner=document.createElement('div');banner.className='task-summary-banner';
@@ -2612,7 +2612,7 @@ function applyMode(mode){
     const ps=document.createElement('div');ps.className='sidebar-section';
     ps.innerHTML=mode==='helper'?'<span>नियोजन</span>':'<span class="en">Plan</span><span class="mr">नियोजन</span>';
     nav.appendChild(ps);
-    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','rcalendar','grocery','buyinglist'];
+    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','rcalendar','grocery','buyinglist'];
     planTabs.forEach(id=>{if(!tabs.includes(id))return;const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
     // Settings section
     const setTabs=mode==='admin'?['customise','essentials','recipes','backup']:['essentials'];
@@ -2622,7 +2622,7 @@ function applyMode(mode){
     setTabs.forEach(id=>{const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
   }
   // Navigate to start view
-  const startView=mode==='helper'?'todaymenu':'planner';
+  const startView=(mode==='helper'||mode==='family')?'todaymenu':'planner';
   showView(startView,null);
   // Highlight first nav item
   const firstNav=document.querySelector('nav.sidebar .nav-item');if(firstNav)firstNav.classList.add('active');
