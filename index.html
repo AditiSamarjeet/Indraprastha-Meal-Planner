@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Indraprastha — Weekly Meal Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"></noscript>
 <style>
 :root {
   --bg: #FEFAF2;
@@ -352,6 +355,40 @@ select.meal-select:focus { border-color:var(--green2); }
 .add-item-row input { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:var(--radius); background:var(--bg); font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; color:var(--text); outline:none; transition:border-color 0.15s; }
 .add-item-row input:focus { border-color:var(--green2); }
 .add-item-row input::placeholder { color:var(--text3); }
+
+/* ── Bulk-add textarea ── */
+.bulk-add-area { display:none; border-top:1px solid var(--border); margin-top:8px; padding-top:10px; }
+.bulk-add-area.open { display:block; }
+.bulk-add-area textarea { width:100%; box-sizing:border-box; padding:8px 10px; border:1.5px solid var(--border); border-radius:var(--radius); background:var(--bg); font-family:'Plus Jakarta Sans',sans-serif; font-size:12.5px; color:var(--text); resize:vertical; min-height:70px; outline:none; transition:border-color 0.15s; }
+.bulk-add-area textarea:focus { border-color:var(--green2); }
+.bulk-add-area textarea::placeholder { color:var(--text3); }
+.bulk-actions { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.bulk-hint { font-size:11px; color:var(--text3); flex:1; }
+
+/* ── Preset picker modal ── */
+#preset-modal-bg { display:none; position:fixed; inset:0; background:rgba(20,18,14,0.55); z-index:300; align-items:center; justify-content:center; }
+#preset-modal-bg.open { display:flex !important; }
+.preset-modal { background:var(--surface); border-radius:var(--radius-xl); width:540px; max-height:82vh; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); border:1.5px solid var(--border); overflow:hidden; }
+.preset-modal-hdr { padding:18px 22px 0; border-bottom:1px solid var(--border); flex-shrink:0; }
+.preset-modal-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; margin-bottom:10px; }
+.preset-tabs { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; padding-bottom:0; }
+.preset-tabs::-webkit-scrollbar { display:none; }
+.preset-tab { padding:5px 14px 6px; border-radius:var(--radius) var(--radius) 0 0; font-size:12px; font-weight:500; border:1.5px solid var(--border); border-bottom:none; cursor:pointer; white-space:nowrap; background:var(--surface2); color:var(--text2); transition:all 0.15s; flex-shrink:0; }
+.preset-tab.active { background:var(--green); color:#fff; border-color:var(--green); }
+.preset-modal-body { flex:1; overflow-y:auto; padding:16px 22px; }
+.preset-item-list { display:flex; flex-wrap:wrap; gap:6px; }
+.preset-chip { display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:20px; border:1.5px solid var(--border); background:var(--surface); font-size:12.5px; color:var(--text); cursor:pointer; transition:all 0.15s; user-select:none; white-space:nowrap; }
+.preset-chip:hover { border-color:var(--green2); }
+.preset-chip.selected { background:var(--green-light); border-color:var(--green); color:var(--green); font-weight:500; }
+.preset-chip.already { background:var(--surface2); color:var(--text3); cursor:default; border-style:dashed; pointer-events:none; }
+.preset-modal-ftr { padding:12px 22px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:8px; flex-shrink:0; }
+.preset-sel-all { font-size:12px; color:var(--green); cursor:pointer; font-weight:500; text-decoration:underline; }
+@media (max-width:768px) {
+  .preset-modal { width:calc(100vw - 24px); max-height:88vh; }
+  .preset-modal-hdr { padding:14px 16px 0; }
+  .preset-modal-body { padding:12px 16px; }
+  .preset-modal-ftr { padding:10px 16px; }
+}
 
 /* Essentials — column category view (all modes) */
 #ess-cat-grid { columns:4; column-gap:14px; }
@@ -720,6 +757,77 @@ body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
 .meal-dd-opt { padding:6px 12px; font-size:12px; cursor:pointer; color:var(--text); white-space:nowrap; }
 .meal-dd-opt:hover, .meal-dd-opt.focused { background:var(--green-light); color:var(--green); }
 .meal-dd-opt.hidden { display:none; }
+.meal-dd-save { padding:6px 12px 7px; font-size:12px; cursor:pointer; color:var(--green); white-space:nowrap; border-top:1px dashed var(--border); display:none; font-weight:500; }
+.meal-dd-save:hover { background:var(--green-light); }
+.meal-dd-save.visible { display:block; }
+
+/* ── Staff availability system ── */
+.staff-bar { display:flex; flex-wrap:wrap; gap:5px; padding:8px 12px 6px; border-top:1px solid var(--border); margin-top:6px; }
+.staff-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px 3px 6px; border-radius:20px; font-size:11px; font-weight:500; white-space:nowrap; }
+.staff-chip .sc-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.staff-chip.sc-present  { background:rgba(34,139,84,0.12); color:var(--green); }
+.staff-chip.sc-absent   { background:rgba(220,60,60,0.12);  color:#DC3C3C; }
+.staff-chip.sc-halfday  { background:rgba(224,123,42,0.12); color:var(--carrot); }
+.staff-chip.sc-unknown  { background:var(--surface2); color:var(--text3); }
+.staff-bar-title { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text3); width:100%; margin-bottom:2px; }
+/* planner day header staff row */
+.planner-staff-row { display:flex; flex-wrap:wrap; gap:3px; padding:3px 4px 4px; border-top:1px solid var(--border); justify-content:center; }
+.psr-dot { width:8px; height:8px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.5); cursor:default; }
+/* hscal multi-staff chips */
+.hscal-staff-chips { display:flex; flex-wrap:wrap; gap:2px; justify-content:center; width:100%; }
+.hscal-sc { font-size:8px; padding:1px 4px; border-radius:8px; font-weight:600; color:#fff; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.hscal-sc.absent  { background:#DC3C3C; }
+.hscal-sc.halfday { background:var(--carrot); }
+/* staff management */
+.staff-mgmt-card { background:var(--surface2); border:1.5px solid var(--border); border-radius:12px; padding:14px 16px; margin:0 0 14px; }
+.staff-mgmt-title { font-size:12px; font-weight:700; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.staff-list { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+.staff-row { display:flex; align-items:center; gap:8px; padding:6px 10px; background:var(--surface); border-radius:8px; border:1px solid var(--border); }
+.staff-row-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.staff-row-name { font-size:13px; font-weight:600; color:var(--text); flex:1; }
+.staff-row-role { font-size:11px; color:var(--text3); }
+.staff-row-del { background:none; border:none; color:var(--text3); cursor:pointer; font-size:16px; padding:0 2px; }
+.staff-row-del:hover { color:var(--tomato); }
+.staff-add-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.staff-add-row input { flex:1; min-width:100px; padding:6px 10px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); font-family:inherit; font-size:12px; color:var(--text); outline:none; }
+.staff-add-row input:focus { border-color:var(--green2); }
+.staff-color-swatch { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid var(--border); flex-shrink:0; }
+
+/* ── Helper Schedule Calendar ── */
+.hscal-wrap { padding:16px 14px 80px; max-width:520px; margin:0 auto; }
+.hscal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.hscal-nav-btn { background:var(--surface2); border:1.5px solid var(--border); border-radius:50%; width:34px; height:34px; font-size:18px; cursor:pointer; color:var(--text); display:flex; align-items:center; justify-content:center; }
+.hscal-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--text); }
+.hscal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
+.hscal-dlabel { text-align:center; font-size:10px; font-weight:700; letter-spacing:0.5px; color:var(--text3); padding:5px 0 7px; }
+.hscal-dlabel.wknd { color:var(--tomato); }
+.hscal-cell { border-radius:10px; padding:6px 2px; min-height:52px; display:flex; flex-direction:column; align-items:center; gap:3px; position:relative; cursor:default; border:1.5px solid transparent; }
+.hscal-cell.other { opacity:0.25; }
+.hscal-cell.is-today { border-color:var(--green2) !important; }
+.hscal-dnum { font-size:13px; font-weight:600; color:var(--text); }
+.hscal-cell.other .hscal-dnum { color:var(--text3); }
+/* Status colours */
+.hscal-cell.status-available  { background:rgba(34,139,84,0.12); }
+.hscal-cell.status-unavailable { background:rgba(220,60,60,0.12); }
+.hscal-cell.status-halfday    { background:rgba(224,123,42,0.12); }
+.hscal-badge { font-size:10px; font-weight:600; padding:2px 6px; border-radius:10px; white-space:nowrap; }
+.hscal-badge.available   { background:var(--green); color:#fff; }
+.hscal-badge.unavailable { background:#DC3C3C; color:#fff; }
+.hscal-badge.halfday     { background:var(--carrot); color:#fff; }
+.hscal-note { font-size:9px; color:var(--text2); text-align:center; padding:0 2px; line-height:1.2; max-width:100%; word-break:break-word; }
+.hscal-legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; padding:10px 12px; background:var(--surface2); border-radius:10px; border:1px solid var(--border); }
+.hscal-legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text2); }
+.hscal-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+/* Admin status picker in rcal panel */
+.hscal-admin-strip { margin-top:12px; padding:10px 12px; background:var(--surface2); border-radius:10px; border:1px solid var(--border); }
+.hscal-admin-title { font-size:10px; font-weight:700; color:var(--carrot); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+.hscal-status-btns { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+.hscal-status-btn { padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:var(--surface); color:var(--text2); font-family:inherit; transition:all 0.15s; }
+.hscal-status-btn.active-available   { background:var(--green); color:#fff; border-color:var(--green); }
+.hscal-status-btn.active-unavailable { background:#DC3C3C; color:#fff; border-color:#DC3C3C; }
+.hscal-status-btn.active-halfday     { background:var(--carrot); color:#fff; border-color:var(--carrot); }
+.hscal-note-inp { width:100%; box-sizing:border-box; padding:6px 10px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); font-family:inherit; font-size:12px; color:var(--text); outline:none; }
+.hscal-note-inp:focus { border-color:var(--carrot); }
 
 /* ── Helper mode grocery: hide actions & progress ── */
 body.marathi-mode #view-grocery .gl-progress-label,
@@ -931,6 +1039,24 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       <div class="custom-grid" id="custom-grid"></div>
     </div>
 
+    <!-- Preset Picker Modal -->
+    <div id="preset-modal-bg" onclick="if(event.target===this)closePresetPicker()">
+      <div class="preset-modal">
+        <div class="preset-modal-hdr">
+          <div class="preset-modal-title" id="preset-modal-title">📦 Preset Dishes</div>
+          <div class="preset-tabs" id="preset-tabs"></div>
+        </div>
+        <div class="preset-modal-body" id="preset-modal-body"></div>
+        <div class="preset-modal-ftr">
+          <span class="preset-sel-all" onclick="presetSelectAll()">✓ Select all on this tab</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-sm btn-surface" onclick="closePresetPicker()">Cancel</button>
+            <button class="btn btn-sm" id="preset-add-btn" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="addFromPreset()">+ Add Selected</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ESSENTIALS -->
     <div id="view-essentials" class="view">
       <div class="view-hero">
@@ -979,18 +1105,18 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
                 <span id="rcal-title"></span>
                 <button class="rcal-nav-btn" onclick="rcalChangeMonth(1)">&#8250;</button>
               </div>
-              <button class="rcal-today-btn" onclick="rcalGoToday()">Today</button>
+              <button class="rcal-today-btn" onclick="rcalGoToday()"><span class="en">Today</span><span class="mr">आज</span></button>
             </div>
             <div class="rcal-grid" id="rcal-grid">
-              <div class="rcal-dlabel wknd">Sun</div>
-              <div class="rcal-dlabel">Mon</div><div class="rcal-dlabel">Tue</div>
-              <div class="rcal-dlabel">Wed</div><div class="rcal-dlabel">Thu</div>
-              <div class="rcal-dlabel">Fri</div><div class="rcal-dlabel wknd">Sat</div>
+              <div class="rcal-dlabel wknd"><span class="en">Sun</span><span class="mr">रवि</span></div>
+              <div class="rcal-dlabel"><span class="en">Mon</span><span class="mr">सोम</span></div><div class="rcal-dlabel"><span class="en">Tue</span><span class="mr">मंगळ</span></div>
+              <div class="rcal-dlabel"><span class="en">Wed</span><span class="mr">बुध</span></div><div class="rcal-dlabel"><span class="en">Thu</span><span class="mr">गुरु</span></div>
+              <div class="rcal-dlabel"><span class="en">Fri</span><span class="mr">शुक्र</span></div><div class="rcal-dlabel wknd"><span class="en">Sat</span><span class="mr">शनि</span></div>
             </div>
           </div>
         </div>
         <div class="rcal-panel" id="rcal-panel">
-          <div class="rcal-hint">📅 Click any date to set a menu or mark a festival</div>
+          <div class="rcal-hint"><span class="en">📅 Click any date to set a menu or mark a festival</span><span class="mr">📅 तारीख निवडा — मेनू किंवा सण नोंदवा</span></div>
         </div>
       </div>
     </div>
@@ -1000,15 +1126,26 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       <div class="view-hero">
         <div class="view-hero-left">
           <div class="view-hero-title">🧾 <span class="en">Buying List</span><span class="mr">खरेदी यादी</span></div>
-          <div class="view-hero-sub"><span class="en">All checked grocery items — ready for shopping</span></div>
+          <div class="view-hero-sub"><span class="en">All checked grocery items — ready for shopping</span><span class="mr">निवडलेल्या सर्व वस्तू — खरेदीसाठी तयार</span></div>
         </div>
         <div class="view-hero-right">
-          <button class="btn btn-sm" onclick="printBuyingList()">🖨 Print</button>
-          <button class="btn btn-sm" onclick="copyBuyingList()">📋 Copy</button>
-          <button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="whatsappBuyingList()">💬 WhatsApp</button>
+          <button class="btn btn-sm" onclick="printBuyingList()">🖨 <span class="en">Print</span><span class="mr">मुद्रण</span></button>
+          <button class="btn btn-sm" onclick="copyBuyingList()">📋 <span class="en">Copy</span><span class="mr">कॉपी</span></button>
+          <button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="whatsappBuyingList()">💬 <span class="en">WhatsApp</span><span class="mr">व्हॉट्सअ‍ॅप</span></button>
         </div>
       </div>
       <div id="bl-body"></div>
+    </div>
+
+    <!-- HELPER SCHEDULE CALENDAR -->
+    <div id="view-hlprschedule" class="view">
+      <div class="view-hero" style="background:linear-gradient(130deg,#7B3F9E 0%,#9B5FBE 100%)">
+        <div class="view-hero-left">
+          <div class="view-hero-title" style="color:#fff">📅 <span class="en">Helper Schedule</span><span class="mr">वेळापत्रक</span></div>
+          <div class="view-hero-sub" style="color:rgba(255,255,255,0.85)"><span class="en">Working days &amp; holidays</span><span class="mr">कामाचे दिवस आणि सुट्ट्या</span></div>
+        </div>
+      </div>
+      <div id="hscal-body"></div>
     </div>
 
     <!-- TODAY'S MENU -->
@@ -1220,9 +1357,29 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 <div class="toast-container" id="toast-container"></div>
 
 <script>
+// ── Startup error guard: show any crash visibly instead of blank screen ──
+window.onerror = function(msg, src, line, col, err) {
+  var box = document.getElementById('startup-error');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'startup-error';
+    box.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:9999;padding:24px;font-family:sans-serif;overflow:auto;';
+    document.body.appendChild(box);
+  }
+  box.innerHTML = '<h2 style="color:#c00;margin:0 0 12px">⚠️ App failed to start</h2>'
+    + '<p style="margin:0 0 8px"><b>' + msg + '</b></p>'
+    + '<p style="color:#666;font-size:13px">' + (src||'') + ' line ' + line + '</p>'
+    + '<p style="margin-top:16px;font-size:13px;color:#555">Please screenshot this and report it.</p>';
+  return false;
+};
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const DAY_EMOJI={Monday:'🌅',Tuesday:'🌤',Wednesday:'☀️',Thursday:'🌻',Friday:'🌈',Saturday:'🎉',Sunday:'🌸'};
 const DAYS_MR={Monday:'सोमवार',Tuesday:'मंगळवार',Wednesday:'बुधवार',Thursday:'गुरुवार',Friday:'शुक्रवार',Saturday:'शनिवार',Sunday:'रविवार'};
+// Safe locale date — falls back gracefully on older browsers / missing locale data
+function safeLocale(date, locale, opts) {
+  try { return date.toLocaleDateString(locale, opts); }
+  catch(e) { try { return date.toLocaleDateString(undefined, opts); } catch(e2) { return date.toLocaleDateString(); } }
+}
 
 const DEFAULT_OPTS={
   drink:['Milk','Chai','Black Tea','Green Tea','Coffee','Lemon Water','Coconut Water','Fresh Juice','Smoothie','Buttermilk','Lassi','Protein Shake','Herbal Tea','Hot Chocolate'],
@@ -1695,7 +1852,7 @@ const DEFAULT_GL_CATS=[
 const CAT_COLORS=['#1F7A4A','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
 function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
-let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
+let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
 
 function loadData(){try{const d=localStorage.getItem('indraprastha-v2');return d?JSON.parse(d):null;}catch(e){return null;}}
 function mergeGroceryList(saved){
@@ -1722,6 +1879,17 @@ function initState(){
     dailyTasks=s.dailyTasks||{};
     mealHistory=s.mealHistory||[];
     recipes=s.recipes||[];
+    helperSchedule=s.helperSchedule||{};
+    staffSchedule=s.staffSchedule||{members:[],dates:{}};
+    // Migrate old helperSchedule into staffSchedule if needed
+    if(staffSchedule.members.length===0 && Object.keys(helperSchedule).length>0){
+      const defMember={id:'m_migrated',name:'मदतनीस',role:'Helper',color:'#7B3F9E',emoji:'🧹'};
+      staffSchedule.members=[defMember];
+      Object.entries(helperSchedule).forEach(([dk,v])=>{
+        if(!staffSchedule.dates[dk])staffSchedule.dates[dk]={};
+        staffSchedule.dates[dk][defMember.id]={status:v.status||'unavailable',note:v.note||''};
+      });
+    }
   } else {
     opts=JSON.parse(JSON.stringify(DEFAULT_OPTS));
     essentials=JSON.parse(JSON.stringify(DEFAULT_ESSENTIALS));
@@ -1730,6 +1898,8 @@ function initState(){
     rcalData={};
     dailyTasks={};
     mealHistory=[];
+    helperSchedule={};
+    staffSchedule={members:[],dates:{}};
     recipes=[];
     const keys=['breakfast','chutney','sabji','bread','dal','rice','salad','snack','snack2','d_sabji','d_bread','d_dal','d_rice','d_salad','d_sides','lonche'];
     const seed=['Idli','Coconut Chutney','Cauliflower','Bhakari','Varan','Rice','Koshimbir','Fruit +','Makhana','Batata Bhaji','Bhakari','Amti','Rice','Koshimbir','Papad','Lonche'];
@@ -1860,10 +2030,12 @@ function renderPlanner(){
   DAYS.forEach(day=>{
     const s=W[day];
     const _dt=_weekDates[day];
-    const _dateStr=_dt?_dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+    const _dateStr=_dt?safeLocale(_dt,'en-IN',{day:'numeric',month:'short'}):'';
     const _isToday=day===_todayDayName;
+    const _dKey=_dt?tdKey(_dt):'';
+    const _staffDots=_dKey?buildStaffBar(_dKey,true):'';
     html+=`<tr${_isToday?' style="background:var(--green-light)"':''}>
-      <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span></td>
+      <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span>${_staffDots}</td>
       <td>${buildBreakfastCell(day,s)}</td>
       <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
@@ -1909,7 +2081,7 @@ function mkSel(k,val,day,field){
   if(isAdmin){
     const safeDay=day.replace(/'/g,"\\'");const safeField=field.replace(/'/g,"\\'");
     const optHtml=['',  ...o].map(v=>`<div class="meal-dd-opt" data-val="${escHtml(v)}" onmousedown="ddPick(this,event)">${escHtml(v)||`<span style="color:var(--text3)">${placeholder}</span>`}</div>`).join('');
-    return`<div class="meal-dd" data-day="${escHtml(day)}" data-field="${escHtml(field)}"><input type="text" class="meal-dd-input" value="${escHtml(val)}" placeholder="${placeholder}" oninput="ddFilter(this)" onfocus="ddOpen(this)" onblur="ddBlur(this,event)"><div class="meal-dd-list">${optHtml}</div></div>`;
+    return`<div class="meal-dd" data-day="${escHtml(day)}" data-field="${escHtml(field)}" data-optkey="${escHtml(k)}"><input type="text" class="meal-dd-input" value="${escHtml(val)}" placeholder="${placeholder}" oninput="ddFilter(this)" onfocus="ddOpen(this)" onblur="ddBlur(this,event)"><div class="meal-dd-list">${optHtml}<div class="meal-dd-save" onmousedown="ddSaveToOpts(this,event)"></div></div></div>`;
   }
   return val
     ? `<div class="meal-ro-val">${escHtml(val)}</div>`
@@ -1933,9 +2105,25 @@ function ddBlur(inp,e){
 }
 function ddFilter(inp){
   const term=inp.value.toLowerCase();
-  inp.nextElementSibling.querySelectorAll('.meal-dd-opt').forEach(opt=>{
-    opt.classList.toggle('hidden', term!==''&&!opt.dataset.val.toLowerCase().includes(term));
+  const list=inp.nextElementSibling;
+  let anyVisible=false;
+  list.querySelectorAll('.meal-dd-opt').forEach(opt=>{
+    const hide=term!==''&&!opt.dataset.val.toLowerCase().includes(term);
+    opt.classList.toggle('hidden',hide);
+    if(!hide&&opt.dataset.val)anyVisible=true;
   });
+  // Save chip: show only when something is typed AND it's not already in the list
+  const saveChip=list.querySelector('.meal-dd-save');
+  if(saveChip){
+    const trimmed=inp.value.trim();
+    const exactExists=trimmed&&[...list.querySelectorAll('.meal-dd-opt')].some(o=>o.dataset.val.toLowerCase()===trimmed.toLowerCase());
+    if(trimmed&&!exactExists){
+      saveChip.textContent='➕ Save "'+trimmed+'" to options';
+      saveChip.classList.add('visible');
+    } else {
+      saveChip.classList.remove('visible');
+    }
+  }
 }
 function ddPick(opt,e){
   if(e)e.preventDefault();
@@ -1945,6 +2133,24 @@ function ddPick(opt,e){
   inp.value=val;
   opt.closest('.meal-dd-list').classList.remove('open');
   updateMeal(dd.dataset.day, dd.dataset.field, val);
+}
+function ddSaveToOpts(chip,e){
+  if(e)e.preventDefault();
+  const dd=chip.closest('.meal-dd');
+  const inp=dd.querySelector('.meal-dd-input');
+  const val=inp.value.trim();
+  const key=dd.dataset.optkey;
+  if(!val||!key)return;
+  if(!opts[key])opts[key]=[];
+  if(!opts[key].some(x=>x.toLowerCase()===val.toLowerCase())){
+    opts[key].push(val);
+    saveToStorage(false);
+    showToast('✅ "'+val+'" saved to options');
+  }
+  chip.closest('.meal-dd-list').classList.remove('open');
+  updateMeal(dd.dataset.day, dd.dataset.field, val);
+  // Re-render planner so the new option appears in the dropdown next time
+  renderPlanner();
 }
 // Close dropdowns on outside click
 document.addEventListener('click',e=>{if(!e.target.closest('.meal-dd'))document.querySelectorAll('.meal-dd-list.open').forEach(l=>l.classList.remove('open'));});
@@ -2119,6 +2325,169 @@ function confirmAddGlCat(){
 }
 document.getElementById('gl-cat-modal-bg').addEventListener('click',function(e){if(e.target===this)closeGlCatModal();});
 
+// ══════════════════════════════════════════════════════
+// DISH PRESETS — curated Indian dish libraries per category
+// ══════════════════════════════════════════════════════
+const DISH_PRESETS={
+  sabji:{
+    'Maharashtrian':['Bharli Vange','Zunka','Pithla','Shepuchi Bhaji','Methi Bhaji','Lal Maath','Kele chi Bhaji','Ghosale chi Bhaji','Padwal Bhaji','Suran','Kanda Batata Rassa','Shevgyachya Shengachi Bhaji','Varanfal','Kobi Batata','Tendli Masala','Chichuchya Biyachya Dal','Vaal chi Usal','Matki Usal','Moongachi Usal','Chawli chi Bhaji'],
+    'North Indian':['Aloo Gobi','Aloo Jeera','Paneer Butter Masala','Palak Paneer','Baingan Bharta','Matar Mushroom','Lauki Ki Sabji','Aloo Matar','Bhindi Do Pyaza','Arbi Masala','Beans Sabji','Dum Aloo','Jeera Aloo','Mix Veg','Achari Aloo'],
+    'Protein Rich':['Chole Masala','Rajma Masala','Moong Usal','Matki Usal','Chawli Bhaji','Dalimbi Usal','Kadale Curry','Peanut Masala','Mixed Sprouts','Soyabean Sabji'],
+  },
+  d_sabji:{
+    'Maharashtrian':['Bharli Vange','Zunka','Pithla','Shepuchi Bhaji','Methi Bhaji','Lal Maath','Kele chi Bhaji','Padwal Bhaji','Suran','Vaal chi Usal','Matki Usal','Tendli Masala','Kanda Batata Rassa'],
+    'North Indian':['Aloo Gobi','Paneer Butter Masala','Palak Paneer','Baingan Bharta','Matar Mushroom','Lauki Ki Sabji','Bhindi Do Pyaza','Dum Aloo'],
+    'Protein Rich':['Chole Masala','Rajma Masala','Moong Usal','Chawli Bhaji','Peanut Masala','Soyabean Sabji'],
+  },
+  dal:{
+    'Maharashtrian':['Amti','Varan','Katachi Amti','Kolhapuri Amti','Tirphal Amti','Methi Dal','Dalimbi','Shevgyachya Shengachi Amti'],
+    'Everyday':['Toor Dal Tadka','Moong Dal','Masoor Dal','Chana Dal','Urad Dal','Mixed Dal','Panchmel Dal','Lemon Dal','Dal Palak','Dal Fry'],
+    'Rich / Special':['Dal Makhani','Dal Baati','Langar Dal','Maa di Dal','Dal Gosht'],
+  },
+  d_dal:{
+    'Maharashtrian':['Amti','Varan','Katachi Amti','Kolhapuri Amti','Methi Dal'],
+    'Everyday':['Toor Dal Tadka','Moong Dal','Masoor Dal','Mixed Dal','Dal Palak','Dal Fry'],
+    'Rich':['Dal Makhani','Langar Dal'],
+  },
+  bread:{
+    'Bhakari':['Jowar Bhakari','Bajri Bhakari','Nachni Bhakari','Ambadi Bhakari','Multi-grain Bhakari'],
+    'Chapati / Paratha':['Chapati','Missi Roti','Methi Thepla','Aloo Paratha','Lachha Paratha','Mooli Paratha','Paneer Paratha','Stuffed Paratha','Methi Paratha'],
+    'Special':['Puri','Naan','Kulcha','Rumali Roti','Makki di Roti','Bati'],
+  },
+  d_bread:{
+    'Bhakari':['Jowar Bhakari','Bajri Bhakari','Nachni Bhakari'],
+    'Chapati / Paratha':['Chapati','Methi Thepla','Aloo Paratha','Lachha Paratha'],
+    'Special':['Puri','Naan','Kulcha','Rumali Roti'],
+  },
+  rice:{
+    'Plain':['Plain Rice','Jeera Rice','Steam Rice','Loni Bhat'],
+    'Flavoured':['Masala Bhat','Lemon Rice','Methi Rice','Tomato Rice','Coconut Rice','Coriander Rice','Tamarind Rice','Vangi Bhat','Navratan Pulao'],
+    'One Pot':['Khichdi','Moong Khichdi','Curd Rice','Peas Pulao','Corn Pulao','Vegetable Biryani','Tahri','Vaghareli Khichdi'],
+  },
+  d_rice:{
+    'Plain':['Plain Rice','Jeera Rice','Steam Rice'],
+    'Flavoured':['Masala Bhat','Lemon Rice','Methi Rice','Vangi Bhat'],
+    'One Pot':['Khichdi','Curd Rice','Peas Pulao'],
+  },
+  breakfast:{
+    'South Indian':['Idli','Dosa','Rava Dosa','Set Dosa','Uttapam','Medu Vada','Paniyaram','Pesarattu','Akki Roti','Rava Idli','Adai'],
+    'Maharashtrian':['Poha','Upma','Thalipeeth','Sabudana Khichdi','Puranpoli','Amboli','Ghavan','Dhapate','Ukad','Bhakri Poha','Kande Pohe'],
+    'North Indian':['Aloo Paratha','Moong Dal Cheela','Thepla','Besan Cheela','Stuffed Paratha','Puri Bhaji','Halwa Puri'],
+    'Quick':['Bread Toast','Sheera','Oats Upma','Muesli','Fruit Bowl','Cornflakes'],
+  },
+  snack:{
+    'Healthy':['Fruit Plate','Sprouts Chaat','Roasted Chana','Makhana','Mixed Nuts','Dhokla','Khakhra','Dates & Nuts'],
+    'Fried':['Batata Vada','Sabudana Vada','Bread Pakoda','Kanda Bhaji','Mirchi Bhaji','Poha Cutlet','Corn Bhaji'],
+    'Light Meals':['Idli','Thalipeeth','Thepla','Poha','Upma','Usal Pav','Misal Pav'],
+  },
+  salad:{
+    'Koshimbir':['Kakdi Koshimbir','Tomato Koshimbir','Carrot Koshimbir','Kanda Koshimbir','Beet Koshimbir','Matki Koshimbir','Radish Koshimbir'],
+    'Sprouts':['Moong Sprouts','Matki Sprouts','Mixed Sprouts Salad','Sprouts Chaat'],
+    'Simple':['Cucumber Slices','Onion Salad','Lemon Cucumber','Carrot Sticks'],
+  },
+  d_salad:{
+    'Koshimbir':['Kakdi Koshimbir','Tomato Koshimbir','Carrot Koshimbir','Beet Koshimbir','Matki Koshimbir'],
+    'Sprouts':['Moong Sprouts','Mixed Sprouts Salad'],
+    'Simple':['Cucumber Slices','Onion Salad','Carrot Sticks'],
+  },
+  chutney:{
+    'Wet Chutneys':['Coconut Chutney','Green Chutney','Tomato Chutney','Peanut Chutney','Mint Chutney','Coriander Chutney'],
+    'Dry / Powder':['Shengdana Chutney','Dry Garlic Chutney','Flaxseed Chutney','Sesame Chutney'],
+    'Sides':['Sambar','Curd','Raita','Pickle'],
+  },
+};
+
+// ── Preset state ──
+let _presetKey=null, _presetActiveTab=0, _presetSelected=new Set();
+
+function openPresetPicker(key){
+  if(!DISH_PRESETS[key])return;
+  _presetKey=key; _presetActiveTab=0; _presetSelected=new Set();
+  const groups=Object.keys(DISH_PRESETS[key]);
+  const meta=CAT_META[key]||{label:key};
+  document.getElementById('preset-modal-title').textContent='📦 '+meta.label+' presets';
+  _renderPresetTabs(groups); _renderPresetItems(groups[0]);
+  document.getElementById('preset-modal-bg').classList.add('open');
+}
+function _renderPresetTabs(groups){
+  document.getElementById('preset-tabs').innerHTML=groups.map((g,i)=>
+    `<div class="preset-tab${i===_presetActiveTab?' active':''}" onclick="_switchPresetTab(${i})">${escHtml(g)}</div>`
+  ).join('');
+}
+function _switchPresetTab(idx){
+  _presetActiveTab=idx;
+  const groups=Object.keys(DISH_PRESETS[_presetKey]);
+  _renderPresetTabs(groups); _renderPresetItems(groups[idx]);
+}
+function _renderPresetItems(group){
+  const items=DISH_PRESETS[_presetKey][group]||[];
+  const existing=new Set((opts[_presetKey]||[]).map(x=>x.toLowerCase()));
+  document.getElementById('preset-modal-body').innerHTML=
+    '<div class="preset-item-list">'+
+    items.map(item=>{
+      const done=existing.has(item.toLowerCase());
+      const sel=_presetSelected.has(item);
+      const cls='preset-chip'+(done?' already':sel?' selected':'');
+      const oc=done?'':` onclick="_togglePresetItem('${item.replace(/'/g,"\\'")}',this)"`;
+      return`<span class="${cls}"${oc}>${done?'✓ ':sel?'✓ ':''} ${escHtml(item)}</span>`;
+    }).join('')+
+    '</div>';
+}
+function _togglePresetItem(item,el){
+  if(_presetSelected.has(item)){_presetSelected.delete(item);el.classList.remove('selected');el.textContent=' '+item;}
+  else{_presetSelected.add(item);el.classList.add('selected');el.textContent='✓ '+item;}
+  const n=_presetSelected.size;
+  document.getElementById('preset-add-btn').textContent=n?`+ Add ${n} item${n>1?'s':''}`:'+ Add Selected';
+}
+function presetSelectAll(){
+  const groups=Object.keys(DISH_PRESETS[_presetKey]);
+  const items=DISH_PRESETS[_presetKey][groups[_presetActiveTab]]||[];
+  const existing=new Set((opts[_presetKey]||[]).map(x=>x.toLowerCase()));
+  items.forEach(item=>{if(!existing.has(item.toLowerCase()))_presetSelected.add(item);});
+  _renderPresetItems(groups[_presetActiveTab]);
+  const n=_presetSelected.size;
+  document.getElementById('preset-add-btn').textContent=n?`+ Add ${n} item${n>1?'s':''}`:'+ Add Selected';
+}
+function addFromPreset(){
+  if(!_presetKey||!_presetSelected.size){showToast('⚠️ Select at least one item');return;}
+  if(!opts[_presetKey])opts[_presetKey]=[];
+  let added=0;
+  _presetSelected.forEach(item=>{
+    if(!(opts[_presetKey]||[]).some(x=>x.toLowerCase()===item.toLowerCase())){opts[_presetKey].push(item);added++;}
+  });
+  saveToStorage(false);renderCustomise();renderPlanner();
+  showToast(`✅ ${added} item${added!==1?'s':''} added`);
+  closePresetPicker();
+}
+function closePresetPicker(){
+  document.getElementById('preset-modal-bg').classList.remove('open');
+  _presetKey=null;_presetSelected=new Set();
+}
+
+// ── Bulk add ──
+function toggleBulkAdd(key){
+  if(!isAdmin)return;
+  const el=document.getElementById('bulk-'+key);if(!el)return;
+  const opening=!el.classList.contains('open');
+  el.classList.toggle('open');
+  if(opening){const ta=el.querySelector('textarea');if(ta){ta.value='';ta.focus();}}
+}
+function addBulkOpts(key){
+  const ta=document.getElementById('bulk-input-'+key);if(!ta)return;
+  const items=ta.value.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  if(!items.length){showToast('⚠️ Nothing to add');return;}
+  if(!opts[key])opts[key]=[];
+  let added=0,dups=0;
+  items.forEach(item=>{
+    if((opts[key]||[]).some(x=>x.toLowerCase()===item.toLowerCase()))dups++;
+    else{opts[key].push(item);added++;}
+  });
+  ta.value='';
+  saveToStorage(false);renderCustomise();renderPlanner();
+  showToast(dups?`✅ ${added} added, ${dups} already existed`:`✅ ${added} item${added!==1?'s':''} added`);
+  document.getElementById('bulk-'+key)?.classList.remove('open');
+}
+
 const CAT_META={
   breakfast:{label:'Breakfast items',color:'var(--sky)'},chutney:{label:'Chutney / sides',color:'var(--sky)'},drink:{label:'Breakfast drinks',color:'var(--sky)'},
   sabji:{label:'Lunch sabji',color:'var(--green)'},bread:{label:'Lunch bread',color:'var(--green)'},
@@ -2137,11 +2506,29 @@ const CAT_META={
 function renderCustomise(){
   document.getElementById('custom-grid').innerHTML=Object.keys(CAT_META).map(key=>{
     const meta=CAT_META[key]; const items=opts[key]||[];
+    const hasPresets=!!DISH_PRESETS[key];
     return`<div class="custom-card">
-      <div class="custom-card-header"><span class="custom-card-title"><span class="cat-dot" style="background:${meta.color}"></span>${meta.label}</span><span style="font-size:11px;color:var(--text3)">${items.length} <span class="en">items</span><span class="mr">वस्तू</span></span></div>
+      <div class="custom-card-header">
+        <span class="custom-card-title"><span class="cat-dot" style="background:${meta.color}"></span>${meta.label}</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${hasPresets?`<button class="btn btn-sm admin-only" style="font-size:11px;padding:3px 9px;background:var(--aubergine);color:#fff;border-color:var(--aubergine)" onclick="openPresetPicker('${key}')">📦 Presets</button>`:''}
+          <span style="font-size:11px;color:var(--text3)">${items.length} items</span>
+        </div>
+      </div>
       <div class="custom-card-body">
         <div class="tag-list">${items.map(item=>`<span class="tag">${escHtml(item)}<button class="tag-remove admin-only" onclick="removeOpt('${key}','${item.replace(/'/g,"\\'")}')">×</button></span>`).join('')}</div>
-        <div class="add-item-row admin-only-block" style="display:none"><input type="text" id="input-${key}" placeholder="Add item…" onkeydown="if(event.key==='Enter')addOpt('${key}')"><button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="addOpt('${key}')"><span class="en">Add</span><span class="mr">जोडा</span></button></div>
+        <div class="add-item-row admin-only-block">
+          <input type="text" id="input-${key}" placeholder="Add one item…" onkeydown="if(event.key==='Enter')addOpt('${key}')">
+          <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="addOpt('${key}')">Add</button>
+          <button class="btn btn-sm btn-surface" title="Bulk add many items" onclick="toggleBulkAdd('${key}')">📋 Bulk</button>
+        </div>
+        <div class="bulk-add-area" id="bulk-${key}">
+          <textarea id="bulk-input-${key}" placeholder="Paste items separated by commas or one per line&#10;e.g.  Batata Bhaji, Karela, Lauki&#10;       Aloo Matar&#10;       Shimla Mirch Sabji"></textarea>
+          <div class="bulk-actions">
+            <span class="bulk-hint">Commas or line-breaks — duplicates skipped automatically</span>
+            <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="addBulkOpts('${key}')">Add All</button>
+          </div>
+        </div>
       </div></div>`;
   }).join('');
 }
@@ -2246,7 +2633,8 @@ function showView(name,el){
   if(name==='customise')  renderCustomise();
   if(name==='essentials') renderEssentialsCats();
   if(name==='rcalendar')  rcalRender();
-  if(name==='buyinglist') renderBuyingList();
+  if(name==='buyinglist')    renderBuyingList();
+  if(name==='hlprschedule') renderHelperSchedule();
   if(name==='todaymenu')  renderTodayMenu();
   if(name==='history')    renderHistory();
   if(name==='recipes')    renderRecipes();
@@ -2255,7 +2643,7 @@ function showView(name,el){
 
 function switchWeek(w,btn){curWeek=w;document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderPlanner();renderMealDerived();}
 function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
-function saveToStorage(toast=true){try{localStorage.setItem('indraprastha-v2',JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes}));if(toast)showToast('💾 Saved!');}catch(e){showToast('⚠️ Storage full');}}
+function saveToStorage(toast=true){try{localStorage.setItem('indraprastha-v2',JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule}));if(toast)showToast('💾 Saved!');}catch(e){showToast('⚠️ Storage full');}}
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
@@ -2330,7 +2718,150 @@ document.getElementById('pin-modal-bg').addEventListener('click',function(e){if(
 
 // startup handled by applyMode('family') at end of script
 const MR_MAP={'Tomatoes':'टोमॅटो','Onions':'कांदे','Potatoes':'बटाटे','Coriander':'कोथिंबीर','Spinach':'पालक','Apple':'सफरचंद','Banana':'केळे','Orange':'संत्रे','Papaya':'पपई','Pineapple':'अननस','Watermelon':'टरबूज','Muskmelon':'खरबूज','Grapes':'द्राक्षे','Pomegranate':'डाळिंब','Guava':'पेरू','Sweet Lime (Mosambi)':'मोसंबी','Chikoo (Sapodilla)':'चिकू','Pear':'नाशपाती','Plum':'प्लम','Peach (Summer)':'पीच','Kiwi (Winter)':'किवी','Lychee (Late Summer)':'लीची','Strawberry (Winter)':'स्ट्रॉबेरी','Blueberry (Imported)':'ब्लूबेरी','Avocado (Monsoon–Autumn)':'अ‍ॅव्होकाडो','Dragon Fruit (Monsoon)':'ड्रॅगन फ्रुट','Custard Apple (Sitaphal) (Monsoon–Winter)':'सीताफळ','Jackfruit (Summer)':'फणस','Starfruit (Kamrakh) (Monsoon–Winter)':'कमरख','Fig (Anjeer) (Summer–Early Monsoon)':'अंजीर','Black Jamun (Summer–Monsoon)':'जांभूळ','Gooseberry (Amla) (Winter)':'आवळा','Ber (Indian Jujube) (Winter–Spring)':'बोर','Dates (Khajoor – fresh) (Summer)':'खजूर','Coconut (Tender/Water)':'नारळ','Tamarind (Imli) (Summer)':'चिंच','Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Mulberry (Shahtoot) (Spring–Summer)':'तुती','Rambutan (Monsoon)':'रंबुटान','Mango (Summer)':'आंबा','Kashmiri Golden Apple':'काश्मिरी सफरचंद','Rakstey Karpo Apricot (Summer)':'जर्दाळू','Royal Delicious Apple':'रॉयल डिलिशस सफरचंद','Himachali Cherry (Spring–Early Summer)':'चेरी','Malta (Citrus) (Winter)':'माल्टा','Aarohi Watermelon (Summer)':'टरबूज','Shahkot Musk Melon (Summer)':'खरबूज','Allahabad Surkha Guava (Rainy–Winter)':'पेरू','Banarasi Langra Mango (Summer)':'लंगडा आंबा','Gangangar Kesar Mango (Summer)':'केसर आंबा','Navsari Chikoo (Winter–Summer)':'नवसारी चिकू','Mahabaleshwar Strawberry (Winter)':'महाबळेश्वर स्ट्रॉबेरी','Solapur Pomegranate':'सोलापूर डाळिंब','Manucurad Mango (Goa) (Summer)':'गोवा आंबा','Moira Banana':'मोईरा केळे','Coorg Orange (Winter)':'कूर्ग संत्रे','Devanahalli Pomelo (Winter–Spring)':'पमेलो','Vazhakulam Pineapple (Monsoon)':'अननस','Kuttanad Banana / Nendran':'नेंद्रन केळे','Changalikodan Banana':'चंगलीकोडन केळे','Mattu Banana':'मट्टू केळे','Panruti Jackfruit (Summer)':'फणस','Jalgaon Banana':'जळगाव केळे','Ratnagiri Alphonso (Summer)':'रत्नागिरी हापूस','Noorjahan Mango (Summer)':'नूरजहाँ आंबा','Mangoes: Malihabadi, Dasheri, Amrapalli, Langra, Fazli':'दशेरी, अमरापाली, लंगडा आंबा','Shahi Lychee (Muzaffarpur) (Summer)':'शाही लीची','Bhagalpur Jardalu Mango (Summer)':'जरदालू आंबा','Tezpur Lychee (Summer)':'तेजपूर लीची','Red Lady Papaya':'पपई','Namdhari Watermelon (Summer)':'टरबूज','Bangalore Blue Grapes (Winter–Spring)':'बंगलोर निळी द्राक्षे','Kanker Custard Apple (Monsoon–Winter)':'सीताफळ','Khasi Orange (Winter)':'संत्रे','Memang Narang (Winter)':'नारंगी','Queen Pineapple (Monsoon)':'अननस','Sohphie (Local – Meghalaya)':'सोहफी','Mizo Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Tamenglong Orange (Winter)':'संत्रे','Kenchu (Uncommon local fruit, Manipur/Northeast)':'केंचू','Onion':'कांदा','Tomato':'टोमॅटो','Green Chilli':'हिरवी मिरची','Garlic':'लसूण','Ginger':'आले','Carrot':'गाजर','Cabbage':'कोबी','Cauliflower':'फ्लॉवर','Brinjal / Eggplant':'वांगे','Lady Finger / Okra':'भेंडी','Bottle Gourd':'दुधी भोपळा','Ridge Gourd':'घोसाळे','Bitter Gourd':'कारले','Sponge Gourd':'घोसाळे','Pumpkin':'भोपळा','Ash Gourd':'कोहळा','Tinda':'टिंडा','Cluster Beans':'गवार','French Beans':'फ्रेंच बीन्स','Snake Gourd':'पडवळ','Ivy Gourd':'तोंडली','Amaranth Leaves':'माठाची भाजी','Fenugreek Leaves':'मेथीची भाजी','Mustard Greens':'मोहरीची भाजी','Coriander Leaves':'कोथिंबीर','Curry Leaves':'कढीपत्ता','Dill Leaves':'शेपूची भाजी','Green Peas':'हिरवे वाटाणे','Raw Banana':'कच्चे केळे','Arbi (Taro Root)':'अरबी','Yam':'सुरण','Beetroot':'बीट','Turnip':'सलगम','Radish':'मुळा','Sweet Potato':'रताळे','Corn (fresh)':'मका','Broccoli':'ब्रोकोली','Zucchini':'झुकीनी','Bell Peppers':'सिमला मिरची','Lettuce':'लेट्यूस','Kale':'केल','Bok Choy':'बोक चॉय','Celery':'सेलेरी','Leeks':'लीक','Parsley':'पार्सले','Thyme / Rosemary / Basil':'थाईम / रोझमेरी / तुळस','Red Cabbage':'लाल कोबी','Cherry Tomatoes':'चेरी टोमॅटो','Asparagus':'अस्पारागस','Artichoke':'आर्टिचोक','Mushrooms':'मशरूम','Avocado':'अ‍ॅव्होकाडो','Arugula (Rocket Leaves)':'अरुगुला','Edamame':'एडामामे','Kale Sprouts':'केल स्प्राउट्स','Brussels Sprouts':'ब्रसेल्स स्प्राउट्स','Milk':'दूध','Curd':'दही','Ghee':'तूप','Butter':'लोणी','Cheese Slices':'चीज स्लाइस','Lassi / Buttermilk':'ताक','Flavored Milk':'फ्लेव्हर्ड दूध','Curd / Dahi':'दही','Paneer':'पनीर','Eggs':'अंडी','Atta':'गहू पीठ','Rice':'तांदूळ','Besan':'बेसन','Basmati Rice':'बासमती तांदूळ','Kolam / Sona Masoori / Surti Kolam Rice':'कोलम तांदूळ','Brown Rice':'ब्राऊन राइस','Poha (Flattened Rice)':'पोहे','Sabudana (Tapioca Pearls)':'साबुदाणा','Dalia (Broken Wheat)':'दलिया','Idli/Dosa Rice':'इडली / डोसा तांदूळ','Wheat Flour (Regular / Chakki Atta)':'गहू पीठ','Corn Flour':'मक्याचे पीठ','Millet Flour':'बाजरी पीठ','Ragi Flour':'नाचणी पीठ','Sattu':'सत्तू','Rice Flour':'तांदळाचे पीठ','Besan (Gram Flour)':'बेसन','Maida (Refined Flour)':'मैदा','Jowar Flour':'ज्वारी पीठ','Bajra Flour':'बाजरी पीठ','Buckwheat Flour':'राजगिरा पीठ','Rajgira Flour':'राजगिरा पीठ','Makai Flour':'मक्याचे पीठ','Rava / Sooji (Semolina)':'रवा / सूजी','Multigrain Flour':'मल्टीग्रेन पीठ','Toor Dal (Arhar Dal)':'तूर डाळ','Moong Dal (Yellow / Green)':'मूग डाळ','Chana Dal':'चना डाळ','Urad Dal (Whole / Split)':'उडीद डाळ','Masoor Dal':'मसूर डाळ','Kabuli Chana (White Chickpeas)':'काबुली चणे','Rajma (Kidney Beans)':'राजमा','Black Chana':'काळे चणे','Lobia (Black-eyed Peas)':'चवळी','Haldi':'हळद','Mirchi':'मिरची','Jeera':'जिरे','Goda Masala':'गोडा मसाला','Turmeric Powder (Haldi)':'हळद पावडर','Red Chili Powder':'लाल मिरची पावडर','Coriander Powder':'धणे पावडर','Cumin Powder':'जिरे पावडर','Garam Masala':'गरम मसाला','Sambar / Rasam Masala':'सांबार मसाला','Chaat Masala':'चाट मसाला','Kitchen King / Sabzi Masala':'किचन किंग मसाला','Mustard Seeds':'मोहरी','Cumin Seeds':'जिरे','Hing (Asafoetida)':'हिंग','Kasuri Methi (Dried Fenugreek)':'कसुरी मेथी','Sunflower Oil':'सूर्यफूल तेल','Groundnut Oil':'शेंगदाणा तेल','Mustard Oil':'मोहरी तेल','Coconut Oil':'खोबरेल तेल','Ghee (Cow or Regular)':'देशी तूप','Olive Oil (for health-conscious cooking)':'ऑलिव्ह तेल','Parle-G':'पार्ले-जी','Marie':'मेरी बिस्किट','Bourbon':'बर्बन बिस्किट','Hide & Seek':'हाइड अ‍ॅण्ड सीक','Parle-G / Marie / Bourbon / Hide & Seek':'बिस्किटे','Chakli / Murukku':'चकली / मुरुक्कू','Bhujia / Sev / Mixture':'भुजिया / शेव / मिक्सचर','Namkeen':'नमकीन','Potato Chips / Wafers':'बटाटा चिप्स','Roasted Chana / Makhana':'भाजलेले चणे / मखाणे','Tea (Tata, Red Label, etc.)':'चहा','Coffee (Bru, Nescafe)':'कॉफी','Soft Drinks (Pepsi, Sprite, etc.)':'सॉफ्ट ड्रिंक्स','Juices (Real, Tropicana)':'ज्यूस','Glucon-D / ORS':'ग्लुकॉन-डी','Health Drinks (Horlicks, Bournvita)':'हेल्थ ड्रिंक','Salt (Regular / Rock Salt)':'मीठ','Sugar':'साखर','Jaggery (Gur)':'गूळ','Tamarind / Kokum':'चिंच / कोकम','Pickles':'लोणचे','Papad':'पापड','Vinegar':'व्हिनेगर','Soy Sauce':'सोया सॉस','Tomato Ketchup':'टोमॅटो केचअप','Instant Noodles / Pasta':'नूडल्स / पास्ता','Baking Powder / Soda':'बेकिंग पावडर','Soap (Lifebuoy, Dettol, Pears)':'साबण','Shampoo & Conditioner':'शॅम्पू','Toothpaste (Colgate, Dabur)':'टूथपेस्ट','Toothbrush':'टूथब्रश','Face Wash':'फेस वॉश','Deodorant':'डिओडोरंट','Talcum Powder':'तालक पावडर','Hair Oil':'केसांचे तेल','Sanitary Pads / Tampons':'सॅनिटरी पॅड','Razor / Shaving Gel':'रेझर','Detergent Powder / Liquid':'डिटर्जंट','Dishwashing Liquid / Bar':'भांडी साबण','Floor Cleaner (Phenyl, Lizol)':'फरशी साफ करणारे','Toilet Cleaner (Harpic)':'टॉयलेट क्लीनर','Scrub Pads / Brushes':'स्क्रब पॅड','Garbage Bags':'कचरा पिशव्या','Air Freshener':'एअर फ्रेशनर','Mosquito Repellent (All-Out, GoodKnight)':'मच्छर अगरबत्ती','Agarbatti / Dhoop':'अगरबत्ती / धूप','Camphor':'कापूर','Cotton Wicks':'वाती','Oil (Til / Ghee)':'तिळाचे तेल / तूप','Matchsticks / Lighter':'काडेपेटी','Haldi-Kumkum':'हळद-कुंकू','Pooja Samagri':'पूजा साहित्य','Frozen Parathas / Rotis':'फ्रोझन पराठे','Frozen Peas / Corn':'फ्रोझन वाटाणे / मका','Ready Mixes (Dosa, Idli, Gulab Jamun)':'रेडी मिक्स','Instant Upma / Poha':'इन्स्टंट उपमा','Bread':'ब्रेड','Jam / Peanut Butter':'जॅम / शेंगदाणा बटर','Frozen snacks (Samosa, Nuggets)':'फ्रोझन स्नॅक्स','Toilet Paper Rolls':'टॉयलेट पेपर','Kitchen Roll / Paper Towels':'किचन रोल','Garbage Bags (Small/Medium/Large)':'कचरा पिशव्या','Disposable Plates (Paper/Plastic)':'डिस्पोझेबल ताट','Disposable Bowls':'डिस्पोझेबल वाट्या','Disposable Glasses / Cups':'डिस्पोझेबल ग्लास','Disposable Spoons / Forks':'डिस्पोझेबल चमचे','Aluminum Foil':'अ‍ॅल्युमिनियम फॉइल','Cling Film / Plastic Wrap':'क्लिंग फिल्म','Ziplock Bags':'झिपलॉक पिशव्या','Disposable Food Containers (with lids)':'डिस्पोझेबल डब्बे','Carry Bags (Plastic/Paper)':'कॅरी बॅग','Face Masks (Single-use)':'फेस मास्क','Gloves (Latex/Plastic)':'हातमोजे','Cotton Pads / Swabs (if household use included)':'कापसाचे पॅड','Flax Seeds (Alsi)':'अळशीचे बी','Chia Seeds':'चिया बी','Sunflower Seeds':'सूर्यफूल बी','Pumpkin Seeds':'भोपळ्याचे बी','Watermelon Seeds':'टरबुजाचे बी','Cucumber Seeds':'काकडीचे बी','Basil Seeds (Sabja)':'सब्जा','Sesame Seeds (Til – White/Black)':'तीळ','Fenugreek Seeds (Methi)':'मेथी','Coriander Seeds (Dhaniya)':'धणे','Mustard Seeds (Rai/Sarson – Yellow/Black)':'मोहरी','Carom Seeds (Ajwain)':'ओवा','Poppy Seeds (Khus Khus)':'खसखस','Nigella Seeds (Kalonji)':'कलौंजी','Hemp Seeds (optional health item)':'हेम्प बी','Garden Cress Seeds (Halim / Aliv)':'अळीव','Dill Seeds (Suwa)':'शेपू बी','Fennel Seeds (Saunf)':'बडीशेप','Idli':'इडली','Poha':'पोहे','Upma':'उपमा','Sabudana Khichdi':'साबुदाणा खिचडी','Dosa':'डोसा','Uttapam':'उत्तपम','Sheera':'शिरा','Bread Toast':'ब्रेड टोस्ट','Thepla':'थेपला','Methi Thepla':'मेथी थेपला','Aloo Paratha':'आलू पराठा','Moong Dal Cheela':'मूग डाळ चिला','Pesarattu':'पेसरट्टू','Rava Dosa':'रवा डोसा','Set Dosa':'सेट डोसा','Thalipeeth':'थालीपीठ','Coconut Chutney':'खोबऱ्याची चटणी','Tomato Chutney':'टोमॅटो चटणी','Green Chutney':'हिरवी चटणी','Peanut Chutney':'शेंगदाण्याची चटणी','Sambar':'सांबार','Shengdana Chutney':'शेंगदाण्याची चटणी','Batata Bhaji':'बटाटा भाजी','Vanga':'वांगे','Bhendi':'भेंडी','Matki':'मटकी','Palak':'पालक','Shimla Mirch':'सिमला मिरची','Tondli':'तोंडली','Karela':'कारले','Dudhi':'दुधी','Kanda Batata':'कांदा बटाटा','Vangyache Bharit':'वांग्याचे भरीत','Chole':'छोले','Rajma':'राजमा','Pithla':'पिठलं','Val':'वाल','Chawli':'चवळी','Kobi':'कोबी','Gajar':'गाजर','Matar Paneer':'मटर पनीर','Dum Aloo':'दम आलू','Katachi Amti':'कटाची आमटी','Bharleli Vange':'भरलेली वांगी','Zunka':'झुणका','Bhakari':'भाकरी','Chapati':'चपाती','Puri':'पुरी','Paratha':'पराठा','Rice Bhakari':'तांदळाची भाकरी','Loni Bhakari':'लोण्याची भाकरी','Rumali Roti':'रुमाली रोटी','Naan':'नान','Methi Paratha':'मेथी पराठा','Varan':'वरण','Amti':'आमटी','Tur Dal':'तूर डाळ','Moong Dal':'मूग डाळ','Mixed Dal':'मिक्स डाळ','Kolhapuri Amti':'कोल्हापुरी आमटी','Dal Tadka':'डाळ तडका','Jeera Rice':'जिरा राइस','Masala Bhat':'मसाला भात','Pulao':'पुलाव','Khichdi':'खिचडी','Curd Rice':'दही भात','Lemon Rice':'लिंबू भात','Methi Rice':'मेथी भात','Koshimbir':'कोशिंबीर','Kakdi Koshimbir':'काकडी कोशिंबीर','Carrot Koshimbir':'गाजर कोशिंबीर','Sprouts':'मोड आलेले','Beet Salad':'बीट सॅलड','Tomato Onion':'टोमॅटो कांदा','Radish Salad':'मुळा सॅलड','Mixed Sprouts':'मिक्स मोड','Fruit +':'फळे','Makhana':'मखाणे','Chivda':'चिवडा','Peanuts':'शेंगदाणे','Sprouts Chaat':'मोड चाट','Roasted Chana':'भाजलेले चणे','Murmura':'मुरमुरे','Lassi':'ताक','Buttermilk':'ताक','Usal':'उसळ','Sabudana Vada':'साबुदाणा वडा','Batata Vada':'बटाटा वडा','Bread Pakoda':'ब्रेड पकोडा','Dhokla':'ढोकळा','Sandesh':'संदेश','Lonche':'लोणचे','Lemon Pickle':'लिंबाचे लोणचे','Mango Pickle':'आंब्याचे लोणचे','Mixed Pickle':'मिक्स लोणचे','Methamba':'मेथांबा','Mirchi Lonche':'मिरचीचे लोणचे','Dahi':'दही','Raita':'रायता','Chutney':'चटणी','Lahsun Achaar':'लसूण लोणचे','Butter Paper':'बटर पेपर','Muslin Cloth':'मलमल कापड','Hand Napkins':'हात पुसणे','Kitchen Napkins':'किचन नॅपकिन','Table Matts':'टेबल मॅट','Table Plastic Cover':'टेबल कव्हर','Table Cover':'टेबल कव्हर','Coasters':'कोस्टर','Cups and Saucers':'कप-बशी','Ceramic Plate Set':'सिरॅमिक ताट सेट','Guest Sheet':'पाहुण्यांची चादर','Bedsheets + Pillow Covers':'बेडशीट + उशीचे अभ्रे','Shampoo':'शॅम्पू','Conditioner':'कंडिशनर','Comb':'फणी','Powder':'पावडर','Readymade Masalas':'रेडीमेड मसाले','Everest Masalas':'एव्हरेस्ट मसाले','Pav Bhaji Masala':'पाव भाजी मसाला','Shahi Biryani Masala':'शाही बिर्याणी मसाला','Pani Puri Masala':'पाणीपुरी मसाला','Achaar Masala':'अचार मसाला','Chivada Masala':'चिवडा मसाला','Aamras':'आमरस','Masala Buttermilk':'मसाला ताक','Ambil':'आंबील','Sweet Lassi':'गोड लस्सी','Salted Lassi':'खारट लस्सी','Solkadhi':'सोलकढी'};
-function mr(s){return MR_MAP[s]||s;}
+// Extra entries for dish names commonly entered in romanised Marathi or English
+Object.assign(MR_MAP,{
+  // Grains / vegetables in English not yet covered
+  'Amaranth':'माठ','Cooked Rice':'भात','Steamed Rice':'भात','Plain Rice':'भात',
+  'Boiled Rice':'भात','Brown Rice Cooked':'भात',
+  'Cake':'केक','Bread':'ब्रेड','Bun':'बन',
+  // Romanised Marathi dishes → Devanagari
+  'Pithacha Sheera':'पिठाचा शिरा','Pithacha Halwa':'पिठाचा हलवा',
+  'Batatyachi Bhaji':'बटाट्याची भाजी','Batatacha Rassa':'बटाट्याचा रस्सा',
+  'Shepu Bhaji':'शेपूची भाजी','Shepuchi Bhaji':'शेपूची भाजी',
+  'Methi Bhaji':'मेथीची भाजी','Methichi Bhaji':'मेथीची भाजी',
+  'Lal Maath':'लाल माठ','Lal Maat':'लाल माठ',
+  'Ghosale Bhaji':'घोसाळ्याची भाजी','Ghosalyachi Bhaji':'घोसाळ्याची भाजी',
+  'Padwal Bhaji':'पडवळाची भाजी','Padwalyachi Bhaji':'पडवळाची भाजी',
+  'Suran':'सुरण','Kanda Batata Rassa':'कांदा बटाट्याचा रस्सा',
+  'Varanfal':'वरणफळ','Kobi Batata':'कोबी बटाटा',
+  'Tendli Masala':'तोंडल्याची भाजी','Vaal chi Usal':'वालाची उसळ',
+  'Vaal Usal':'वालाची उसळ','Dalimbi Usal':'दालिंब्याची उसळ',
+  'Kadale Curry':'काडळ्याचं कुरी','Chawli chi Bhaji':'चवळीची भाजी',
+  'Shevgyachya Shengachi Bhaji':'शेवग्याच्या शेंगाची भाजी',
+  'Bharli Vange':'भरलेली वांगी','Bharale Vange':'भरलेली वांगी',
+  'Kele chi Bhaji':'केळफुलाची भाजी',
+  'Aloo Gobi':'आलू गोबी','Aloo Jeera':'जिरा आलू','Aloo Matar':'आलू मटर',
+  'Paneer Butter Masala':'पनीर बटर मसाला','Palak Paneer':'पालक पनीर',
+  'Baingan Bharta':'वांग्याचे भरीत','Matar Mushroom':'मटर मशरूम',
+  'Lauki Ki Sabji':'दुधी भाजी','Bhindi Do Pyaza':'भेंडी दो प्याजा',
+  'Arbi Masala':'अरबी मसाला','Beans Sabji':'बीन्स भाजी','Dum Aloo':'दम आलू',
+  'Jeera Aloo':'जिरा आलू','Mix Veg':'मिक्स भाजी','Achari Aloo':'अचारी आलू',
+  'Chole Masala':'छोले मसाला','Rajma Masala':'राजमा मसाला',
+  'Moong Usal':'मुगाची उसळ','Matki Usal':'मटकीची उसळ','Peanut Masala':'शेंगदाणा मसाला',
+  'Soyabean Sabji':'सोयाबीन भाजी','Mixed Sprouts':'मिक्स मोड',
+  // Breads
+  'Jowar Bhakari':'ज्वारीची भाकरी','Bajra Bhakari':'बाजरीची भाकरी',
+  'Thalipeeth':'थालीपीठ','Amboli':'आंबोळी','Ghavan':'घावन',
+  // Dal / amti variants
+  'Varan Bhat':'वरण भात','Toor Dal Varan':'तुरीचं वरण',
+  'Masoor Dal':'मसूर डाळ','Chana Dal':'चना डाळ','Urad Dal':'उडीद डाळ',
+  // Rice variants
+  'Jeera Rice':'जिरा राइस','Masala Bhat':'मसाला भात','Khichdi':'खिचडी',
+  'Curd Rice':'दही भात','Lemon Rice':'लिंबू भात','Methi Rice':'मेथी भात',
+  // Snacks
+  'Sabudana Khichdi':'साबुदाणा खिचडी','Sabudana Vada':'साबुदाणा वडा',
+  'Batata Vada':'बटाटा वडा','Misal':'मिसळ','Kanda Bhaji':'कांदा भजी',
+  'Pakoda':'पकोडा','Samosa':'समोसा','Pani Puri':'पाणीपुरी',
+  'Bhel Puri':'भेळपुरी','Sev Puri':'शेव पुरी','Dahi Puri':'दही पुरी',
+  'Corn':'मका','Roasted Corn':'भाजलेला मका',
+  // Breakfast extras
+  'Rava Upma':'रवा उपमा','Vermicelli Upma':'शेवयाचा उपमा',
+  'Poha Upma':'पोहे उपमा','Corn Poha':'मक्याचे पोहे',
+  'Masala Dosa':'मसाला डोसा','Mysore Masala Dosa':'म्हैसूर मसाला डोसा',
+  'Rava Idli':'रवा इडली','Mini Idli':'मिनी इडली',
+  'Wheat Dosa':'गव्हाचा डोसा','Besan Chilla':'बेसन चिला',
+  'Egg Bhurji':'अंड्याची भुर्जी','Omelette':'ऑम्लेट',
+  'Bread Upma':'ब्रेड उपमा','Bread Poha':'ब्रेड पोहे',
+  'Sprouts Poha':'मोड पोहे','Sprouts Upma':'मोड उपमा',
+  // Drinks
+  'Orange Juice':'संत्र्याचा रस','Lemon Juice':'लिंबाचा रस',
+  'Sugarcane Juice':'उसाचा रस','Coconut Water':'नारळाचं पाणी',
+  'Turmeric Milk':'हळदीचं दूध','Cold Coffee':'कोल्ड कॉफी',
+  'Hot Chocolate':'हॉट चॉकलेट','Masala Chai':'मसाला चहा',
+  'Green Tea':'ग्रीन टी','Milkshake':'मिल्कशेक',
+});
+// ── Extra English task/household vocabulary ──────────────────────────────
+Object.assign(MR_MAP,{
+  // Task verbs
+  'Clean':'साफ करणे','Cleaning':'साफसफाई','clean':'साफ करणे','cleaning':'साफसफाई',
+  'Wash':'धुणे','Washing':'धुणे','wash':'धुणे','washing':'धुणे',
+  'Sweep':'झाडणे','Sweeping':'झाडणे','Mop':'पुसणे','Mopping':'पुसणे',
+  'Wipe':'पुसणे','Wiping':'पुसणे','Scrub':'घासणे','Scrubbing':'घासणे',
+  'Cook':'स्वयंपाक','Cooking':'स्वयंपाक करणे','Prepare':'तयार करणे',
+  'Make':'बनवणे','Making':'बनवणे','Buy':'विकत घेणे','Get':'आणणे','Bring':'आणणे',
+  'Check':'तपासणे','Order':'मागवणे','Fill':'भरणे','Empty':'रिकामे करणे',
+  'Arrange':'लावणे','Organize':'व्यवस्था करणे','Sort':'वर्गवारी',
+  'Cut':'कापणे','Chop':'चिरणे','Boil':'उकळणे','Soak':'भिजवणे',
+  'Dry':'वाळवणे','Iron':'इस्त्री करणे','Fold':'घडी करणे',
+  // Household places & things
+  'Fridge':'फ्रिज','Refrigerator':'फ्रिज','Freezer':'फ्रीझर',
+  'Kitchen':'स्वयंपाकघर','Bathroom':'बाथरूम','Toilet':'शौचालय',
+  'Hall':'दिवाणखाना','Room':'खोली','Bedroom':'शयनकक्ष',
+  'Floor':'जमीन','Ceiling':'छत','Wall':'भिंत',
+  'Window':'खिडकी','Door':'दरवाजा','Stairs':'जिना',
+  'Trolley':'ट्रॉली','Shelf':'कपाट','Cupboard':'कपाट','Cabinet':'कपाट',
+  'Drawer':'खण','Table':'टेबल','Chair':'खुर्ची',
+  'Vessel':'भांडे','Vessels':'भांडी','Utensils':'भांडी','Dishes':'भांडी',
+  'Plate':'ताट','Bowl':'वाटी','Pot':'भांडे','Pan':'तवा',
+  'Towel':'टॉवेल','Cloth':'कापड','Broom':'झाडू','Mop':'फडका',
+  'Gas':'गॅस','Cylinder':'सिलिंडर','Water':'पाणी','Light':'दिवा',
+  // Modifiers & articles
+  'Full':'संपूर्ण','Whole':'संपूर्ण','All':'सर्व','Every':'प्रत्येक',
+  'Big':'मोठा','Small':'लहान','New':'नवीन','Old':'जुना',
+  'Outside':'बाहेरून','Inside':'आतून','outside':'बाहेरून','inside':'आतून',
+  'from':'पासून','From':'पासून','and':'आणि','And':'आणि',
+  'with':'सोबत','for':'साठी','of':'चे','in':'मध्ये',
+  'is':'आहे','are':'आहेत',
+  'today':'आज','Today':'आज','tomorrow':'उद्या','Tomorrow':'उद्या',
+  'daily':'दररोज','weekly':'आठवड्यातून','morning':'सकाळी','evening':'संध्याकाळी',
+  // Common nouns not yet covered
+  'vegetables':'भाज्या','Vegetables':'भाज्या','fruits':'फळे','Fruits':'फळे',
+  'groceries':'किराणा','Groceries':'किराणा','items':'वस्तू','Items':'वस्तू',
+  'the':'','a':'','an':'','The':'','A':'','An':'',
+});
+
+// ── Phonetic Roman → Devanagari (fallback for truly unknown words) ────────
+function _phoneticDev(w){
+  if(!w||/[ऀ-ॿ]/.test(w))return w;
+  const s=w.toLowerCase();
+  // Consonants (longest-match first)
+  const CP=[['ksh','क्ष'],['bh','भ'],['ch','च'],['dh','ध'],['gh','घ'],
+    ['jh','झ'],['kh','ख'],['ph','फ'],['sh','श'],['th','थ'],
+    ['b','ब'],['c','क'],['d','द'],['f','फ'],['g','ग'],['h','ह'],
+    ['j','ज'],['k','क'],['l','ल'],['m','म'],['n','न'],['p','प'],
+    ['r','र'],['s','स'],['t','त'],['v','व'],['w','व'],
+    ['y','य'],['z','ज'],['q','क'],['x','क्स']];
+  // Initial (standalone) vowels
+  const VI=[['aa','आ'],['ai','ऐ'],['au','औ'],['ee','ई'],['ii','ई'],
+    ['oo','ऊ'],['uu','ऊ'],['a','अ'],['e','ए'],['i','इ'],['o','ओ'],['u','उ']];
+  // Matra forms (after a consonant)
+  const VM=[['aa','ा'],['ai','ै'],['au','ौ'],['ee','ी'],['ii','ी'],
+    ['oo','ू'],['uu','ू'],['a','ा'],['e','े'],['i','ि'],['o','ो'],['u','ु']];
+  let out='',i=0,aC=false;
+  while(i<s.length){
+    if(!/[a-z]/.test(s[i])){out+=s[i++];aC=false;continue;}
+    const VT=aC?VM:VI;
+    let vm=null;for(const[p,d]of VT)if(s.startsWith(p,i)){vm=[p,d];break;}
+    let cm=null;for(const[p,d]of CP)if(s.startsWith(p,i)){cm=[p,d];break;}
+    if(!aC&&vm&&(!cm||vm[0].length>=cm[0].length)){out+=vm[1];i+=vm[0].length;aC=false;}
+    else if(cm){if(aC&&!vm)out+='्';out+=cm[1];i+=cm[0].length;aC=true;}
+    else if(vm){out+=vm[1];i+=vm[0].length;aC=false;}
+    else{out+=s[i++];aC=false;}
+  }
+  return out||w;
+}
+
+// mr() — always returns Marathi: dict lookup → word-by-word → phonetic Devanagari
+function mr(s){
+  if(!s)return s;
+  if(MR_MAP[s])return MR_MAP[s];
+  if(/\s/.test(s.trim()))
+    return s.trim().split(/\s+/)
+      .map(w=>MR_MAP[w]!=null?MR_MAP[w]:_phoneticDev(w))
+      .filter(w=>w.length>0)
+      .join(' ');
+  return _phoneticDev(s);
+}
 const CAT_MR_MAP={
   // Grocery list default categories
   'Fruits & Vegetables':'फळे व भाज्या','Dairy & Eggs':'दुग्धजन्य व अंडी','Grains & Flour':'धान्य व पीठ',
@@ -2445,6 +2976,7 @@ const INDIAN_FESTIVALS={'01-01':"New Year's Day",'01-14':'Makar Sankranti','01-2
 const rcalToday=new Date(); rcalToday.setHours(0,0,0,0);
 let rcalYear=rcalToday.getFullYear(), rcalMonth=rcalToday.getMonth(), rcalSelKey=null;
 const RCAL_ML=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const RCAL_ML_MR=['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
 function rcalKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function rcalParse(k){const[y,m,d]=k.split('-').map(Number);const dt=new Date(y,m-1,d);dt.setHours(0,0,0,0);return dt;}
 function rcalAutoFest(k){const p=k.split('-');return INDIAN_FESTIVALS[p[1]+'-'+p[2]]||'';}
@@ -2455,7 +2987,7 @@ function rcalRender(){
   const topbar=document.querySelector('.rcal-topbar');
   if(topbar&&!topbar.querySelector('.rcal-pdf-btn')){
     const btn=document.createElement('button');
-    btn.className='rcal-today-btn rcal-pdf-btn';btn.textContent='🖨 PDF';
+    btn.className='rcal-today-btn rcal-pdf-btn';btn.textContent=isMarathi?'🖨 PDF':'🖨 PDF';
     btn.onclick=exportCalendarPDF;topbar.appendChild(btn);
   }
 }
@@ -2479,18 +3011,18 @@ function rcalRenderGrid(){
     c.innerHTML='<span class="rcal-dnum">'+d+'</span>'
       +(menu?'<span class="rcal-menu-chip">🍽 '+escHtml(menu)+'</span>':'')
       +(fest?'<span class="rcal-fest-chip">🪔 '+escHtml(fest)+'</span>':'')
-      +'<span class="rcal-meal-dot dot-'+status+'" title="'+(status==='planned'?'Meals planned':status==='partial'?'Some meals planned':'No meals')+'"></span>';
+      +'<span class="rcal-meal-dot dot-'+status+'" title="'+(isMarathi?(status==='planned'?'जेवण नियोजित':status==='partial'?'काही जेवण नियोजित':'जेवण नाही'):(status==='planned'?'Meals planned':status==='partial'?'Some meals planned':'No meals'))+'"></span>';
     c.onclick=()=>{rcalSelKey=key;rcalRender();};
     grid.appendChild(c);
   }
   const total=fd+dim;const rem=total%7===0?0:7-(total%7);
   for(let d=1;d<=rem;d++){const c=document.createElement('div');c.className='rcal-cell other';c.innerHTML='<span class="rcal-dnum">'+d+'</span>';grid.appendChild(c);}
-  document.getElementById('rcal-title').textContent=RCAL_ML[rcalMonth]+' '+rcalYear;
+  document.getElementById('rcal-title').textContent=(isMarathi?RCAL_ML_MR:RCAL_ML)[rcalMonth]+' '+rcalYear;
 }
 function rcalMkSel(optKey, field, currentVal, wk){
   const o=opts[optKey]||[];
   return '<select class="rcal-inp" style="padding:5px 8px;font-size:12px;cursor:pointer;margin-bottom:4px" onchange="rcalUpdateWeekMeal('+wk+',\''+field+'\',this.value)">'
-    +['',  ...o].map(v=>'<option value="'+escHtml(v)+'"'+(v===currentVal?' selected':'')+'>'+escHtml(v||'— Select —')+'</option>').join('')
+    +['',  ...o].map(v=>'<option value="'+escHtml(v)+'"'+(v===currentVal?' selected':'')+'>'+escHtml(v||(isMarathi?'— निवडा —':'— Select —'))+'</option>').join('')
     +'</select>';
 }
 function rcalUpdateWeekMeal(wk, field, val){
@@ -2507,9 +3039,9 @@ let rcalSelWeek=1;
 function rcalShowWeekForm(w){ rcalSelWeek=w; rcalRenderPanel(); }
 function rcalRenderPanel(){
   const panel=document.getElementById('rcal-panel'); if(!panel) return;
-  if(!rcalSelKey){panel.innerHTML='<div class="rcal-hint">📅 Click any date to set a menu or mark a festival</div>';return;}
+  if(!rcalSelKey){panel.innerHTML='<div class="rcal-hint">'+(isMarathi?'📅 तारीख निवडा — मेनू किंवा सण नोंदवा':'📅 Click any date to set a menu or mark a festival')+'</div>';return;}
   const dt=rcalParse(rcalSelKey);
-  const label=dt.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const label=safeLocale(dt,isMarathi?'mr-IN':'en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const entry=rcalData[rcalSelKey]||{}; const af=rcalAutoFest(rcalSelKey);
   const festivals=entry.festivals||[]; const menu=entry.menu||''; const hasData=!!(menu||festivals.length);
   const dowIdx=dt.getDay(); const dayName=DAYS[dowIdx===0?6:dowIdx-1];
@@ -2565,7 +3097,33 @@ function rcalRenderPanel(){
     +'<label class="rcal-flabel" style="margin-top:10px">'+RL.specialNote+'</label>'
     +'<input class="rcal-inp" id="rcal-menu" type="text" placeholder="'+RL.notePH+'" value="'+escHtml(menu)+'">'
     +'<button class="rcal-save-btn" style="margin-top:10px" onclick="rcalSave()">'+RL.saveNote+'</button>'
-    +(hasData?'<button class="rcal-clear-btn" onclick="rcalClear()">'+RL.clearNote+'</button>':'');
+    +(hasData?'<button class="rcal-clear-btn" onclick="rcalClear()">'+RL.clearNote+'</button>':'')
+    // ── Staff availability (admin only) ──
+    +(isAdmin&&staffSchedule.members.length?(()=>{
+      const rows=staffSchedule.members.map(m=>{
+        const s=(staffSchedule.dates[rcalSelKey]||{})[m.id]||{};
+        const cur=s.status||'';
+        const note=s.note||'';
+        const btnCls=(st)=>'hscal-status-btn'+(cur===st?' active-'+st:'');
+        return '<div style="margin-bottom:10px">'
+          +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">'
+          +'<span style="width:10px;height:10px;border-radius:50%;background:'+m.color+';flex-shrink:0;display:inline-block"></span>'
+          +'<strong style="font-size:12px">'+escHtml(m.name)+'</strong>'
+          +'<span style="font-size:11px;color:var(--text3)">'+escHtml(m.role)+'</span>'
+          +'</div>'
+          +'<div class="hscal-status-btns">'
+          +'<button class="'+btnCls('available')+'" onclick="hscalSetStatus(\''+rcalSelKey+'\',\''+m.id+'\',\'available\')">✅ '+(isMarathi?'येणार':'Present')+'</button>'
+          +'<button class="'+btnCls('unavailable')+'" onclick="hscalSetStatus(\''+rcalSelKey+'\',\''+m.id+'\',\'unavailable\')">🔴 '+(isMarathi?'सुट्टी':'Absent')+'</button>'
+          +'<button class="'+btnCls('halfday')+'" onclick="hscalSetStatus(\''+rcalSelKey+'\',\''+m.id+'\',\'halfday\')">🟡 '+(isMarathi?'अर्धा दिवस':'Half Day')+'</button>'
+          +(cur?'<button class="hscal-status-btn" onclick="hscalClearMember(\''+rcalSelKey+'\',\''+m.id+'\')">✕</button>':'')
+          +'</div>'
+          +'<input class="hscal-note-inp" type="text" placeholder="'+(isMarathi?'नोंद…':'Note… (sick, festival…)')+'" value="'+escHtml(note)+'" oninput="hscalSetNote(\''+rcalSelKey+'\',\''+m.id+'\',this.value)">'
+          +'</div>';
+      }).join('<hr style="border:none;border-top:1px solid var(--border);margin:6px 0">');
+      return '<div class="hscal-admin-strip">'
+        +'<div class="hscal-admin-title">👥 '+(isMarathi?'कर्मचारी उपस्थिती':'Staff Availability')+'</div>'
+        +rows+'</div>';
+    })():(isAdmin?'<div class="hscal-admin-strip" style="font-size:12px;color:var(--text3)">👥 '+(isMarathi?'कर्मचारी जोडण्यासाठी वेळापत्रक टॅबवर जा':'Go to Schedule tab to add staff members')+'</div>':''));
 }
 function rcalSave(){if(!rcalSelKey)return;const m=document.getElementById('rcal-menu')?.value.trim()||'';if(!rcalData[rcalSelKey])rcalData[rcalSelKey]={};rcalData[rcalSelKey].menu=m;saveToStorage(false);rcalRender();showToast('✅ Saved');}
 function rcalClear(){if(!rcalSelKey)return;delete rcalData[rcalSelKey];saveToStorage(false);rcalRender();showToast('🗑 Cleared');}
@@ -2629,6 +3187,193 @@ function deleteTask(dateKey,taskId){if(!dailyTasks[dateKey])return;dailyTasks[da
 const ML_EN={bf:'Breakfast',lu:'Lunch',sn:'Snacks',di:'Dinner'};
 const ML_MR={bf:'न्याहारी',lu:'दुपारचे जेवण',sn:'नाश्ता',di:'रात्रीचे जेवण'};
 const MI={bf:'🌅',lu:'🥘',sn:'🍊',di:'🌙'};
+// ══════════════════════════════════════════════════
+// STAFF AVAILABILITY SYSTEM
+// ══════════════════════════════════════════════════
+let hscalYear=new Date().getFullYear(), hscalMonth=new Date().getMonth();
+const STAFF_COLORS=['#7B3F9E','#E07B2A','#2E6FA8','#1F7A4A','#C0392B','#16A085','#8E44AD','#D35400'];
+let _staffColorPick=STAFF_COLORS[0];
+
+function hscalKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+// Get status of a member on a date
+function staffStatus(dateKey, memberId){
+  return (staffSchedule.dates[dateKey]||{})[memberId]||null;
+}
+
+// Build the "staff bar" HTML for a given date (used in Today's Menu + Planner)
+function buildStaffBar(dateKey, compact){
+  if(!staffSchedule.members.length) return '';
+  const isMr=isMarathi;
+  const statusLabel={
+    available:  isMr?'येणार':'Present',
+    unavailable:isMr?'सुट्टी':'Absent',
+    halfday:    isMr?'अर्धा दिवस':'Half Day',
+    null:       isMr?'येणार':'Present',
+  };
+  const chips=staffSchedule.members.map(m=>{
+    const s=staffStatus(dateKey,m.id);
+    const st=s?s.status:'available';
+    const note=s&&s.note?(' · '+s.note):'';
+    const cls=st==='available'?'sc-present':st==='unavailable'?'sc-absent':st==='halfday'?'sc-halfday':'sc-unknown';
+    const emoji=st==='available'?'✅':st==='unavailable'?'🔴':'🟡';
+    if(compact){
+      // Small dot for planner header
+      return`<span class="psr-dot" style="background:${st==='available'?m.color:st==='unavailable'?'#DC3C3C':'var(--carrot)'}" title="${escHtml(m.name)} — ${statusLabel[st]}"></span>`;
+    }
+    return`<span class="staff-chip ${cls}"><span class="sc-dot" style="background:${m.color}"></span>${emoji} ${escHtml(m.name)}${compact?'':(' — '+statusLabel[st]+note)}</span>`;
+  }).join('');
+  if(compact) return chips?`<div class="planner-staff-row">${chips}</div>`:'';
+  const title=isMr?'आजचे कर्मचारी':'Staff Today';
+  return`<div class="staff-bar"><div class="staff-bar-title">👥 ${title}</div>${chips}</div>`;
+}
+
+// Staff management functions (admin)
+function addStaffMember(){
+  const nameEl=document.getElementById('staff-add-name');
+  const roleEl=document.getElementById('staff-add-role');
+  const name=(nameEl?.value||'').trim();
+  const role=(roleEl?.value||'').trim();
+  if(!name){showToast('⚠️ '+(isMarathi?'नाव लिहा':'Enter a name'));return;}
+  const id='m_'+Date.now();
+  staffSchedule.members.push({id,name,role:role||'Staff',color:_staffColorPick,emoji:'🧑'});
+  nameEl.value=''; if(roleEl)roleEl.value='';
+  saveToStorage(false); renderHelperSchedule();
+  showToast('✅ '+name+' added');
+}
+function removeStaffMember(id){
+  staffSchedule.members=staffSchedule.members.filter(m=>m.id!==id);
+  // Clean dates
+  Object.keys(staffSchedule.dates).forEach(dk=>{
+    delete staffSchedule.dates[dk][id];
+    if(!Object.keys(staffSchedule.dates[dk]).length) delete staffSchedule.dates[dk];
+  });
+  saveToStorage(false); renderHelperSchedule();
+  showToast('🗑 Removed');
+}
+function pickStaffColor(color){
+  _staffColorPick=color;
+  document.querySelectorAll('.staff-color-swatch').forEach(s=>{
+    s.style.border=s.dataset.color===color?'3px solid var(--text)':'2px solid var(--border)';
+  });
+}
+
+function renderHelperSchedule(){
+  const body=document.getElementById('hscal-body'); if(!body) return;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayKey=hscalKey(today);
+  const isMr=isMarathi;
+  const months=isMr?RCAL_ML_MR:RCAL_ML;
+  const dayLabels=isMr?
+    [{l:'रवि',w:true},{l:'सोम',w:false},{l:'मंगळ',w:false},{l:'बुध',w:false},{l:'गुरु',w:false},{l:'शुक्र',w:false},{l:'शनि',w:true}]:
+    [{l:'Sun',w:true},{l:'Mon',w:false},{l:'Tue',w:false},{l:'Wed',w:false},{l:'Thu',w:false},{l:'Fri',w:false},{l:'Sat',w:true}];
+
+  // ── Staff management section (admin only) ──────────────────────
+  let mgmtHtml='';
+  if(isAdmin){
+    const colorSwatches=STAFF_COLORS.map(c=>`<span class="staff-color-swatch" data-color="${c}" style="background:${c};border:${c===_staffColorPick?'3px solid var(--text)':'2px solid var(--border)'}" onclick="pickStaffColor('${c}')"></span>`).join('');
+    const listHtml=staffSchedule.members.length?staffSchedule.members.map(m=>`
+      <div class="staff-row">
+        <span class="staff-row-dot" style="background:${m.color}"></span>
+        <span class="staff-row-name">${escHtml(m.name)}</span>
+        <span class="staff-row-role">${escHtml(m.role)}</span>
+        <button class="staff-row-del" onclick="removeStaffMember('${m.id}')">✕</button>
+      </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">'+(isMr?'अजून कोणीही नाही — खाली नाव जोडा':'No staff yet — add below')+'</div>';
+    mgmtHtml=`<div class="staff-mgmt-card">
+      <div class="staff-mgmt-title">👥 ${isMr?'कर्मचारी यादी':'Staff Members'}</div>
+      <div class="staff-list">${listHtml}</div>
+      <div class="staff-add-row">
+        <input id="staff-add-name" type="text" placeholder="${isMr?'नाव':'Name'}" style="flex:2">
+        <input id="staff-add-role" type="text" placeholder="${isMr?'काम':'Role'}" style="flex:1.5">
+        <div style="display:flex;gap:4px;align-items:center">${colorSwatches}</div>
+        <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="addStaffMember()">+ ${isMr?'जोडा':'Add'}</button>
+      </div>
+    </div>`;
+  }
+
+  // ── Calendar grid ───────────────────────────────────────────────
+  const fd=new Date(hscalYear,hscalMonth,1).getDay();
+  const dim=new Date(hscalYear,hscalMonth+1,0).getDate();
+  const pdim=new Date(hscalYear,hscalMonth,0).getDate();
+  const dlHtml=dayLabels.map(d=>`<div class="hscal-dlabel${d.w?' wknd':''}">${d.l}</div>`).join('');
+  let cellHtml='';
+  for(let i=fd-1;i>=0;i--) cellHtml+=`<div class="hscal-cell other"><span class="hscal-dnum">${pdim-i}</span></div>`;
+
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(hscalYear,hscalMonth,d); dt.setHours(0,0,0,0);
+    const key=hscalKey(dt);
+    const isT=key===todayKey;
+    const dow=dt.getDay(); const isW=dow===0||dow===6;
+    // Build per-member chips (only absent/halfday shown to keep cells clean)
+    let hasAbsent=false;
+    const staffChips=staffSchedule.members.map(m=>{
+      const s=staffStatus(key,m.id);
+      if(!s||s.status==='available') return '';
+      hasAbsent=true;
+      const cls=s.status==='unavailable'?'absent':'halfday';
+      const label=s.note?escHtml(s.note):escHtml(m.name);
+      return`<span class="hscal-sc ${cls}" title="${escHtml(m.name)}" style="background:${s.status==='unavailable'?m.color:'var(--carrot)'}">${label}</span>`;
+    }).filter(Boolean).join('');
+    const statusCls=hasAbsent?'status-unavailable':'';
+    cellHtml+=`<div class="hscal-cell ${statusCls}${isT?' is-today':''}${isW?' wknd-col':''}">
+      <span class="hscal-dnum">${d}</span>
+      ${staffChips?`<div class="hscal-staff-chips">${staffChips}</div>`:''}
+    </div>`;
+  }
+  const total=fd+dim; const rem=total%7===0?0:7-(total%7);
+  for(let d=1;d<=rem;d++) cellHtml+=`<div class="hscal-cell other"><span class="hscal-dnum">${d}</span></div>`;
+
+  // ── Legend ──────────────────────────────────────────────────────
+  const memberDots=staffSchedule.members.map(m=>`<div class="hscal-legend-item"><div class="hscal-legend-dot" style="background:${m.color}"></div>${escHtml(m.name)}</div>`).join('');
+  const legendHtml=`<div class="hscal-legend">
+    <div class="hscal-legend-item" style="width:100%;color:var(--text3);font-size:10px">${isMr?'रंगीत चिप = सुट्टी / अर्धा दिवस · रिकामे = येणार':'Coloured chip = absent/half-day · Empty = present'}</div>
+    ${memberDots}
+  </div>`;
+
+  body.innerHTML=`<div class="hscal-wrap">
+    ${mgmtHtml}
+    <div class="hscal-nav">
+      <button class="hscal-nav-btn" onclick="hscalChangeMonth(-1)">&#8249;</button>
+      <span class="hscal-title">${months[hscalMonth]} ${hscalYear}</span>
+      <button class="hscal-nav-btn" onclick="hscalChangeMonth(1)">&#8250;</button>
+    </div>
+    <div class="hscal-grid">${dlHtml}${cellHtml}</div>
+    ${legendHtml}
+  </div>`;
+}
+
+function hscalChangeMonth(dir){
+  hscalMonth+=dir;
+  if(hscalMonth>11){hscalMonth=0;hscalYear++;}
+  if(hscalMonth<0){hscalMonth=11;hscalYear--;}
+  renderHelperSchedule();
+}
+
+// Set/clear status for a specific staff member on a date
+function hscalSetStatus(dateKey, memberId, status){
+  if(!staffSchedule.dates[dateKey]) staffSchedule.dates[dateKey]={};
+  if(!staffSchedule.dates[dateKey][memberId]) staffSchedule.dates[dateKey][memberId]={status,note:''};
+  else staffSchedule.dates[dateKey][memberId].status=status;
+  saveToStorage(false);
+  if(document.getElementById('view-hlprschedule').classList.contains('active')) renderHelperSchedule();
+  rcalRenderPanel(); renderTodayMenu();
+  const msg=status==='available'?'✅ येणार':status==='unavailable'?'🔴 सुट्टी':'🟡 अर्धा दिवस';
+  showToast(msg);
+}
+function hscalSetNote(dateKey, memberId, note){
+  if(!staffSchedule.dates[dateKey]) staffSchedule.dates[dateKey]={};
+  if(!staffSchedule.dates[dateKey][memberId]) staffSchedule.dates[dateKey][memberId]={status:'available',note};
+  else staffSchedule.dates[dateKey][memberId].note=note;
+  saveToStorage(false);
+}
+function hscalClearMember(dateKey, memberId){
+  if(staffSchedule.dates[dateKey]) delete staffSchedule.dates[dateKey][memberId];
+  saveToStorage(false);
+  if(document.getElementById('view-hlprschedule').classList.contains('active')) renderHelperSchedule();
+  rcalRenderPanel(); renderTodayMenu();
+  showToast('🗑 '+(isMarathi?'साफ केले':'Cleared'));
+}
+
 function renderTodayMenu(){
   const body=document.getElementById('tm-body');if(!body)return;
   const isH=(currentMode==='helper');const labels=isH?ML_MR:ML_EN;
@@ -2654,11 +3399,11 @@ function renderTodayMenu(){
     const todayKey=tdKey(now);
     const af=rcalAutoFest(todayKey);const te=rcalData[todayKey]||{};const fest=(te.festivals&&te.festivals.length)?te.festivals[0]:af;
     const hh=String(now.getHours()).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');
-    const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+now.toLocaleDateString('mr-IN',{month:'long'})+'</div><div class="tm-today-sub">'+now.toLocaleDateString('mr-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+hh+':'+mm+':'+ss+'</div></div></div>';
+    const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+safeLocale(now,'mr-IN',{month:'long'})+'</div><div class="tm-today-sub">'+safeLocale(now,'mr-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+hh+':'+mm+':'+ss+'</div></div></div>';
     // helper to build one day card
     const buildCard=(s,dayName,date,isToday)=>{
       const dayMr=DAYS_MR[dayName]||dayName;
-      const dateStr=date.toLocaleDateString('mr-IN',{day:'numeric',month:'long'});
+      const dateStr=safeLocale(date,'mr-IN',{day:'numeric',month:'long'});
       const hdrCls=isToday?'today-hd':'tmrw-hd';
       const badge=isToday?'<span class="hlpr-badge today">आज</span>':'<span class="hlpr-badge tmrw">उद्या</span>';
       const subLbl=isToday?'':'<span style="font-size:12px;color:var(--carrot);font-weight:500;display:block;margin-top:2px">उद्याची तयारी</span>';
@@ -2685,13 +3430,14 @@ function renderTodayMenu(){
       const dayTasks=dailyTasks[dKey]||[];
       const dWorkItems=dayTasks.filter(t=>(t.type||'task')==='task');
       const dBuyItems=dayTasks.filter(t=>t.type==='buy');
-      const mkDRow=(t)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dKey+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(t.text)+'</span><button class="tm-task-del" onclick="deleteTask(\''+dKey+'\',\''+t.id+'\')">✕</button></div>';
+      const mkDRow=(t)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dKey+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(mr(t.text))+'</span><button class="tm-task-del" onclick="deleteTask(\''+dKey+'\',\''+t.id+'\')">✕</button></div>';
       const dWorkHtml=dWorkItems.length?dWorkItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">काम नाही</div>';
       const dBuyHtml=dBuyItems.length?dBuyItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">वस्तू नाही</div>';
       const wLbl=isToday?'आजचे काम':'उद्याचे काम';const bLbl=isToday?'आज आणायचे':'उद्या आणायचे';
       const addWId='htw-'+dKey;const addBId='htb-'+dKey;
       const taskBlock='<div class="hlpr-meal-block"><div class="tm-tasks-title" style="margin-bottom:6px">📋 '+wLbl+'</div>'+dWorkHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWId+'" placeholder="काम लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'task\');this.value=\'\';}"><button class="tm-add-btn" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addWId+'\').value,\'task\');document.getElementById(\''+addWId+'\').value=\'\'">+ जोडा</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky);margin-bottom:6px">🛒 '+bLbl+'</div>'+dBuyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBId+'" placeholder="वस्तू लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'buy\');this.value=\'\';}"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addBId+'\').value,\'buy\');document.getElementById(\''+addBId+'\').value=\'\'">+ जोडा</button></div></div>';
-      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
+      const staffBarHtml=buildStaffBar(dKey,false);
+      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+staffBarHtml+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
     };
     body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
     if(window._tmCI)clearInterval(window._tmCI);
@@ -2704,13 +3450,13 @@ function renderTodayMenu(){
   const now=new Date();const todayKey=tdKey(now);
   const af=rcalAutoFest(todayKey);const te=rcalData[todayKey]||{};const fest=(te.festivals&&te.festivals.length)?te.festivals[0]:af;
   const h=String(now.getHours()).padStart(2,'0'),mn=String(now.getMinutes()).padStart(2,'0'),sc=String(now.getSeconds()).padStart(2,'0');
-  const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+now.toLocaleDateString(isH?'mr-IN':'en-IN',{month:'long'})+'</div><div class="tm-today-sub">'+now.toLocaleDateString(isH?'mr-IN':'en-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+h+':'+mn+':'+sc+'</div></div></div>';
+  const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+safeLocale(now,isH?'mr-IN':'en-IN',{month:'long'})+'</div><div class="tm-today-sub">'+safeLocale(now,isH?'mr-IN':'en-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+h+':'+mn+':'+sc+'</div></div></div>';
   const W=weeks[tmCurWeek]||{};const todayDow=now.getDay();const todayDayName=DAYS[todayDow===0?6:todayDow-1];
   const monday=new Date(now);monday.setDate(now.getDate()-((now.getDay()+6)%7));
   const cards=DAYS.map((day,idx)=>{
     const s=W[day]||{};const dt=new Date(monday);dt.setDate(monday.getDate()+idx);
     const dateKey=tdKey(dt);const isToday=day===todayDayName;
-    const dayLabel=isH?DAYS_MR[day]:day;const dateStr=dt.toLocaleDateString(isH?'mr-IN':'en-IN',{day:'numeric',month:'short'});
+    const dayLabel=isH?DAYS_MR[day]:day;const dateStr=safeLocale(dt,isH?'mr-IN':'en-IN',{day:'numeric',month:'short'});
     const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
     const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad,s.l_sides,s.l_lonche,s.l_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const sn=[s.snack,s.snack2,s.snack_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
@@ -2726,7 +3472,8 @@ function renderTodayMenu(){
     const buyHtml=buyItems.length?buyItems.map(t=>mkTRow(t,dateKey)).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'वस्तू नाही':'Nothing to buy')+'</div>';
     const addWorkId='tmw-'+dateKey;const addBuyId='tmb-'+dateKey;
     const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'आजचे काम':'Tasks')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWorkId+'" placeholder="'+(isH?'काम लिहा…':'Add task…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'task\');this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addWorkId+'\').value,\'task\');document.getElementById(\''+addWorkId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky)">🛒 '+(isH?'आज आणायचे':'To Buy')+'</div>'+buyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBuyId+'" placeholder="'+(isH?'वस्तू लिहा…':'Add item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'buy\');this.value=\'\';}\"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addBuyId+'\').value,\'buy\');document.getElementById(\''+addBuyId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
-    return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div><div class="tm-meals">'+mealRows+calRow+taskSec+'</div></div>';
+    const staffB=buildStaffBar(dateKey,false);
+    return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div>'+(staffB?'<div style="padding:0 10px">'+staffB+'</div>':'')+'<div class="tm-meals">'+mealRows+calRow+taskSec+'</div></div>';
   }).join('');
   body.innerHTML=weekBar+dateBanner+'<div class="tm-week-grid">'+cards+'</div>';
   if(window._tmCI)clearInterval(window._tmCI);
@@ -2752,13 +3499,13 @@ function tmSwitchWeek(w){tmCurWeek=w;renderTodayMenu();}
 // ══════════════════════════════════════════════════
 const ADMIN_PIN='1234';
 const MODE_TABS={
-  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup'],
+  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup','hlprschedule'],
   family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
-  helper:['todaymenu','rcalendar','grocery','buyinglist','essentials'],
+  helper:['todaymenu','hlprschedule','grocery','buyinglist','essentials'],
 };
-const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',rcalendar:'📆 जेवण कॅलेंडर',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
+const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',hlprschedule:'📅 वेळापत्रक',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
 const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup'};
-const ADMIN_LABELS=Object.assign({},FAMILY_LABELS);
+const ADMIN_LABELS=Object.assign({},FAMILY_LABELS,{hlprschedule:'📅 Helper Schedule'});
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
 function applyMode(mode){
   currentMode=mode;isAdmin=(mode==='admin');isMarathi=(mode==='helper');
@@ -2778,7 +3525,7 @@ function applyMode(mode){
     const ps=document.createElement('div');ps.className='sidebar-section';
     ps.innerHTML=mode==='helper'?'<span>नियोजन</span>':'<span class="en">Plan</span><span class="mr">नियोजन</span>';
     nav.appendChild(ps);
-    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history']:mode==='family'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','rcalendar','grocery','buyinglist'];
+    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','hlprschedule']:mode==='family'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived']:['todaymenu','hlprschedule','grocery','buyinglist'];
     planTabs.forEach(id=>{if(!tabs.includes(id))return;const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
     // Settings section
     const setTabs=mode==='admin'?['customise','essentials','recipes','backup']:['essentials'];
@@ -2948,7 +3695,7 @@ function archiveWeekToHistory(){
   const W = weeks[curWeek];
   const hasMeals = DAYS.some(d => Object.values(W[d]).some(v => v));
   if(!hasMeals){ showToast('⚠️ No meals to archive in this week'); return; }
-  const label = `Week ${curWeek} — ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}`;
+  const label = `Week ${curWeek} — ${safeLocale(new Date(),'en-IN',{day:'numeric',month:'short',year:'numeric'})}`;
   mealHistory.unshift({ label, archivedAt: new Date().toISOString(), data: JSON.parse(JSON.stringify(W)) });
   if(mealHistory.length > 12) mealHistory = mealHistory.slice(0, 12); // keep last 12
   saveToStorage(false);
@@ -2964,7 +3711,7 @@ function renderHistory(){
     return;
   }
   body.innerHTML = mealHistory.map((entry, hi) => {
-    const arDate = new Date(entry.archivedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const arDate = safeLocale(new Date(entry.archivedAt),'en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     const dayCards = DAYS.map(day => {
       const s = entry.data[day] || {};
       const bf = [s.breakfast, s.bf2, s.bf3, s.chutney].filter(Boolean).join(' + ');
@@ -3195,7 +3942,7 @@ function whatsappTodayMenu(){
   const lu  = [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ');
   const sn  = [s.snack, s.snack2].filter(Boolean).join(', ');
   const di  = dinnerSummary(s,false);
-  const date = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
+  const date = safeLocale(now,'en-IN', {weekday:'long', day:'numeric', month:'long'});
   let text = `🏠 *Indraprastha — ${date}*\n\n`;
   if(bf)  text += `🌅 *Breakfast:* ${bf}\n`;
   if(lu)  text += `🥘 *Lunch:* ${lu}\n`;
