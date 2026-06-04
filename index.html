@@ -935,6 +935,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Save
     </button>
+    <span id="sync-dot" title="Connecting…" style="width:9px;height:9px;border-radius:50%;background:#ccc;display:inline-block;flex-shrink:0;cursor:default;transition:background 0.4s"></span>
   </div>
 </header>
 
@@ -2643,7 +2644,108 @@ function showView(name,el){
 
 function switchWeek(w,btn){curWeek=w;document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderPlanner();renderMealDerived();}
 function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
-function saveToStorage(toast=true){try{localStorage.setItem('indraprastha-v2',JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule}));if(toast)showToast('💾 Saved!');}catch(e){showToast('⚠️ Storage full');}}
+// ── Real-time sync ────────────────────────────────────────────────────────
+window._syncAvailable  = false;
+window._syncIgnoreNext = 0;     // counter: how many incoming updates to skip (our own)
+let   _syncDebounceTimer = null; // debounce timer for outgoing POST
+let   _pendingSyncJson   = null; // queued incoming data waiting for idle
+
+function saveToStorage(toast=true){
+  const payload=JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule});
+  // 1. Always save locally — instant, no delay
+  try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
+  // 2. Debounce sync POST — wait 800ms after last save before pushing to server
+  //    This prevents hammering the server while the user is still typing/selecting
+  if(window._syncAvailable){
+    clearTimeout(_syncDebounceTimer);
+    _syncDebounceTimer = setTimeout(()=>{
+      window._syncIgnoreNext++;   // we will receive our own broadcast — skip it
+      fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
+        .catch(()=>{window._syncAvailable=false;const d=document.getElementById('sync-dot');if(d){d.style.background='#ccc';d.title='Sync offline';}});
+    }, 800);
+  }
+  if(toast)showToast('💾 Saved!');
+}
+
+function _isUserTyping(){
+  // Returns true if a dropdown is open or an input is focused — don't re-render now
+  return !!(document.querySelector('.meal-dd-list.open') ||
+            document.querySelector('.meal-dd-input:focus') ||
+            document.querySelector('input:focus, textarea:focus, select:focus'));
+}
+
+function _doRender(){
+  const active=document.querySelector('.view.active');
+  if(active){
+    const id=active.id.replace('view-','');
+    if(id==='planner')renderPlanner();
+    else if(id==='todaymenu')renderTodayMenu();
+    else if(id==='grocery')renderGroceryList();
+    else if(id==='buyinglist')renderBuyingList();
+    else if(id==='mealderived')renderMealDerived();
+    else if(id==='hlprschedule')renderHelperSchedule();
+    else if(id==='rcalendar')rcalRender();
+  }
+  renderEssentialsBar();
+}
+
+function _applyServerData(json){
+  try{
+    const s=JSON.parse(json);
+    opts=s.opts||opts; essentials=s.essentials||essentials;
+    weeks=s.weeks||weeks; groceryList=s.groceryList||groceryList;
+    rcalData=s.rcalData||rcalData; dailyTasks=s.dailyTasks||dailyTasks;
+    mealHistory=s.mealHistory||mealHistory; recipes=s.recipes||recipes;
+    helperSchedule=s.helperSchedule||helperSchedule;
+    staffSchedule=s.staffSchedule||staffSchedule;
+    localStorage.setItem('indraprastha-v2',json);
+    // If user is actively typing/selecting, queue the render for when they stop
+    if(_isUserTyping()){
+      _pendingSyncJson=json;
+      return;
+    }
+    _doRender();
+    // Subtle sync dot flash instead of intrusive toast
+    const dot=document.getElementById('sync-dot');
+    if(dot){dot.style.background='#81C784';setTimeout(()=>{dot.style.background='#4CAF50';},600);}
+  }catch(e){console.warn('Sync apply error',e);}
+}
+
+// Flush pending sync render when user finishes typing
+document.addEventListener('focusout',()=>{
+  if(_pendingSyncJson && !_isUserTyping()){
+    const j=_pendingSyncJson; _pendingSyncJson=null;
+    setTimeout(()=>{ if(!_isUserTyping()) _applyServerData(j); },300);
+  }
+});
+
+function _syncConnect(){
+  if(typeof EventSource==='undefined')return;
+  const es=new EventSource('/sync/events');
+  es.addEventListener('connected',()=>{
+    window._syncAvailable=true;
+    const dot=document.getElementById('sync-dot');
+    if(dot){dot.style.background='#4CAF50';dot.title='Live sync on';}
+    fetch('/sync/data').then(r=>r.text()).then(json=>{
+      if(json&&json!=='{}') _applyServerData(json);
+    }).catch(()=>{});
+  });
+  es.addEventListener('update',()=>{
+    // Skip updates that WE triggered
+    if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
+    fetch('/sync/data').then(r=>r.text()).then(json=>{
+      if(json) _applyServerData(json);
+    }).catch(()=>{});
+  });
+  es.onerror=()=>{
+    window._syncAvailable=false;
+    const dot=document.getElementById('sync-dot');
+    if(dot){dot.style.background='#ccc';dot.title='Sync offline';}
+    es.close();
+    setTimeout(_syncConnect,5000);
+  };
+}
+setTimeout(_syncConnect,500);
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
@@ -3514,7 +3616,10 @@ function applyMode(mode){
   document.body.classList.toggle('marathi-mode',isMarathi);
   ['family','helper','admin'].forEach(m=>{const b=document.getElementById('mmode-'+m);if(b){b.classList.remove('active-family','active-helper','active-admin');if(m===mode)b.classList.add('active-'+m);}});
   const st=document.getElementById('mode-status-bar');
-  if(st)st.textContent={admin:'🔓 Admin mode',family:'👨‍👩‍👧 Family view',helper:'🧑‍🍳 Helper mode — मराठी'}[mode]||'';
+  if(st){
+    if(window._lockedMode) st.textContent='';  // no mode label for named staff links
+    else st.textContent={admin:'🔓 Admin mode',family:'👨‍👩‍👧 Family view',helper:'🧑‍🍳 Helper mode — मराठी'}[mode]||'';
+  }
   // Rebuild nav
   const nav=document.querySelector('nav.sidebar');
   if(nav){
@@ -3543,6 +3648,7 @@ function applyMode(mode){
   const modeExportBtn=document.getElementById('modebar-export-btn');
   if(modeExportBtn)modeExportBtn.style.display=mode==='admin'?'inline-block':'none';
   const msgs={admin:'🔓 Admin mode enabled',family:'👨‍👩‍👧 Family mode',helper:'🧑‍🍳 Helper mode — मराठी'};
+  if(window._lockedMode) return; // no toast for locked named-staff links
   showToast(msgs[mode]||'');
 }
 function exportData(){exportBackup();}
@@ -3584,7 +3690,34 @@ carryOverTasks();
 saveToStorage(false);
 hdtUpdate();
 setInterval(hdtUpdate,1000);
-applyMode('family');
+// Named staff members → helper mode with locked UI
+// Add more names here as needed: 'lata', 'raju', etc.
+const NAMED_HELPERS = {
+  'sham': 'Sham',
+  // 'lata': 'Lata',
+};
+
+// Auto-mode from URL: ?mode=helper / ?mode=admin / ?mode=family / ?mode=sham
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  const m = (p.get('mode')||'').toLowerCase();
+
+  if(NAMED_HELPERS[m]){
+    // Named staff link — lock to helper mode, personalise title
+    window._lockedMode = true;
+    window._userName   = NAMED_HELPERS[m];
+    document.title     = NAMED_HELPERS[m];
+    applyMode('helper');
+    // Hide the entire mode bar
+    const bar = document.querySelector('.mode-bar');
+    if(bar) bar.style.display = 'none';
+  } else if(m === 'helper' || m === 'admin' || m === 'family'){
+    if(m === 'admin'){ applyMode('family'); openAdminPin(); }
+    else applyMode(m);
+  } else {
+    applyMode('family');
+  }
+})();
 
 // ══════════════════════════════════════════════════════
 // DARK MODE

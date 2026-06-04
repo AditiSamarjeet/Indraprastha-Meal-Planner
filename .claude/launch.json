@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "meal-planner",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["D:\\Github Projects\\Indraprastha-Meal-Planner\\server.py"],
+      "port": 8000,
+      "autoPort": false
+    }
+  ]
+}
