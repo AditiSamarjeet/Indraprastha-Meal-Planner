@@ -3,7 +3,7 @@ Indraprastha Meal Planner — Real-time Sync Server
 Serves index.html + syncs data across all devices instantly via SSE.
 """
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import json, os, threading, queue, socket
+import json, os, threading, queue, socket, subprocess
 
 ROOT     = os.path.dirname(os.path.abspath(__file__))
 INDEX    = os.path.join(ROOT, 'index.html')
@@ -33,11 +33,32 @@ class Handler(BaseHTTPRequestHandler):
             self._send_file(DATA_FILE, 'application/json') if os.path.exists(DATA_FILE) else self._send_text('{}', 'application/json')
         elif p == '/sync/events':
             self._sse()
+        elif p == '/publish/status':
+            self._send_text('ok', 'text/plain')
         else:
             self.send_response(404); self._cors(); self.end_headers()
 
     def do_POST(self):
-        if self.path.split('?')[0] == '/sync/data':
+        p = self.path.split('?')[0]
+        if p == '/publish/save':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try: json.loads(body)
+            except: self.send_response(400); self._cors(); self.end_headers(); return
+            with open(DATA_FILE, 'wb') as f: f.write(body)
+            print('  [publish] data.json saved.')
+            self._send_text('saved', 'text/plain')
+        elif p == '/publish/git':
+            try:
+                msg = self.rfile.read(int(self.headers.get('Content-Length', 0))).decode() or 'Update meal planner data'
+                subprocess.run(['git', 'add', 'data.json', 'index.html'], cwd=ROOT, check=True)
+                subprocess.run(['git', 'commit', '-m', msg], cwd=ROOT, check=True)
+                subprocess.run(['git', 'push'], cwd=ROOT, check=True)
+                print('  [publish] Pushed to GitHub.')
+                self._send_text('pushed', 'text/plain')
+            except subprocess.CalledProcessError as e:
+                self._send_text(f'error: {e}', 'text/plain')
+        elif p == '/sync/data':
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
             try: json.loads(body)

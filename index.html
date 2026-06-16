@@ -1295,6 +1295,13 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn" onclick="document.getElementById('restore-file').click()">⬆ Upload Backup</button>
         </div>
         <div class="backup-card">
+          <div class="backup-icon">🌐</div>
+          <div class="backup-title">Publish Data</div>
+          <div class="backup-desc">Download your current data as <b>data.json</b>. Replace the file in your project folder, then push to GitHub — all visitors will load your updated data.</div>
+          <button class="btn" onclick="publishDataJson()">💾 Save & Prepare</button>
+          <button class="btn" id="publish-git-btn" onclick="publishGitPush()" style="display:none;margin-top:8px;background:var(--green)">🚀 Push to GitHub</button>
+        </div>
+        <div class="backup-card">
           <div class="backup-icon">🌙</div>
           <div class="backup-title">Dark Mode</div>
           <div class="backup-desc">Switch between light and dark theme. Your preference is saved automatically.</div>
@@ -1952,6 +1959,12 @@ const DEFAULT_STOCK_ITEMS=[
   {id:'gas',    name:'Gas',        nameMr:'गॅस',         unit:'full / half / low'},
 ];
 
+// Auto-seed from published data.json if localStorage is empty (for GitHub Pages visitors)
+(function(){
+  if(!localStorage.getItem('indraprastha-v2')){
+    try{const xhr=new XMLHttpRequest();xhr.open('GET','data.json',false);xhr.send();if(xhr.status===200)localStorage.setItem('indraprastha-v2',xhr.responseText);}catch(e){}
+  }
+})();
 function loadData(){try{const d=localStorage.getItem('indraprastha-v2');return d?JSON.parse(d):null;}catch(e){return null;}}
 function mergeGroceryList(saved){
   const def=JSON.parse(JSON.stringify(DEFAULT_GL_CATS));
@@ -4534,6 +4547,33 @@ function renderBackup(){
     const pct = ((data.length * 2) / (5 * 1024 * 1024) * 100).toFixed(1);
     info.textContent = `Using ${kb} KB of ~5 MB available (${pct}%)`;
   } catch(e) { info.textContent = 'Unable to calculate'; }
+}
+async function publishDataJson(){
+  const data = localStorage.getItem('indraprastha-v2') || '{}';
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if(isLocal){
+    try{
+      // Save data.json to disk via local server
+      const r = await fetch('/publish/save', {method:'POST', headers:{'Content-Type':'application/json'}, body:data});
+      if(!r.ok) throw new Error('save failed');
+      showToast('✅ data.json saved! Click "Push to GitHub" to publish.');
+      document.getElementById('publish-git-btn').style.display = 'inline-block';
+    } catch(e){ showToast('⚠️ Could not save — is the server running?'); }
+  } else {
+    // On GitHub Pages — fallback to download
+    const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'data.json'; a.click();
+    showToast('✅ data.json downloaded — replace the file & push to publish!');
+  }
+}
+async function publishGitPush(){
+  showToast('⏳ Pushing to GitHub...');
+  try{
+    const r = await fetch('/publish/git', {method:'POST', headers:{'Content-Type':'text/plain'}, body:'Update meal planner data'});
+    const t = await r.text();
+    if(t === 'pushed'){ showToast('🚀 Pushed! GitHub Pages will update in ~1 min.'); document.getElementById('publish-git-btn').style.display='none'; }
+    else showToast('⚠️ Git error — check terminal: ' + t);
+  } catch(e){ showToast('⚠️ Could not reach server.'); }
 }
 function exportBackup(){
   const data = {
