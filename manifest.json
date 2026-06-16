@@ -1,0 +1,14 @@
+{
+  "name": "Indraprastha Meal Planner",
+  "short_name": "Indraprastha",
+  "description": "Weekly meal planner for the Indraprastha family",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEFAF2",
+  "theme_color": "#1F7A4A",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

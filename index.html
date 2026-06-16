@@ -761,6 +761,69 @@ body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
 .meal-dd-save:hover { background:var(--green-light); }
 .meal-dd-save.visible { display:block; }
 
+/* ── Milk Monthly Summary ── */
+.milk-wrap { padding:14px 14px 80px; max-width:540px; margin:0 auto; }
+.milk-month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.milk-month-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; }
+.milk-nav-btn { background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:4px 12px; font-size:14px; cursor:pointer; color:var(--text); }
+.milk-table { width:100%; border-collapse:collapse; background:var(--surface); border-radius:12px; overflow:hidden; border:1.5px solid var(--border); font-size:13px; }
+.milk-table th { background:var(--sky); color:#fff; padding:9px 12px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+.milk-table th:not(:first-child) { text-align:right; }
+.milk-table td { padding:8px 12px; border-bottom:1px solid var(--border); color:var(--text); }
+.milk-table td:not(:first-child) { text-align:right; font-weight:600; }
+.milk-table tr:last-child td { border-bottom:none; }
+.milk-table tr.today-row td { background:rgba(46,111,168,0.06); }
+.milk-diff.over  { color:#DC3C3C; }
+.milk-diff.under { color:var(--carrot); }
+.milk-diff.exact { color:var(--green); }
+.milk-total-row td { background:var(--surface2); font-weight:700; font-size:14px; border-top:2px solid var(--sky) !important; }
+.milk-total-row td:not(:first-child) { color:var(--sky); }
+.milk-empty { padding:32px; text-align:center; color:var(--text3); font-style:italic; font-size:14px; }
+
+/* ── Daily Report & Chat ── */
+.dr-wrap { padding:14px 14px 100px; max-width:540px; margin:0 auto; }
+.dr-date-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.dr-date-label { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--text); }
+.dr-date-nav { display:flex; gap:6px; }
+.dr-nav-btn { background:var(--surface2); border:1.5px solid var(--border); border-radius:8px; padding:4px 10px; font-size:14px; cursor:pointer; color:var(--text); }
+.dr-section-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text3); margin:0 0 8px; }
+/* Stock card */
+.dr-stock-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:14px; }
+.dr-stock-hdr { background:linear-gradient(90deg,#1F7A4A,#2E8B57); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; }
+.dr-stock-hdr-title { color:#fff; font-weight:700; font-size:13px; }
+.dr-stock-hdr-time  { color:rgba(255,255,255,0.75); font-size:11px; }
+.dr-stock-row { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.dr-stock-item { padding:9px 12px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
+.dr-stock-item:nth-child(even){ border-right:none; }
+.dr-stock-name  { font-size:11px; font-weight:600; color:var(--text2); margin-bottom:3px; }
+.dr-stock-qty   { font-size:13px; font-weight:600; color:var(--text); }
+.dr-stock-qty.empty { color:var(--text3); font-weight:400; font-style:italic; }
+.dr-stock-qty-inp { width:100%; border:none; background:transparent; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600; color:var(--text); outline:none; padding:0; }
+.dr-stock-qty-inp::placeholder { color:var(--text3); font-weight:400; font-style:italic; }
+.dr-submit-btn { width:100%; padding:12px; background:var(--green); color:#fff; border:none; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.3px; }
+.dr-submit-btn:active { opacity:0.85; }
+.dr-submitted-banner { padding:10px 14px; background:#E8F5E9; color:#1F7A4A; font-size:12px; font-weight:600; text-align:center; }
+/* Admin stock manage */
+.dr-manage-row { display:flex; gap:6px; margin-bottom:10px; }
+.dr-manage-row input { flex:1; padding:6px 10px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); font-family:inherit; font-size:12px; color:var(--text); outline:none; }
+.dr-manage-row input:focus { border-color:var(--green2); }
+/* Chat */
+.dr-chat-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; }
+.dr-chat-msgs { padding:10px 12px; min-height:100px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+.dr-msg { max-width:82%; padding:7px 11px; border-radius:14px; font-size:13px; line-height:1.4; word-break:break-word; }
+.dr-msg.admin  { background:var(--green); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+.dr-msg.sham   { background:var(--surface2); color:var(--text); align-self:flex-start; border-bottom-left-radius:4px; border:1px solid var(--border); }
+.dr-msg.admin .dr-msg-meta  { color:rgba(255,255,255,0.7); font-size:10px; margin-top:3px; text-align:right; }
+.dr-msg.sham  .dr-msg-meta  { color:var(--text3); font-size:10px; margin-top:3px; }
+.dr-chat-input-row { display:flex; gap:0; border-top:1.5px solid var(--border); }
+.dr-chat-inp { flex:1; padding:11px 14px; border:none; background:var(--bg); font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; color:var(--text); outline:none; }
+.dr-chat-inp::placeholder { color:var(--text3); }
+.dr-chat-send { padding:11px 18px; background:var(--green); color:#fff; border:none; font-size:18px; cursor:pointer; flex-shrink:0; }
+.dr-chat-send:active { opacity:0.8; }
+.dr-empty-msg { padding:20px; text-align:center; color:var(--text3); font-size:13px; font-style:italic; }
+/* unread badge */
+.dr-unread-dot { width:8px; height:8px; background:var(--tomato); border-radius:50%; display:inline-block; margin-left:4px; vertical-align:middle; }
+
 /* ── Staff availability system ── */
 .staff-bar { display:flex; flex-wrap:wrap; gap:5px; padding:8px 12px 6px; border-top:1px solid var(--border); margin-top:6px; }
 .staff-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px 3px 6px; border-radius:20px; font-size:11px; font-weight:500; white-space:nowrap; }
@@ -975,12 +1038,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn btn-sm admin-only" onclick="archiveWeekToHistory()">📖 <span class="en">Archive week</span><span class="mr">आठवडा जतन करा</span></button>
         </div>
       </div>
-      <div class="week-bar" id="planner-week-bar">
-        <button class="week-tab active" onclick="switchWeek(1,this)"><span class="en">Week 1</span><span class="mr">आठवडा १</span></button>
-        <button class="week-tab" onclick="switchWeek(2,this)"><span class="en">Week 2</span><span class="mr">आठवडा २</span></button>
-        <button class="week-tab" onclick="switchWeek(3,this)"><span class="en">Week 3</span><span class="mr">आठवडा ३</span></button>
-        <button class="week-tab" onclick="switchWeek(4,this)"><span class="en">Week 4</span><span class="mr">आठवडा ४</span></button>
-        <div id="planner-week-badge" style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:20px">
+        <button onclick="switchWeekNav(-1)" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0">‹</button>
+        <div id="planner-week-badge" style="display:inline-flex;align-items:center;gap:8px;padding:6px 18px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green);white-space:nowrap"></div>
+        <button onclick="switchWeekNav(1)" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0">›</button>
       </div>
       <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
     </div>
@@ -1136,6 +1197,28 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
         </div>
       </div>
       <div id="bl-body"></div>
+    </div>
+
+    <!-- MILK MONTHLY SUMMARY -->
+    <div id="view-milksummary" class="view">
+      <div class="view-hero" style="background:linear-gradient(130deg,#1A6EA8 0%,#2E8BB0 100%)">
+        <div class="view-hero-left">
+          <div class="view-hero-title" style="color:#fff">🥛 <span class="en">Milk Summary</span><span class="mr">दूध नोंद</span></div>
+          <div class="view-hero-sub" style="color:rgba(255,255,255,0.85)"><span class="en">Daily ordered vs bought · monthly total</span><span class="mr">रोजचे ऑर्डर आणि आणलेले · महिना एकूण</span></div>
+        </div>
+      </div>
+      <div id="milk-summary-body"></div>
+    </div>
+
+    <!-- DAILY REPORT & CHAT -->
+    <div id="view-dailyreport" class="view">
+      <div class="view-hero" style="background:linear-gradient(130deg,#1F7A4A 0%,#2E8B57 100%)">
+        <div class="view-hero-left">
+          <div class="view-hero-title" style="color:#fff">📋 <span class="en">Daily Report</span><span class="mr">रोजचा अहवाल</span></div>
+          <div class="view-hero-sub" style="color:rgba(255,255,255,0.85)"><span class="en">Stock update &amp; chat</span><span class="mr">साठा अपडेट आणि संदेश</span></div>
+        </div>
+      </div>
+      <div id="dr-body"></div>
     </div>
 
     <!-- HELPER SCHEDULE CALENDAR -->
@@ -1853,7 +1936,21 @@ const DEFAULT_GL_CATS=[
 const CAT_COLORS=['#1F7A4A','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
 function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
-let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
+let opts, essentials, weeks, groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, dailyReport={}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
+
+// Default stock items Sham reports on each day
+const DEFAULT_STOCK_ITEMS=[
+  {id:'milk',   name:'Milk',       nameMr:'दूध',         unit:'ml / L'},
+  {id:'curd',   name:'Curd',       nameMr:'दही',         unit:'grams'},
+  {id:'veggies',name:'Vegetables', nameMr:'भाज्या',      unit:''},
+  {id:'onion',  name:'Onions',     nameMr:'कांदे',       unit:'kg / nos'},
+  {id:'tomato', name:'Tomatoes',   nameMr:'टोमॅटो',      unit:'kg / nos'},
+  {id:'potato', name:'Potatoes',   nameMr:'बटाटे',       unit:'kg / nos'},
+  {id:'eggs',   name:'Eggs',       nameMr:'अंडी',        unit:'nos'},
+  {id:'bread',  name:'Bread',      nameMr:'ब्रेड',       unit:'slices / pcs'},
+  {id:'fruits', name:'Fruits',     nameMr:'फळे',         unit:''},
+  {id:'gas',    name:'Gas',        nameMr:'गॅस',         unit:'full / half / low'},
+];
 
 function loadData(){try{const d=localStorage.getItem('indraprastha-v2');return d?JSON.parse(d):null;}catch(e){return null;}}
 function mergeGroceryList(saved){
@@ -1882,6 +1979,7 @@ function initState(){
     recipes=s.recipes||[];
     helperSchedule=s.helperSchedule||{};
     staffSchedule=s.staffSchedule||{members:[],dates:{}};
+    dailyReport=s.dailyReport||{};
     // Migrate old helperSchedule into staffSchedule if needed
     if(staffSchedule.members.length===0 && Object.keys(helperSchedule).length>0){
       const defMember={id:'m_migrated',name:'मदतनीस',role:'Helper',color:'#7B3F9E',emoji:'🧹'};
@@ -1901,13 +1999,14 @@ function initState(){
     mealHistory=[];
     helperSchedule={};
     staffSchedule={members:[],dates:{}};
+    dailyReport={};
     recipes=[];
     const keys=['breakfast','chutney','sabji','bread','dal','rice','salad','snack','snack2','d_sabji','d_bread','d_dal','d_rice','d_salad','d_sides','lonche'];
     const seed=['Idli','Coconut Chutney','Cauliflower','Bhakari','Varan','Rice','Koshimbir','Fruit +','Makhana','Batata Bhaji','Bhakari','Amti','Rice','Koshimbir','Papad','Lonche'];
     keys.forEach((k,i)=>{if(weeks[1]['Monday'][k]!==undefined)weeks[1]['Monday'][k]=seed[i];});
   }
 }
-function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});}return w;}
+function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:'',d_notes:'',milk_order:'',milk_bought:''};});}return w;}
 initState();
 
 // ── Dinner Cuisine Schemas ──────────────────────────
@@ -2006,8 +2105,6 @@ function dinnerSummary(s,translate){
 function renderPlanner(){
   // curWeek is managed globally (set on load and by switchWeek/applyMode) — do NOT reset here
   // Sync week tab active state
-  const wbar=document.getElementById('planner-week-bar');
-  if(wbar){wbar.querySelectorAll('.week-tab').forEach((t,i)=>t.classList.toggle('active',i+1===curWeek));}
   const badge=document.getElementById('planner-week-badge');
   if(badge){const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][new Date().getMonth()];badge.innerHTML='🗓 Week '+curWeek+' &nbsp;·&nbsp; '+mn+' '+new Date().getFullYear();}
   const tbl=document.getElementById('meal-table');
@@ -2041,6 +2138,26 @@ function renderPlanner(){
       <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
+    </tr>
+    <tr${_isToday?' style="background:var(--green-light)"':''}>
+      <td colspan="5" style="padding:4px 8px 8px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:10px;font-weight:700;color:var(--sky);white-space:nowrap">🥛 Milk to buy</span>
+          <input type="number" min="0" step="0.5" value="${escHtml(s.milk_order||'')}"
+            placeholder="L" title="Litres of milk to order today"
+            style="width:70px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none"
+            onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'"
+            onchange="updateMeal('${day}','milk_order',this.value)">
+          <span style="font-size:11px;color:var(--text3)">L &nbsp;|&nbsp; Bought:</span>
+          <input type="number" min="0" step="0.5" value="${escHtml(s.milk_bought||'')}"
+            placeholder="L" title="Actual litres bought (filled by helper)"
+            style="width:70px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;background:${s.milk_bought?'rgba(224,123,42,0.08)':'var(--bg)'};font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none"
+            onfocus="this.style.borderColor='var(--carrot)'" onblur="this.style.borderColor='var(--border)'"
+            onchange="updateMeal('${day}','milk_bought',this.value)">
+          <span style="font-size:11px;color:var(--text3)">L</span>
+          ${s.milk_order&&s.milk_bought&&parseFloat(s.milk_order)!==parseFloat(s.milk_bought)?`<span style="font-size:10px;background:rgba(220,60,60,0.1);color:#DC3C3C;padding:2px 7px;border-radius:10px;font-weight:600">Δ ${(parseFloat(s.milk_bought)-parseFloat(s.milk_order)).toFixed(1)}L</span>`:''}
+        </div>
+      </td>
     </tr>`;
   });
   tbl.innerHTML=html+'</tbody>';
@@ -2636,32 +2753,66 @@ function showView(name,el){
   if(name==='rcalendar')  rcalRender();
   if(name==='buyinglist')    renderBuyingList();
   if(name==='hlprschedule') renderHelperSchedule();
+  if(name==='dailyreport')  renderDailyReport();
+  if(name==='milksummary')  renderMilkSummary();
   if(name==='todaymenu')  renderTodayMenu();
   if(name==='history')    renderHistory();
   if(name==='recipes')    renderRecipes();
   if(name==='backup')     renderBackup();
 }
 
-function switchWeek(w,btn){curWeek=w;document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderPlanner();renderMealDerived();}
+function switchWeek(w,btn){curWeek=w;renderPlanner();renderMealDerived();}
+function switchWeekNav(dir){curWeek=Math.min(4,Math.max(1,curWeek+dir));renderPlanner();renderMealDerived();}
 function clearWeek(){if(!confirm(`Clear Week ${curWeek}?`))return;DAYS.forEach(d=>{weeks[curWeek][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:''};});renderPlanner();renderMealDerived();saveToStorage(false);showToast('🧹 Week '+curWeek+' cleared');}
-// ── Real-time sync ────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════
+// CLOUD SYNC  —  Firebase (cloud, no laptop needed)  OR  local server fallback
+// ════════════════════════════════════════════════════════════════════════
+// ┌─────────────────────────────────────────────────────────────────────┐
+// │  PASTE YOUR FIREBASE CONFIG BELOW (from Firebase console).           │
+// │  Leave databaseURL empty to use the local laptop server instead.     │
+// └─────────────────────────────────────────────────────────────────────┘
+const FIREBASE_CONFIG = {
+  apiKey:            "",
+  authDomain:        "",
+  databaseURL:       "",   // ← the key one, e.g. https://indraprastha-xxxx.firebaseio.com
+  projectId:         "",
+  storageBucket:     "",
+  messagingSenderId: "",
+  appId:             ""
+};
+const _useFirebase = !!FIREBASE_CONFIG.databaseURL;
+
+// ── Real-time sync state ──────────────────────────────────────────────────
 window._syncAvailable  = false;
-window._syncIgnoreNext = 0;     // counter: how many incoming updates to skip (our own)
-let   _syncDebounceTimer = null; // debounce timer for outgoing POST
-let   _pendingSyncJson   = null; // queued incoming data waiting for idle
+window._syncIgnoreNext = 0;      // (local server) skip our own broadcasts
+let   _syncDebounceTimer = null;  // debounce outgoing writes
+let   _pendingSyncJson   = null;  // queued incoming data waiting for idle
+let   _lastWrittenJson   = null;  // (firebase) skip echo of our own write
+let   _fbRef             = null;  // firebase database ref
+
+function _setSyncDot(state){ // 'on' | 'flash' | 'off'
+  const d=document.getElementById('sync-dot'); if(!d) return;
+  if(state==='on'){d.style.background='#4CAF50';d.title=_useFirebase?'Cloud sync on':'Live sync on';}
+  else if(state==='flash'){d.style.background='#81C784';setTimeout(()=>{d.style.background='#4CAF50';},600);}
+  else {d.style.background='#ccc';d.title='Sync offline (saved on this device)';}
+}
 
 function saveToStorage(toast=true){
-  const payload=JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule});
-  // 1. Always save locally — instant, no delay
+  const payload=JSON.stringify({opts,essentials,weeks,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
+  // 1. Always save locally — instant, works offline
   try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
-  // 2. Debounce sync POST — wait 800ms after last save before pushing to server
-  //    This prevents hammering the server while the user is still typing/selecting
+  // 2. Debounced push to cloud/server (800ms after last change — no spam while typing)
   if(window._syncAvailable){
     clearTimeout(_syncDebounceTimer);
     _syncDebounceTimer = setTimeout(()=>{
-      window._syncIgnoreNext++;   // we will receive our own broadcast — skip it
-      fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
-        .catch(()=>{window._syncAvailable=false;const d=document.getElementById('sync-dot');if(d){d.style.background='#ccc';d.title='Sync offline';}});
+      if(_useFirebase && _fbRef){
+        _lastWrittenJson = payload;          // remember, so we ignore the echo
+        _fbRef.set(payload).catch(()=>{ _setSyncDot('off'); });
+      } else {
+        window._syncIgnoreNext++;
+        fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
+          .catch(()=>{window._syncAvailable=false;_setSyncDot('off');});
+      }
     }, 800);
   }
   if(toast)showToast('💾 Saved!');
@@ -2684,6 +2835,7 @@ function _doRender(){
     else if(id==='buyinglist')renderBuyingList();
     else if(id==='mealderived')renderMealDerived();
     else if(id==='hlprschedule')renderHelperSchedule();
+    else if(id==='milksummary')renderMilkSummary();
     else if(id==='rcalendar')rcalRender();
   }
   renderEssentialsBar();
@@ -2698,6 +2850,7 @@ function _applyServerData(json){
     mealHistory=s.mealHistory||mealHistory; recipes=s.recipes||recipes;
     helperSchedule=s.helperSchedule||helperSchedule;
     staffSchedule=s.staffSchedule||staffSchedule;
+    dailyReport=s.dailyReport||dailyReport;
     localStorage.setItem('indraprastha-v2',json);
     // If user is actively typing/selecting, queue the render for when they stop
     if(_isUserTyping()){
@@ -2719,33 +2872,58 @@ document.addEventListener('focusout',()=>{
   }
 });
 
+// ── Local laptop server (Server-Sent Events) ──────────────────────────────
 function _syncConnect(){
   if(typeof EventSource==='undefined')return;
   const es=new EventSource('/sync/events');
   es.addEventListener('connected',()=>{
-    window._syncAvailable=true;
-    const dot=document.getElementById('sync-dot');
-    if(dot){dot.style.background='#4CAF50';dot.title='Live sync on';}
+    window._syncAvailable=true; _setSyncDot('on');
     fetch('/sync/data').then(r=>r.text()).then(json=>{
       if(json&&json!=='{}') _applyServerData(json);
     }).catch(()=>{});
   });
   es.addEventListener('update',()=>{
-    // Skip updates that WE triggered
     if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
     fetch('/sync/data').then(r=>r.text()).then(json=>{
       if(json) _applyServerData(json);
     }).catch(()=>{});
   });
   es.onerror=()=>{
-    window._syncAvailable=false;
-    const dot=document.getElementById('sync-dot');
-    if(dot){dot.style.background='#ccc';dot.title='Sync offline';}
-    es.close();
-    setTimeout(_syncConnect,5000);
+    window._syncAvailable=false; _setSyncDot('off');
+    es.close(); setTimeout(_syncConnect,5000);
   };
 }
-setTimeout(_syncConnect,500);
+
+// ── Firebase cloud (works without the laptop, auto-offline-queue) ──────────
+function _firebaseConnect(){
+  // Dynamically load the Firebase SDK, then attach a realtime listener
+  const load=(src)=>new Promise((res,rej)=>{
+    const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
+    document.head.appendChild(s);
+  });
+  load('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js')
+    .then(()=>load('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js'))
+    .then(()=>{
+      firebase.initializeApp(FIREBASE_CONFIG);
+      const db=firebase.database();
+      _fbRef=db.ref('appDataJson');
+      window._syncAvailable=true; _setSyncDot('on');
+      // Realtime listener — fires on first load AND on every remote change
+      _fbRef.on('value',snap=>{
+        const json=snap.val();
+        if(!json) return;
+        if(json===_lastWrittenJson){ _lastWrittenJson=null; return; } // skip our own echo
+        _applyServerData(json);
+      });
+      // Show offline state if connection drops
+      db.ref('.info/connected').on('value',s=>{ _setSyncDot(s.val()?'on':'off'); window._syncAvailable=!!s.val()||true; });
+    })
+    .catch(()=>{ _setSyncDot('off'); /* offline — localStorage still works */ });
+}
+
+// Start whichever backend is configured
+if(_useFirebase) _firebaseConnect();
+else setTimeout(_syncConnect,500);
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
@@ -2819,7 +2997,7 @@ document.getElementById('pin-modal-bg').addEventListener('click',function(e){if(
 // toggleMarathi replaced by mode system
 
 // startup handled by applyMode('family') at end of script
-const MR_MAP={'Tomatoes':'टोमॅटो','Onions':'कांदे','Potatoes':'बटाटे','Coriander':'कोथिंबीर','Spinach':'पालक','Apple':'सफरचंद','Banana':'केळे','Orange':'संत्रे','Papaya':'पपई','Pineapple':'अननस','Watermelon':'टरबूज','Muskmelon':'खरबूज','Grapes':'द्राक्षे','Pomegranate':'डाळिंब','Guava':'पेरू','Sweet Lime (Mosambi)':'मोसंबी','Chikoo (Sapodilla)':'चिकू','Pear':'नाशपाती','Plum':'प्लम','Peach (Summer)':'पीच','Kiwi (Winter)':'किवी','Lychee (Late Summer)':'लीची','Strawberry (Winter)':'स्ट्रॉबेरी','Blueberry (Imported)':'ब्लूबेरी','Avocado (Monsoon–Autumn)':'अ‍ॅव्होकाडो','Dragon Fruit (Monsoon)':'ड्रॅगन फ्रुट','Custard Apple (Sitaphal) (Monsoon–Winter)':'सीताफळ','Jackfruit (Summer)':'फणस','Starfruit (Kamrakh) (Monsoon–Winter)':'कमरख','Fig (Anjeer) (Summer–Early Monsoon)':'अंजीर','Black Jamun (Summer–Monsoon)':'जांभूळ','Gooseberry (Amla) (Winter)':'आवळा','Ber (Indian Jujube) (Winter–Spring)':'बोर','Dates (Khajoor – fresh) (Summer)':'खजूर','Coconut (Tender/Water)':'नारळ','Tamarind (Imli) (Summer)':'चिंच','Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Mulberry (Shahtoot) (Spring–Summer)':'तुती','Rambutan (Monsoon)':'रंबुटान','Mango (Summer)':'आंबा','Kashmiri Golden Apple':'काश्मिरी सफरचंद','Rakstey Karpo Apricot (Summer)':'जर्दाळू','Royal Delicious Apple':'रॉयल डिलिशस सफरचंद','Himachali Cherry (Spring–Early Summer)':'चेरी','Malta (Citrus) (Winter)':'माल्टा','Aarohi Watermelon (Summer)':'टरबूज','Shahkot Musk Melon (Summer)':'खरबूज','Allahabad Surkha Guava (Rainy–Winter)':'पेरू','Banarasi Langra Mango (Summer)':'लंगडा आंबा','Gangangar Kesar Mango (Summer)':'केसर आंबा','Navsari Chikoo (Winter–Summer)':'नवसारी चिकू','Mahabaleshwar Strawberry (Winter)':'महाबळेश्वर स्ट्रॉबेरी','Solapur Pomegranate':'सोलापूर डाळिंब','Manucurad Mango (Goa) (Summer)':'गोवा आंबा','Moira Banana':'मोईरा केळे','Coorg Orange (Winter)':'कूर्ग संत्रे','Devanahalli Pomelo (Winter–Spring)':'पमेलो','Vazhakulam Pineapple (Monsoon)':'अननस','Kuttanad Banana / Nendran':'नेंद्रन केळे','Changalikodan Banana':'चंगलीकोडन केळे','Mattu Banana':'मट्टू केळे','Panruti Jackfruit (Summer)':'फणस','Jalgaon Banana':'जळगाव केळे','Ratnagiri Alphonso (Summer)':'रत्नागिरी हापूस','Noorjahan Mango (Summer)':'नूरजहाँ आंबा','Mangoes: Malihabadi, Dasheri, Amrapalli, Langra, Fazli':'दशेरी, अमरापाली, लंगडा आंबा','Shahi Lychee (Muzaffarpur) (Summer)':'शाही लीची','Bhagalpur Jardalu Mango (Summer)':'जरदालू आंबा','Tezpur Lychee (Summer)':'तेजपूर लीची','Red Lady Papaya':'पपई','Namdhari Watermelon (Summer)':'टरबूज','Bangalore Blue Grapes (Winter–Spring)':'बंगलोर निळी द्राक्षे','Kanker Custard Apple (Monsoon–Winter)':'सीताफळ','Khasi Orange (Winter)':'संत्रे','Memang Narang (Winter)':'नारंगी','Queen Pineapple (Monsoon)':'अननस','Sohphie (Local – Meghalaya)':'सोहफी','Mizo Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Tamenglong Orange (Winter)':'संत्रे','Kenchu (Uncommon local fruit, Manipur/Northeast)':'केंचू','Onion':'कांदा','Tomato':'टोमॅटो','Green Chilli':'हिरवी मिरची','Garlic':'लसूण','Ginger':'आले','Carrot':'गाजर','Cabbage':'कोबी','Cauliflower':'फ्लॉवर','Brinjal / Eggplant':'वांगे','Lady Finger / Okra':'भेंडी','Bottle Gourd':'दुधी भोपळा','Ridge Gourd':'घोसाळे','Bitter Gourd':'कारले','Sponge Gourd':'घोसाळे','Pumpkin':'भोपळा','Ash Gourd':'कोहळा','Tinda':'टिंडा','Cluster Beans':'गवार','French Beans':'फ्रेंच बीन्स','Snake Gourd':'पडवळ','Ivy Gourd':'तोंडली','Amaranth Leaves':'माठाची भाजी','Fenugreek Leaves':'मेथीची भाजी','Mustard Greens':'मोहरीची भाजी','Coriander Leaves':'कोथिंबीर','Curry Leaves':'कढीपत्ता','Dill Leaves':'शेपूची भाजी','Green Peas':'हिरवे वाटाणे','Raw Banana':'कच्चे केळे','Arbi (Taro Root)':'अरबी','Yam':'सुरण','Beetroot':'बीट','Turnip':'सलगम','Radish':'मुळा','Sweet Potato':'रताळे','Corn (fresh)':'मका','Broccoli':'ब्रोकोली','Zucchini':'झुकीनी','Bell Peppers':'सिमला मिरची','Lettuce':'लेट्यूस','Kale':'केल','Bok Choy':'बोक चॉय','Celery':'सेलेरी','Leeks':'लीक','Parsley':'पार्सले','Thyme / Rosemary / Basil':'थाईम / रोझमेरी / तुळस','Red Cabbage':'लाल कोबी','Cherry Tomatoes':'चेरी टोमॅटो','Asparagus':'अस्पारागस','Artichoke':'आर्टिचोक','Mushrooms':'मशरूम','Avocado':'अ‍ॅव्होकाडो','Arugula (Rocket Leaves)':'अरुगुला','Edamame':'एडामामे','Kale Sprouts':'केल स्प्राउट्स','Brussels Sprouts':'ब्रसेल्स स्प्राउट्स','Milk':'दूध','Curd':'दही','Ghee':'तूप','Butter':'लोणी','Cheese Slices':'चीज स्लाइस','Lassi / Buttermilk':'ताक','Flavored Milk':'फ्लेव्हर्ड दूध','Curd / Dahi':'दही','Paneer':'पनीर','Eggs':'अंडी','Atta':'गहू पीठ','Rice':'तांदूळ','Besan':'बेसन','Basmati Rice':'बासमती तांदूळ','Kolam / Sona Masoori / Surti Kolam Rice':'कोलम तांदूळ','Brown Rice':'ब्राऊन राइस','Poha (Flattened Rice)':'पोहे','Sabudana (Tapioca Pearls)':'साबुदाणा','Dalia (Broken Wheat)':'दलिया','Idli/Dosa Rice':'इडली / डोसा तांदूळ','Wheat Flour (Regular / Chakki Atta)':'गहू पीठ','Corn Flour':'मक्याचे पीठ','Millet Flour':'बाजरी पीठ','Ragi Flour':'नाचणी पीठ','Sattu':'सत्तू','Rice Flour':'तांदळाचे पीठ','Besan (Gram Flour)':'बेसन','Maida (Refined Flour)':'मैदा','Jowar Flour':'ज्वारी पीठ','Bajra Flour':'बाजरी पीठ','Buckwheat Flour':'राजगिरा पीठ','Rajgira Flour':'राजगिरा पीठ','Makai Flour':'मक्याचे पीठ','Rava / Sooji (Semolina)':'रवा / सूजी','Multigrain Flour':'मल्टीग्रेन पीठ','Toor Dal (Arhar Dal)':'तूर डाळ','Moong Dal (Yellow / Green)':'मूग डाळ','Chana Dal':'चना डाळ','Urad Dal (Whole / Split)':'उडीद डाळ','Masoor Dal':'मसूर डाळ','Kabuli Chana (White Chickpeas)':'काबुली चणे','Rajma (Kidney Beans)':'राजमा','Black Chana':'काळे चणे','Lobia (Black-eyed Peas)':'चवळी','Haldi':'हळद','Mirchi':'मिरची','Jeera':'जिरे','Goda Masala':'गोडा मसाला','Turmeric Powder (Haldi)':'हळद पावडर','Red Chili Powder':'लाल मिरची पावडर','Coriander Powder':'धणे पावडर','Cumin Powder':'जिरे पावडर','Garam Masala':'गरम मसाला','Sambar / Rasam Masala':'सांबार मसाला','Chaat Masala':'चाट मसाला','Kitchen King / Sabzi Masala':'किचन किंग मसाला','Mustard Seeds':'मोहरी','Cumin Seeds':'जिरे','Hing (Asafoetida)':'हिंग','Kasuri Methi (Dried Fenugreek)':'कसुरी मेथी','Sunflower Oil':'सूर्यफूल तेल','Groundnut Oil':'शेंगदाणा तेल','Mustard Oil':'मोहरी तेल','Coconut Oil':'खोबरेल तेल','Ghee (Cow or Regular)':'देशी तूप','Olive Oil (for health-conscious cooking)':'ऑलिव्ह तेल','Parle-G':'पार्ले-जी','Marie':'मेरी बिस्किट','Bourbon':'बर्बन बिस्किट','Hide & Seek':'हाइड अ‍ॅण्ड सीक','Parle-G / Marie / Bourbon / Hide & Seek':'बिस्किटे','Chakli / Murukku':'चकली / मुरुक्कू','Bhujia / Sev / Mixture':'भुजिया / शेव / मिक्सचर','Namkeen':'नमकीन','Potato Chips / Wafers':'बटाटा चिप्स','Roasted Chana / Makhana':'भाजलेले चणे / मखाणे','Tea (Tata, Red Label, etc.)':'चहा','Coffee (Bru, Nescafe)':'कॉफी','Soft Drinks (Pepsi, Sprite, etc.)':'सॉफ्ट ड्रिंक्स','Juices (Real, Tropicana)':'ज्यूस','Glucon-D / ORS':'ग्लुकॉन-डी','Health Drinks (Horlicks, Bournvita)':'हेल्थ ड्रिंक','Salt (Regular / Rock Salt)':'मीठ','Sugar':'साखर','Jaggery (Gur)':'गूळ','Tamarind / Kokum':'चिंच / कोकम','Pickles':'लोणचे','Papad':'पापड','Vinegar':'व्हिनेगर','Soy Sauce':'सोया सॉस','Tomato Ketchup':'टोमॅटो केचअप','Instant Noodles / Pasta':'नूडल्स / पास्ता','Baking Powder / Soda':'बेकिंग पावडर','Soap (Lifebuoy, Dettol, Pears)':'साबण','Shampoo & Conditioner':'शॅम्पू','Toothpaste (Colgate, Dabur)':'टूथपेस्ट','Toothbrush':'टूथब्रश','Face Wash':'फेस वॉश','Deodorant':'डिओडोरंट','Talcum Powder':'तालक पावडर','Hair Oil':'केसांचे तेल','Sanitary Pads / Tampons':'सॅनिटरी पॅड','Razor / Shaving Gel':'रेझर','Detergent Powder / Liquid':'डिटर्जंट','Dishwashing Liquid / Bar':'भांडी साबण','Floor Cleaner (Phenyl, Lizol)':'फरशी साफ करणारे','Toilet Cleaner (Harpic)':'टॉयलेट क्लीनर','Scrub Pads / Brushes':'स्क्रब पॅड','Garbage Bags':'कचरा पिशव्या','Air Freshener':'एअर फ्रेशनर','Mosquito Repellent (All-Out, GoodKnight)':'मच्छर अगरबत्ती','Agarbatti / Dhoop':'अगरबत्ती / धूप','Camphor':'कापूर','Cotton Wicks':'वाती','Oil (Til / Ghee)':'तिळाचे तेल / तूप','Matchsticks / Lighter':'काडेपेटी','Haldi-Kumkum':'हळद-कुंकू','Pooja Samagri':'पूजा साहित्य','Frozen Parathas / Rotis':'फ्रोझन पराठे','Frozen Peas / Corn':'फ्रोझन वाटाणे / मका','Ready Mixes (Dosa, Idli, Gulab Jamun)':'रेडी मिक्स','Instant Upma / Poha':'इन्स्टंट उपमा','Bread':'ब्रेड','Jam / Peanut Butter':'जॅम / शेंगदाणा बटर','Frozen snacks (Samosa, Nuggets)':'फ्रोझन स्नॅक्स','Toilet Paper Rolls':'टॉयलेट पेपर','Kitchen Roll / Paper Towels':'किचन रोल','Garbage Bags (Small/Medium/Large)':'कचरा पिशव्या','Disposable Plates (Paper/Plastic)':'डिस्पोझेबल ताट','Disposable Bowls':'डिस्पोझेबल वाट्या','Disposable Glasses / Cups':'डिस्पोझेबल ग्लास','Disposable Spoons / Forks':'डिस्पोझेबल चमचे','Aluminum Foil':'अ‍ॅल्युमिनियम फॉइल','Cling Film / Plastic Wrap':'क्लिंग फिल्म','Ziplock Bags':'झिपलॉक पिशव्या','Disposable Food Containers (with lids)':'डिस्पोझेबल डब्बे','Carry Bags (Plastic/Paper)':'कॅरी बॅग','Face Masks (Single-use)':'फेस मास्क','Gloves (Latex/Plastic)':'हातमोजे','Cotton Pads / Swabs (if household use included)':'कापसाचे पॅड','Flax Seeds (Alsi)':'अळशीचे बी','Chia Seeds':'चिया बी','Sunflower Seeds':'सूर्यफूल बी','Pumpkin Seeds':'भोपळ्याचे बी','Watermelon Seeds':'टरबुजाचे बी','Cucumber Seeds':'काकडीचे बी','Basil Seeds (Sabja)':'सब्जा','Sesame Seeds (Til – White/Black)':'तीळ','Fenugreek Seeds (Methi)':'मेथी','Coriander Seeds (Dhaniya)':'धणे','Mustard Seeds (Rai/Sarson – Yellow/Black)':'मोहरी','Carom Seeds (Ajwain)':'ओवा','Poppy Seeds (Khus Khus)':'खसखस','Nigella Seeds (Kalonji)':'कलौंजी','Hemp Seeds (optional health item)':'हेम्प बी','Garden Cress Seeds (Halim / Aliv)':'अळीव','Dill Seeds (Suwa)':'शेपू बी','Fennel Seeds (Saunf)':'बडीशेप','Idli':'इडली','Poha':'पोहे','Upma':'उपमा','Sabudana Khichdi':'साबुदाणा खिचडी','Dosa':'डोसा','Uttapam':'उत्तपम','Sheera':'शिरा','Bread Toast':'ब्रेड टोस्ट','Thepla':'थेपला','Methi Thepla':'मेथी थेपला','Aloo Paratha':'आलू पराठा','Moong Dal Cheela':'मूग डाळ चिला','Pesarattu':'पेसरट्टू','Rava Dosa':'रवा डोसा','Set Dosa':'सेट डोसा','Thalipeeth':'थालीपीठ','Coconut Chutney':'खोबऱ्याची चटणी','Tomato Chutney':'टोमॅटो चटणी','Green Chutney':'हिरवी चटणी','Peanut Chutney':'शेंगदाण्याची चटणी','Sambar':'सांबार','Shengdana Chutney':'शेंगदाण्याची चटणी','Batata Bhaji':'बटाटा भाजी','Vanga':'वांगे','Bhendi':'भेंडी','Matki':'मटकी','Palak':'पालक','Shimla Mirch':'सिमला मिरची','Tondli':'तोंडली','Karela':'कारले','Dudhi':'दुधी','Kanda Batata':'कांदा बटाटा','Vangyache Bharit':'वांग्याचे भरीत','Chole':'छोले','Rajma':'राजमा','Pithla':'पिठलं','Val':'वाल','Chawli':'चवळी','Kobi':'कोबी','Gajar':'गाजर','Matar Paneer':'मटर पनीर','Dum Aloo':'दम आलू','Katachi Amti':'कटाची आमटी','Bharleli Vange':'भरलेली वांगी','Zunka':'झुणका','Bhakari':'भाकरी','Chapati':'चपाती','Puri':'पुरी','Paratha':'पराठा','Rice Bhakari':'तांदळाची भाकरी','Loni Bhakari':'लोण्याची भाकरी','Rumali Roti':'रुमाली रोटी','Naan':'नान','Methi Paratha':'मेथी पराठा','Varan':'वरण','Amti':'आमटी','Tur Dal':'तूर डाळ','Moong Dal':'मूग डाळ','Mixed Dal':'मिक्स डाळ','Kolhapuri Amti':'कोल्हापुरी आमटी','Dal Tadka':'डाळ तडका','Jeera Rice':'जिरा राइस','Masala Bhat':'मसाला भात','Pulao':'पुलाव','Khichdi':'खिचडी','Curd Rice':'दही भात','Lemon Rice':'लिंबू भात','Methi Rice':'मेथी भात','Koshimbir':'कोशिंबीर','Kakdi Koshimbir':'काकडी कोशिंबीर','Carrot Koshimbir':'गाजर कोशिंबीर','Sprouts':'मोड आलेले','Beet Salad':'बीट सॅलड','Tomato Onion':'टोमॅटो कांदा','Radish Salad':'मुळा सॅलड','Mixed Sprouts':'मिक्स मोड','Fruit +':'फळे','Makhana':'मखाणे','Chivda':'चिवडा','Peanuts':'शेंगदाणे','Sprouts Chaat':'मोड चाट','Roasted Chana':'भाजलेले चणे','Murmura':'मुरमुरे','Lassi':'ताक','Buttermilk':'ताक','Usal':'उसळ','Sabudana Vada':'साबुदाणा वडा','Batata Vada':'बटाटा वडा','Bread Pakoda':'ब्रेड पकोडा','Dhokla':'ढोकळा','Sandesh':'संदेश','Lonche':'लोणचे','Lemon Pickle':'लिंबाचे लोणचे','Mango Pickle':'आंब्याचे लोणचे','Mixed Pickle':'मिक्स लोणचे','Methamba':'मेथांबा','Mirchi Lonche':'मिरचीचे लोणचे','Dahi':'दही','Raita':'रायता','Chutney':'चटणी','Lahsun Achaar':'लसूण लोणचे','Butter Paper':'बटर पेपर','Muslin Cloth':'मलमल कापड','Hand Napkins':'हात पुसणे','Kitchen Napkins':'किचन नॅपकिन','Table Matts':'टेबल मॅट','Table Plastic Cover':'टेबल कव्हर','Table Cover':'टेबल कव्हर','Coasters':'कोस्टर','Cups and Saucers':'कप-बशी','Ceramic Plate Set':'सिरॅमिक ताट सेट','Guest Sheet':'पाहुण्यांची चादर','Bedsheets + Pillow Covers':'बेडशीट + उशीचे अभ्रे','Shampoo':'शॅम्पू','Conditioner':'कंडिशनर','Comb':'फणी','Powder':'पावडर','Readymade Masalas':'रेडीमेड मसाले','Everest Masalas':'एव्हरेस्ट मसाले','Pav Bhaji Masala':'पाव भाजी मसाला','Shahi Biryani Masala':'शाही बिर्याणी मसाला','Pani Puri Masala':'पाणीपुरी मसाला','Achaar Masala':'अचार मसाला','Chivada Masala':'चिवडा मसाला','Aamras':'आमरस','Masala Buttermilk':'मसाला ताक','Ambil':'आंबील','Sweet Lassi':'गोड लस्सी','Salted Lassi':'खारट लस्सी','Solkadhi':'सोलकढी'};
+const MR_MAP={'Tomatoes':'टोमॅटो','Onions':'कांदे','Potatoes':'बटाटे','Coriander':'कोथिंबीर','Spinach':'पालक','Apple':'सफरचंद','Banana':'केळे','Orange':'संत्रे','Papaya':'पपई','Pineapple':'अननस','Watermelon':'टरबूज','Muskmelon':'खरबूज','Grapes':'द्राक्षे','Pomegranate':'डाळिंब','Guava':'पेरू','Sweet Lime (Mosambi)':'मोसंबी','Chikoo (Sapodilla)':'चिकू','Pear':'नाशपाती','Plum':'प्लम','Peach (Summer)':'पीच','Kiwi (Winter)':'किवी','Lychee (Late Summer)':'लीची','Strawberry (Winter)':'स्ट्रॉबेरी','Blueberry (Imported)':'ब्लूबेरी','Avocado (Monsoon–Autumn)':'अ‍ॅव्होकाडो','Dragon Fruit (Monsoon)':'ड्रॅगन फ्रुट','Custard Apple (Sitaphal) (Monsoon–Winter)':'सीताफळ','Jackfruit (Summer)':'फणस','Starfruit (Kamrakh) (Monsoon–Winter)':'कमरख','Fig (Anjeer) (Summer–Early Monsoon)':'अंजीर','Black Jamun (Summer–Monsoon)':'जांभूळ','Gooseberry (Amla) (Winter)':'आवळा','Ber (Indian Jujube) (Winter–Spring)':'बोर','Dates (Khajoor – fresh) (Summer)':'खजूर','Coconut (Tender/Water)':'नारळ','Tamarind (Imli) (Summer)':'चिंच','Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Mulberry (Shahtoot) (Spring–Summer)':'तुती','Rambutan (Monsoon)':'रंबुटान','Mango (Summer)':'आंबा','Kashmiri Golden Apple':'काश्मिरी सफरचंद','Rakstey Karpo Apricot (Summer)':'जर्दाळू','Royal Delicious Apple':'रॉयल डिलिशस सफरचंद','Himachali Cherry (Spring–Early Summer)':'चेरी','Malta (Citrus) (Winter)':'माल्टा','Aarohi Watermelon (Summer)':'टरबूज','Shahkot Musk Melon (Summer)':'खरबूज','Allahabad Surkha Guava (Rainy–Winter)':'पेरू','Banarasi Langra Mango (Summer)':'लंगडा आंबा','Gangangar Kesar Mango (Summer)':'केसर आंबा','Navsari Chikoo (Winter–Summer)':'नवसारी चिकू','Mahabaleshwar Strawberry (Winter)':'महाबळेश्वर स्ट्रॉबेरी','Solapur Pomegranate':'सोलापूर डाळिंब','Manucurad Mango (Goa) (Summer)':'गोवा आंबा','Moira Banana':'मोईरा केळे','Coorg Orange (Winter)':'कूर्ग संत्रे','Devanahalli Pomelo (Winter–Spring)':'पमेलो','Vazhakulam Pineapple (Monsoon)':'अननस','Kuttanad Banana / Nendran':'नेंद्रन केळे','Changalikodan Banana':'चंगलीकोडन केळे','Mattu Banana':'मट्टू केळे','Panruti Jackfruit (Summer)':'फणस','Jalgaon Banana':'जळगाव केळे','Ratnagiri Alphonso (Summer)':'रत्नागिरी हापूस','Noorjahan Mango (Summer)':'नूरजहाँ आंबा','Mangoes: Malihabadi, Dasheri, Amrapalli, Langra, Fazli':'दशेरी, अमरापाली, लंगडा आंबा','Shahi Lychee (Muzaffarpur) (Summer)':'शाही लीची','Bhagalpur Jardalu Mango (Summer)':'जरदालू आंबा','Tezpur Lychee (Summer)':'तेजपूर लीची','Red Lady Papaya':'पपई','Namdhari Watermelon (Summer)':'टरबूज','Bangalore Blue Grapes (Winter–Spring)':'बंगलोर निळी द्राक्षे','Kanker Custard Apple (Monsoon–Winter)':'सीताफळ','Khasi Orange (Winter)':'संत्रे','Memang Narang (Winter)':'नारंगी','Queen Pineapple (Monsoon)':'अननस','Sohphie (Local – Meghalaya)':'सोहफी','Mizo Passion Fruit (Monsoon–Autumn)':'पॅशन फ्रुट','Tamenglong Orange (Winter)':'संत्रे','Kenchu (Uncommon local fruit, Manipur/Northeast)':'केंचू','Onion':'कांदा','Tomato':'टोमॅटो','Green Chilli':'हिरवी मिरची','Garlic':'लसूण','Ginger':'आले','Carrot':'गाजर','Cabbage':'कोबी','Cauliflower':'फ्लॉवर','Brinjal / Eggplant':'वांगे','Lady Finger / Okra':'भेंडी','Bottle Gourd':'दुधी भोपळा','Ridge Gourd':'घोसाळे','Bitter Gourd':'कारले','Sponge Gourd':'घोसाळे','Pumpkin':'भोपळा','Ash Gourd':'कोहळा','Tinda':'टिंडा','Cluster Beans':'गवार','French Beans':'फ्रेंच बीन्स','Snake Gourd':'पडवळ','Ivy Gourd':'तोंडली','Amaranth Leaves':'माठाची भाजी','Fenugreek Leaves':'मेथीची भाजी','Mustard Greens':'मोहरीची भाजी','Coriander Leaves':'कोथिंबीर','Curry Leaves':'कढीपत्ता','Dill Leaves':'शेपूची भाजी','Green Peas':'हिरवे वाटाणे','Raw Banana':'कच्चे केळे','Arbi (Taro Root)':'अरबी','Yam':'सुरण','Beetroot':'बीट','Turnip':'सलगम','Radish':'मुळा','Sweet Potato':'रताळे','Corn (fresh)':'मका','Broccoli':'ब्रोकोली','Zucchini':'झुकीनी','Bell Peppers':'सिमला मिरची','Lettuce':'लेट्यूस','Kale':'केल','Bok Choy':'बोक चॉय','Celery':'सेलेरी','Leeks':'लीक','Parsley':'पार्सले','Thyme / Rosemary / Basil':'थाईम / रोझमेरी / तुळस','Red Cabbage':'लाल कोबी','Cherry Tomatoes':'चेरी टोमॅटो','Asparagus':'अस्पारागस','Artichoke':'आर्टिचोक','Mushrooms':'मशरूम','Avocado':'अ‍ॅव्होकाडो','Arugula (Rocket Leaves)':'अरुगुला','Edamame':'एडामामे','Kale Sprouts':'केल स्प्राउट्स','Brussels Sprouts':'ब्रसेल्स स्प्राउट्स','Milk':'दूध','Curd':'दही','Ghee':'तूप','Butter':'लोणी','Cheese Slices':'चीज स्लाइस','Lassi / Buttermilk':'ताक','Flavored Milk':'फ्लेव्हर्ड दूध','Curd / Dahi':'दही','Paneer':'पनीर','Eggs':'अंडी','Atta':'गहू पीठ','Rice':'भात','Besan':'बेसन','Basmati Rice':'बासमती तांदूळ','Kolam / Sona Masoori / Surti Kolam Rice':'कोलम तांदूळ','Brown Rice':'ब्राऊन राइस','Poha (Flattened Rice)':'पोहे','Sabudana (Tapioca Pearls)':'साबुदाणा','Dalia (Broken Wheat)':'दलिया','Idli/Dosa Rice':'इडली / डोसा तांदूळ','Wheat Flour (Regular / Chakki Atta)':'गहू पीठ','Corn Flour':'मक्याचे पीठ','Millet Flour':'बाजरी पीठ','Ragi Flour':'नाचणी पीठ','Sattu':'सत्तू','Rice Flour':'तांदळाचे पीठ','Besan (Gram Flour)':'बेसन','Maida (Refined Flour)':'मैदा','Jowar Flour':'ज्वारी पीठ','Bajra Flour':'बाजरी पीठ','Buckwheat Flour':'राजगिरा पीठ','Rajgira Flour':'राजगिरा पीठ','Makai Flour':'मक्याचे पीठ','Rava / Sooji (Semolina)':'रवा / सूजी','Multigrain Flour':'मल्टीग्रेन पीठ','Toor Dal (Arhar Dal)':'तूर डाळ','Moong Dal (Yellow / Green)':'मूग डाळ','Chana Dal':'चना डाळ','Urad Dal (Whole / Split)':'उडीद डाळ','Masoor Dal':'मसूर डाळ','Kabuli Chana (White Chickpeas)':'काबुली चणे','Rajma (Kidney Beans)':'राजमा','Black Chana':'काळे चणे','Lobia (Black-eyed Peas)':'चवळी','Haldi':'हळद','Mirchi':'मिरची','Jeera':'जिरे','Goda Masala':'गोडा मसाला','Turmeric Powder (Haldi)':'हळद पावडर','Red Chili Powder':'लाल मिरची पावडर','Coriander Powder':'धणे पावडर','Cumin Powder':'जिरे पावडर','Garam Masala':'गरम मसाला','Sambar / Rasam Masala':'सांबार मसाला','Chaat Masala':'चाट मसाला','Kitchen King / Sabzi Masala':'किचन किंग मसाला','Mustard Seeds':'मोहरी','Cumin Seeds':'जिरे','Hing (Asafoetida)':'हिंग','Kasuri Methi (Dried Fenugreek)':'कसुरी मेथी','Sunflower Oil':'सूर्यफूल तेल','Groundnut Oil':'शेंगदाणा तेल','Mustard Oil':'मोहरी तेल','Coconut Oil':'खोबरेल तेल','Ghee (Cow or Regular)':'देशी तूप','Olive Oil (for health-conscious cooking)':'ऑलिव्ह तेल','Parle-G':'पार्ले-जी','Marie':'मेरी बिस्किट','Bourbon':'बर्बन बिस्किट','Hide & Seek':'हाइड अ‍ॅण्ड सीक','Parle-G / Marie / Bourbon / Hide & Seek':'बिस्किटे','Chakli / Murukku':'चकली / मुरुक्कू','Bhujia / Sev / Mixture':'भुजिया / शेव / मिक्सचर','Namkeen':'नमकीन','Potato Chips / Wafers':'बटाटा चिप्स','Roasted Chana / Makhana':'भाजलेले चणे / मखाणे','Tea (Tata, Red Label, etc.)':'चहा','Coffee (Bru, Nescafe)':'कॉफी','Soft Drinks (Pepsi, Sprite, etc.)':'सॉफ्ट ड्रिंक्स','Juices (Real, Tropicana)':'ज्यूस','Glucon-D / ORS':'ग्लुकॉन-डी','Health Drinks (Horlicks, Bournvita)':'हेल्थ ड्रिंक','Salt (Regular / Rock Salt)':'मीठ','Sugar':'साखर','Jaggery (Gur)':'गूळ','Tamarind / Kokum':'चिंच / कोकम','Pickles':'लोणचे','Papad':'पापड','Vinegar':'व्हिनेगर','Soy Sauce':'सोया सॉस','Tomato Ketchup':'टोमॅटो केचअप','Instant Noodles / Pasta':'नूडल्स / पास्ता','Baking Powder / Soda':'बेकिंग पावडर','Soap (Lifebuoy, Dettol, Pears)':'साबण','Shampoo & Conditioner':'शॅम्पू','Toothpaste (Colgate, Dabur)':'टूथपेस्ट','Toothbrush':'टूथब्रश','Face Wash':'फेस वॉश','Deodorant':'डिओडोरंट','Talcum Powder':'तालक पावडर','Hair Oil':'केसांचे तेल','Sanitary Pads / Tampons':'सॅनिटरी पॅड','Razor / Shaving Gel':'रेझर','Detergent Powder / Liquid':'डिटर्जंट','Dishwashing Liquid / Bar':'भांडी साबण','Floor Cleaner (Phenyl, Lizol)':'फरशी साफ करणारे','Toilet Cleaner (Harpic)':'टॉयलेट क्लीनर','Scrub Pads / Brushes':'स्क्रब पॅड','Garbage Bags':'कचरा पिशव्या','Air Freshener':'एअर फ्रेशनर','Mosquito Repellent (All-Out, GoodKnight)':'मच्छर अगरबत्ती','Agarbatti / Dhoop':'अगरबत्ती / धूप','Camphor':'कापूर','Cotton Wicks':'वाती','Oil (Til / Ghee)':'तिळाचे तेल / तूप','Matchsticks / Lighter':'काडेपेटी','Haldi-Kumkum':'हळद-कुंकू','Pooja Samagri':'पूजा साहित्य','Frozen Parathas / Rotis':'फ्रोझन पराठे','Frozen Peas / Corn':'फ्रोझन वाटाणे / मका','Ready Mixes (Dosa, Idli, Gulab Jamun)':'रेडी मिक्स','Instant Upma / Poha':'इन्स्टंट उपमा','Bread':'ब्रेड','Jam / Peanut Butter':'जॅम / शेंगदाणा बटर','Frozen snacks (Samosa, Nuggets)':'फ्रोझन स्नॅक्स','Toilet Paper Rolls':'टॉयलेट पेपर','Kitchen Roll / Paper Towels':'किचन रोल','Garbage Bags (Small/Medium/Large)':'कचरा पिशव्या','Disposable Plates (Paper/Plastic)':'डिस्पोझेबल ताट','Disposable Bowls':'डिस्पोझेबल वाट्या','Disposable Glasses / Cups':'डिस्पोझेबल ग्लास','Disposable Spoons / Forks':'डिस्पोझेबल चमचे','Aluminum Foil':'अ‍ॅल्युमिनियम फॉइल','Cling Film / Plastic Wrap':'क्लिंग फिल्म','Ziplock Bags':'झिपलॉक पिशव्या','Disposable Food Containers (with lids)':'डिस्पोझेबल डब्बे','Carry Bags (Plastic/Paper)':'कॅरी बॅग','Face Masks (Single-use)':'फेस मास्क','Gloves (Latex/Plastic)':'हातमोजे','Cotton Pads / Swabs (if household use included)':'कापसाचे पॅड','Flax Seeds (Alsi)':'अळशीचे बी','Chia Seeds':'चिया बी','Sunflower Seeds':'सूर्यफूल बी','Pumpkin Seeds':'भोपळ्याचे बी','Watermelon Seeds':'टरबुजाचे बी','Cucumber Seeds':'काकडीचे बी','Basil Seeds (Sabja)':'सब्जा','Sesame Seeds (Til – White/Black)':'तीळ','Fenugreek Seeds (Methi)':'मेथी','Coriander Seeds (Dhaniya)':'धणे','Mustard Seeds (Rai/Sarson – Yellow/Black)':'मोहरी','Carom Seeds (Ajwain)':'ओवा','Poppy Seeds (Khus Khus)':'खसखस','Nigella Seeds (Kalonji)':'कलौंजी','Hemp Seeds (optional health item)':'हेम्प बी','Garden Cress Seeds (Halim / Aliv)':'अळीव','Dill Seeds (Suwa)':'शेपू बी','Fennel Seeds (Saunf)':'बडीशेप','Idli':'इडली','Poha':'पोहे','Upma':'उपमा','Sabudana Khichdi':'साबुदाणा खिचडी','Dosa':'डोसा','Uttapam':'उत्तपम','Sheera':'शिरा','Bread Toast':'ब्रेड टोस्ट','Thepla':'थेपला','Methi Thepla':'मेथी थेपला','Aloo Paratha':'आलू पराठा','Moong Dal Cheela':'मूग डाळ चिला','Pesarattu':'पेसरट्टू','Rava Dosa':'रवा डोसा','Set Dosa':'सेट डोसा','Thalipeeth':'थालीपीठ','Coconut Chutney':'खोबऱ्याची चटणी','Tomato Chutney':'टोमॅटो चटणी','Green Chutney':'हिरवी चटणी','Peanut Chutney':'शेंगदाण्याची चटणी','Sambar':'सांबार','Shengdana Chutney':'शेंगदाण्याची चटणी','Batata Bhaji':'बटाटा भाजी','Vanga':'वांगे','Bhendi':'भेंडी','Matki':'मटकी','Palak':'पालक','Shimla Mirch':'सिमला मिरची','Tondli':'तोंडली','Karela':'कारले','Dudhi':'दुधी','Kanda Batata':'कांदा बटाटा','Vangyache Bharit':'वांग्याचे भरीत','Chole':'छोले','Rajma':'राजमा','Pithla':'पिठलं','Val':'वाल','Chawli':'चवळी','Kobi':'कोबी','Gajar':'गाजर','Matar Paneer':'मटर पनीर','Dum Aloo':'दम आलू','Katachi Amti':'कटाची आमटी','Bharleli Vange':'भरलेली वांगी','Zunka':'झुणका','Bhakari':'भाकरी','Chapati':'चपाती','Puri':'पुरी','Paratha':'पराठा','Rice Bhakari':'तांदळाची भाकरी','Loni Bhakari':'लोण्याची भाकरी','Rumali Roti':'रुमाली रोटी','Naan':'नान','Methi Paratha':'मेथी पराठा','Varan':'वरण','Amti':'आमटी','Tur Dal':'तूर डाळ','Moong Dal':'मूग डाळ','Mixed Dal':'मिक्स डाळ','Kolhapuri Amti':'कोल्हापुरी आमटी','Dal Tadka':'डाळ तडका','Jeera Rice':'जिरा राइस','Masala Bhat':'मसाला भात','Pulao':'पुलाव','Khichdi':'खिचडी','Curd Rice':'दही भात','Lemon Rice':'लिंबू भात','Methi Rice':'मेथी भात','Koshimbir':'कोशिंबीर','Kakdi Koshimbir':'काकडी कोशिंबीर','Carrot Koshimbir':'गाजर कोशिंबीर','Sprouts':'मोड आलेले','Beet Salad':'बीट सॅलड','Tomato Onion':'टोमॅटो कांदा','Radish Salad':'मुळा सॅलड','Mixed Sprouts':'मिक्स मोड','Fruit +':'फळे','Makhana':'मखाणे','Chivda':'चिवडा','Peanuts':'शेंगदाणे','Sprouts Chaat':'मोड चाट','Roasted Chana':'भाजलेले चणे','Murmura':'मुरमुरे','Lassi':'ताक','Buttermilk':'ताक','Usal':'उसळ','Sabudana Vada':'साबुदाणा वडा','Batata Vada':'बटाटा वडा','Bread Pakoda':'ब्रेड पकोडा','Dhokla':'ढोकळा','Sandesh':'संदेश','Lonche':'लोणचे','Lemon Pickle':'लिंबाचे लोणचे','Mango Pickle':'आंब्याचे लोणचे','Mixed Pickle':'मिक्स लोणचे','Methamba':'मेथांबा','Mirchi Lonche':'मिरचीचे लोणचे','Dahi':'दही','Raita':'रायता','Chutney':'चटणी','Lahsun Achaar':'लसूण लोणचे','Butter Paper':'बटर पेपर','Muslin Cloth':'मलमल कापड','Hand Napkins':'हात पुसणे','Kitchen Napkins':'किचन नॅपकिन','Table Matts':'टेबल मॅट','Table Plastic Cover':'टेबल कव्हर','Table Cover':'टेबल कव्हर','Coasters':'कोस्टर','Cups and Saucers':'कप-बशी','Ceramic Plate Set':'सिरॅमिक ताट सेट','Guest Sheet':'पाहुण्यांची चादर','Bedsheets + Pillow Covers':'बेडशीट + उशीचे अभ्रे','Shampoo':'शॅम्पू','Conditioner':'कंडिशनर','Comb':'फणी','Powder':'पावडर','Readymade Masalas':'रेडीमेड मसाले','Everest Masalas':'एव्हरेस्ट मसाले','Pav Bhaji Masala':'पाव भाजी मसाला','Shahi Biryani Masala':'शाही बिर्याणी मसाला','Pani Puri Masala':'पाणीपुरी मसाला','Achaar Masala':'अचार मसाला','Chivada Masala':'चिवडा मसाला','Aamras':'आमरस','Masala Buttermilk':'मसाला ताक','Ambil':'आंबील','Sweet Lassi':'गोड लस्सी','Salted Lassi':'खारट लस्सी','Solkadhi':'सोलकढी'};
 // Extra entries for dish names commonly entered in romanised Marathi or English
 Object.assign(MR_MAP,{
   // Grains / vegetables in English not yet covered
@@ -2882,6 +3060,61 @@ Object.assign(MR_MAP,{
   'Hot Chocolate':'हॉट चॉकलेट','Masala Chai':'मसाला चहा',
   'Green Tea':'ग्रीन टी','Milkshake':'मिल्कशेक',
 });
+// ── Chicken & non-veg dishes ─────────────────────────────────────────────
+Object.assign(MR_MAP,{
+  'Chicken':'चिकन रस्सा',
+  'Chicken Rassa':'चिकन रस्सा',
+  'Chicken Rasa':'चिकन रस्सा',
+  'Chicken Curry':'चिकन करी',
+  'Chicken Masala':'चिकन मसाला',
+  'Chicken Gravy':'चिकन ग्रेव्ही',
+  'Chicken Fry':'चिकन फ्राय',
+  'Chicken Roast':'चिकन रोस्ट',
+  'Chicken Biryani':'चिकन बिर्याणी',
+  'Chicken Pulao':'चिकन पुलाव',
+  'Chicken Tikka':'चिकन टिक्का',
+  'Chicken Kebab':'चिकन कबाब',
+  'Chicken Soup':'चिकन सूप',
+  'Chicken Korma':'चिकन कोर्मा',
+  'Kombdi Vade':'कोंबडी वडे',
+  'Kombdi Rassa':'कोंबडी रस्सा',
+  'Mutton':'मटण',
+  'Mutton Rassa':'मटण रस्सा',
+  'Mutton Curry':'मटण करी',
+  'Mutton Biryani':'मटण बिर्याणी',
+  'Fish':'मासे',
+  'Fish Curry':'मासे करी',
+  'Fish Fry':'मासे फ्राय',
+  'Egg':'अंडे',
+  'Egg Curry':'अंडे करी',
+  'Egg Bhurji':'अंडे भुर्जी',
+  'Omelette':'ऑम्लेट',
+  'Prawn':'कोळंबी',
+  'Prawn Curry':'कोळंबी रस्सा',
+  'Prawns Curry':'कोळंबी रस्सा',
+  'Prawn Rassa':'कोळंबी रस्सा',
+  'Prawn Masala':'कोळंबी मसाला',
+  'Prawn Fry':'कोळंबी फ्राय',
+  'Prawn Biryani':'कोळंबी बिर्याणी',
+  'Prawn Pulao':'कोळंबी पुलाव',
+});
+
+// ── User-requested translations & cooking modifiers ──────────────────────
+Object.assign(MR_MAP,{
+  'Kurdayi':'कुरडई','Kurdai':'कुरडई',
+  'Sliced':'उभा',           // "Sliced Onion" → उभा कांदा (word-by-word)
+  'Boiled':'उकडलेले',        // "Boiled Potato" → उकडलेले बटाटा
+  'Kg':'किलो','KG':'किलो','Kilogram':'किलो','Kilo':'किलो',
+  'Shevga':'शेवगा','Drumstick':'शेवगा','Drumsticks':'शेवगा',
+  'Soup':'सूप',
+  'Toast':'टोस्ट',
+  'Bhadang':'भडंग',
+  // Common singular forms (so "Sliced/Boiled X" translate cleanly)
+  'Potato':'बटाटा','Tomato':'टोमॅटो','Onion':'कांदा','Carrot':'गाजर',
+  'Beetroot':'बीट','Cucumber':'काकडी','Cabbage':'कोबी','Capsicum':'सिमला मिरची',
+  'Egg':'अंडे','Apple':'सफरचंद','Banana':'केळे',
+});
+
 // ── Extra English task/household vocabulary ──────────────────────────────
 Object.assign(MR_MAP,{
   // Task verbs
@@ -3031,7 +3264,7 @@ Object.assign(MR_MAP,{
   'Dry Fruits':'सुका मेवा','Salted/Coated Nuts':'खारे काजू / शेंगदाणे',
   'Farsan':'फरसाण','Popcorn':'पॉपकॉर्न','Chakli':'चकली',
   // Non-veg
-  'Fried Food':'तळलेले पदार्थ','Chicken':'कोंबडी','Mutton':'मटण','Fish':'मासे',
+  'Fried Food':'तळलेले पदार्थ','Chicken':'चिकन रस्सा','Mutton':'मटण','Fish':'मासे',
   'Prawn':'कोळंबी','Egg':'अंडे',
   // Frozen / Packaged
   'Green Peas Packet':'हिरव्या वाटाण्याचे पाकीट','Frozen Peas':'फ्रोझन वाटाणे',
@@ -3145,7 +3378,7 @@ function rcalRenderPanel(){
   const dt=rcalParse(rcalSelKey);
   const label=safeLocale(dt,isMarathi?'mr-IN':'en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const entry=rcalData[rcalSelKey]||{}; const af=rcalAutoFest(rcalSelKey);
-  const festivals=entry.festivals||[]; const menu=entry.menu||''; const hasData=!!(menu||festivals.length);
+  const festivals=entry.festivals||[]; const menu=entry.menu||''; const tithi=entry.tithi||''; const hasData=!!(menu||festivals.length||tithi);
   const dowIdx=dt.getDay(); const dayName=DAYS[dowIdx===0?6:dowIdx-1];
   const selW=rcalSelWeek||1;
   const s=(weeks[selW]&&weeks[selW][dayName])||{};
@@ -3192,6 +3425,8 @@ function rcalRenderPanel(){
   panel.innerHTML='<div class="rcal-panel-title">📅 '+escHtml(label)+'</div>'
     +weekTabs
     +mealForm
+    +'<label class="rcal-flabel" style="margin-top:10px">'+(isMarathi?'🕉 हिंदू तिथी / विशेष दिवस':'🕉 Hindu Calendar / Special Day')+'</label>'
+    +'<input class="rcal-inp" id="rcal-tithi" type="text" placeholder="'+(isMarathi?'उदा. शुक्ल तृतीया, एकादशी, अमावस्या, संक्रांत…':'e.g. Shukla Tritiya, Ekadashi, Amavasya, Sankranti…')+'" value="'+escHtml(tithi)+'" onchange="rcalSaveTithi(this.value)">'
     +'<label class="rcal-flabel" style="margin-top:10px">'+RL.festivals+'</label>'
     +(af?'<div class="rcal-autodet">'+RL.auto+' <strong>'+escHtml(af)+'</strong></div>':'')
     +'<div id="rcal-ftags">'+festivals.map((f,i)=>'<span class="rcal-ftag">🪔 '+escHtml(f)+'<button onclick="rcalRemFest('+i+')">×</button></span>').join('')+'</div>'
@@ -3227,7 +3462,8 @@ function rcalRenderPanel(){
         +rows+'</div>';
     })():(isAdmin?'<div class="hscal-admin-strip" style="font-size:12px;color:var(--text3)">👥 '+(isMarathi?'कर्मचारी जोडण्यासाठी वेळापत्रक टॅबवर जा':'Go to Schedule tab to add staff members')+'</div>':''));
 }
-function rcalSave(){if(!rcalSelKey)return;const m=document.getElementById('rcal-menu')?.value.trim()||'';if(!rcalData[rcalSelKey])rcalData[rcalSelKey]={};rcalData[rcalSelKey].menu=m;saveToStorage(false);rcalRender();showToast('✅ Saved');}
+function rcalSave(){if(!rcalSelKey)return;const m=document.getElementById('rcal-menu')?.value.trim()||'';const t=document.getElementById('rcal-tithi')?.value.trim()||'';if(!rcalData[rcalSelKey])rcalData[rcalSelKey]={};rcalData[rcalSelKey].menu=m;rcalData[rcalSelKey].tithi=t;saveToStorage(false);rcalRender();showToast('✅ Saved');}
+function rcalSaveTithi(v){if(!rcalSelKey)return;if(!rcalData[rcalSelKey])rcalData[rcalSelKey]={};rcalData[rcalSelKey].tithi=(v||'').trim();saveToStorage(false);rcalRenderGrid();hdtUpdate();showToast('🕉 '+(isMarathi?'तिथी जतन':'Saved'));}
 function rcalClear(){if(!rcalSelKey)return;delete rcalData[rcalSelKey];saveToStorage(false);rcalRender();showToast('🗑 Cleared');}
 function rcalAddFest(){if(!rcalSelKey)return;const inp=document.getElementById('rcal-fest-inp');const val=inp?.value.trim();if(!val){showToast('⚠️ Enter festival name');return;}if(!rcalData[rcalSelKey])rcalData[rcalSelKey]={};if(!rcalData[rcalSelKey].festivals)rcalData[rcalSelKey].festivals=[];if(rcalData[rcalSelKey].festivals.includes(val)){showToast('⚠️ Already added');return;}rcalData[rcalSelKey].festivals.push(val);inp.value='';saveToStorage(false);rcalRenderPanel();rcalRenderGrid();hdtUpdate();showToast('🪔 Added!');}
 function rcalRemFest(idx){if(!rcalSelKey||!rcalData[rcalSelKey])return;rcalData[rcalSelKey].festivals.splice(idx,1);saveToStorage(false);rcalRenderPanel();rcalRenderGrid();hdtUpdate();}
@@ -3289,6 +3525,271 @@ function deleteTask(dateKey,taskId){if(!dailyTasks[dateKey])return;dailyTasks[da
 const ML_EN={bf:'Breakfast',lu:'Lunch',sn:'Snacks',di:'Dinner'};
 const ML_MR={bf:'न्याहारी',lu:'दुपारचे जेवण',sn:'नाश्ता',di:'रात्रीचे जेवण'};
 const MI={bf:'🌅',lu:'🥘',sn:'🍊',di:'🌙'};
+// ══════════════════════════════════════════════════
+// MILK MONTHLY SUMMARY
+// ══════════════════════════════════════════════════
+let _milkYear=new Date().getFullYear(), _milkMonth=new Date().getMonth();
+
+function renderMilkSummary(){
+  const body=document.getElementById('milk-summary-body'); if(!body) return;
+  const isMr=isMarathi;
+  const monthNames=isMr?RCAL_ML_MR:RCAL_ML;
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  // Build rows for every day in the selected month
+  const dim=new Date(_milkYear,_milkMonth+1,0).getDate();
+  let rows=[], totalOrder=0, totalBought=0, hasAnyData=false;
+
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(_milkYear,_milkMonth,d);
+    const dow=dt.getDay(); // 0=Sun
+    // Map to our DAYS array (Mon=0 … Sun=6)
+    const dayIdx=dow===0?6:dow-1;
+    const dayName=DAYS[dayIdx];
+    // Figure out which week number this date falls in (week of month)
+    const firstOfMonth=new Date(_milkYear,_milkMonth,1);
+    const firstDow=firstOfMonth.getDay()===0?6:firstOfMonth.getDay()-1; // Mon-based
+    const weekNum=Math.ceil((d+firstDow)/7); // 1-4
+    const wk=Math.min(weekNum,4);
+    const s=(weeks[wk]&&weeks[wk][dayName])||{};
+    const order=parseFloat(s.milk_order)||0;
+    const bought=parseFloat(s.milk_bought)||0;
+    if(order||bought) hasAnyData=true;
+    totalOrder+=order; totalBought+=bought;
+    const isT=dt.getTime()===today.getTime();
+    const diff=bought-order;
+    const diffCls=diff>0?'over':diff<0?'under':'exact';
+    const diffStr=(order||bought)?(diff>0?'+':'')+diff.toFixed(1)+'L':'—';
+    const dateStr=safeLocale(dt,isMr?'mr-IN':'en-IN',{weekday:'short',day:'numeric'});
+    rows.push(`<tr${isT?' class="today-row"':''}>
+      <td>${dateStr}</td>
+      <td>${order?order+'L':'—'}</td>
+      <td>${bought?'<strong>'+bought+'L</strong>':'—'}</td>
+      <td><span class="milk-diff ${(order||bought)?diffCls:''}">${diffStr}</span></td>
+    </tr>`);
+  }
+
+  const thead=`<tr>
+    <th>${isMr?'तारीख':'Date'}</th>
+    <th>${isMr?'मागवले':'Ordered'}</th>
+    <th>${isMr?'आणले':'Bought'}</th>
+    <th>${isMr?'फरक':'Diff'}</th>
+  </tr>`;
+
+  const totalDiff=totalBought-totalOrder;
+  const totalRow=`<tr class="milk-total-row">
+    <td>📊 ${isMr?'एकूण':'TOTAL'}</td>
+    <td>${totalOrder.toFixed(1)}L</td>
+    <td>${totalBought.toFixed(1)}L</td>
+    <td><span class="milk-diff ${totalDiff>0?'over':totalDiff<0?'under':'exact'}">${totalDiff>0?'+':''}${totalDiff.toFixed(1)}L</span></td>
+  </tr>`;
+
+  const navHtml=`<div class="milk-month-nav">
+    <button class="milk-nav-btn" onclick="milkChangeMonth(-1)">‹</button>
+    <span class="milk-month-title">${monthNames[_milkMonth]} ${_milkYear}</span>
+    <button class="milk-nav-btn" onclick="milkChangeMonth(1)"${_milkYear===new Date().getFullYear()&&_milkMonth===new Date().getMonth()?' disabled style="opacity:0.4"':''}>›</button>
+  </div>`;
+
+  const summaryCards=`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
+      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'मागवले':'Ordered'}</div>
+      <div style="font-size:22px;font-weight:700;color:var(--sky)">${totalOrder.toFixed(1)}<span style="font-size:13px">L</span></div>
+    </div>
+    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
+      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'आणले':'Bought'}</div>
+      <div style="font-size:22px;font-weight:700;color:var(--green)">${totalBought.toFixed(1)}<span style="font-size:13px">L</span></div>
+    </div>
+    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
+      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'फरक':'Difference'}</div>
+      <div style="font-size:22px;font-weight:700;color:${totalDiff>0?'#DC3C3C':totalDiff<0?'var(--carrot)':'var(--green)'}">${totalDiff>0?'+':''}${totalDiff.toFixed(1)}<span style="font-size:13px">L</span></div>
+    </div>
+  </div>`;
+
+  body.innerHTML=`<div class="milk-wrap">${navHtml}${summaryCards}
+    ${hasAnyData
+      ?`<table class="milk-table"><thead>${thead}</thead><tbody>${rows.join('')}${totalRow}</tbody></table>`
+      :`<div class="milk-empty">🥛 ${isMr?'अजून नोंद नाही — नियोजकात दूध भरा':'No data yet — fill milk quantities in the Weekly Planner'}</div>`
+    }
+  </div>`;
+}
+
+function milkChangeMonth(dir){
+  _milkMonth+=dir;
+  if(_milkMonth>11){_milkMonth=0;_milkYear++;}
+  if(_milkMonth<0){_milkMonth=11;_milkYear--;}
+  renderMilkSummary();
+}
+
+// ══════════════════════════════════════════════════
+// DAILY REPORT & CHAT
+// ══════════════════════════════════════════════════
+let _drViewDate = new Date();
+function _drKey(d){ const x=d||_drViewDate; return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function _drDateLabel(d){
+  const isMr=isMarathi;
+  return safeLocale(d||_drViewDate, isMr?'mr-IN':'en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+function _drStockItems(){
+  // Use custom items from opts if defined, else defaults
+  return (opts.reportItems && opts.reportItems.length) ? opts.reportItems : DEFAULT_STOCK_ITEMS;
+}
+
+function renderDailyReport(){
+  const body=document.getElementById('dr-body'); if(!body) return;
+  const isMr=isMarathi; const isSham=(currentMode==='sham');
+  const key=_drKey();
+  const rec=dailyReport[key]||{stock:{},chat:[],submitted:false,submittedAt:''};
+
+  // ── Date navigation ─────────────────────────────────────────
+  const today=new Date(); today.setHours(0,0,0,0);
+  const vd=new Date(_drViewDate); vd.setHours(0,0,0,0);
+  const isToday=vd.getTime()===today.getTime();
+  const dateBar=`<div class="dr-date-bar">
+    <span class="dr-date-label">${_drDateLabel()}</span>
+    <div class="dr-date-nav">
+      <button class="dr-nav-btn" onclick="drChangeDay(-1)">‹</button>
+      ${!isToday?`<button class="dr-nav-btn" onclick="drGoToday()">${isMr?'आज':'Today'}</button>`:''}
+      <button class="dr-nav-btn" onclick="drChangeDay(1)" ${isToday?'disabled style="opacity:0.4"':''}>›</button>
+    </div>
+  </div>`;
+
+  // ── Stock section ────────────────────────────────────────────
+  const items=_drStockItems();
+  const canEdit=(isSham||isAdmin) && isToday;
+  const cells=items.map(item=>{
+    const val=rec.stock[item.id]||'';
+    const lbl=isMr?(item.nameMr||item.name):item.name;
+    const unit=item.unit?`<span style="font-size:9px;color:var(--text3);display:block;font-weight:400">${item.unit}</span>`:'';
+    if(canEdit){
+      return`<div class="dr-stock-item">
+        <div class="dr-stock-name">${escHtml(lbl)}${unit}</div>
+        <input class="dr-stock-qty-inp" type="text" value="${escHtml(val)}"
+          placeholder="${isMr?'किती आहे…':'quantity…'}"
+          onchange="drUpdateStock('${item.id}',this.value)"
+          oninput="drUpdateStock('${item.id}',this.value)">
+      </div>`;
+    } else {
+      return`<div class="dr-stock-item">
+        <div class="dr-stock-name">${escHtml(lbl)}${unit}</div>
+        <div class="dr-stock-qty ${val?'':'empty'}">${val?escHtml(val):(isMr?'नाही':'—')}</div>
+      </div>`;
+    }
+  }).join('');
+
+  const submitBtn=isSham&&isToday&&!rec.submitted
+    ?`<button class="dr-submit-btn" onclick="drSubmit()">✅ ${isMr?'अहवाल पाठवला':'Submit Report'}</button>`:'';
+  const submittedBanner=rec.submitted
+    ?`<div class="dr-submitted-banner">✅ ${isMr?'अहवाल पाठवला':'Report submitted'} — ${rec.submittedAt||''}</div>`:'';
+
+  // Admin item management
+  let manageSec='';
+  if(isAdmin){
+    const itemTags=items.map(it=>`<span class="tag" style="margin:2px">${escHtml(isMr?it.nameMr:it.name)}<button class="tag-remove" onclick="drRemoveItem('${it.id}')">×</button></span>`).join('');
+    manageSec=`<div style="margin-bottom:12px;padding:10px 12px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
+      <div class="dr-section-title" style="margin-bottom:6px">📦 ${isMr?'वस्तू यादी':'Stock Items'}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${itemTags}</div>
+      <div class="dr-manage-row">
+        <input id="dr-new-item-en" type="text" placeholder="Name (English)">
+        <input id="dr-new-item-mr" type="text" placeholder="नाव (मराठी)">
+        <input id="dr-new-item-unit" type="text" placeholder="Unit" style="max-width:80px">
+        <button class="btn btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="drAddItem()">+ Add</button>
+      </div>
+    </div>`;
+  }
+
+  const stockCard=`<div class="dr-stock-card">
+    <div class="dr-stock-hdr">
+      <span class="dr-stock-hdr-title">📦 ${isMr?'साठ्याची माहिती':'Kitchen Stock'}</span>
+      ${rec.submittedAt?`<span class="dr-stock-hdr-time">${isMr?'अपडेट':'Updated'}: ${rec.submittedAt}</span>`:''}
+    </div>
+    <div class="dr-stock-row">${cells}</div>
+    ${submitBtn}${submittedBanner}
+  </div>`;
+
+  // ── Chat section ─────────────────────────────────────────────
+  const msgs=rec.chat||[];
+  const msgHtml=msgs.length ? msgs.map(m=>{
+    const isMe=(isSham&&m.sender==='sham')||(!isSham&&m.sender==='admin');
+    const name=m.sender==='sham'?'Sham':'Admin';
+    return`<div class="dr-msg ${m.sender}">
+      ${escHtml(m.text)}
+      <div class="dr-msg-meta">${name} · ${m.time}</div>
+    </div>`;
+  }).join('') : `<div class="dr-empty-msg">${isMr?'अजून कोणताही संदेश नाही':'No messages yet'}</div>`;
+
+  const chatInputId='dr-chat-inp-'+key;
+  const chatCard=`<div class="dr-chat-card">
+    <div class="dr-chat-msgs" id="dr-chat-msgs">${msgHtml}</div>
+    <div class="dr-chat-input-row">
+      <input class="dr-chat-inp" id="${chatInputId}" type="text"
+        placeholder="${isMr?'संदेश लिहा…':'Type a message…'}"
+        onkeydown="if(event.key==='Enter')drSendChat('${key}')">
+      <button class="dr-chat-send" onclick="drSendChat('${key}')">➤</button>
+    </div>
+  </div>`;
+
+  body.innerHTML=`<div class="dr-wrap">${dateBar}${manageSec}${stockCard}<div style="margin-top:14px"><div class="dr-section-title">💬 ${isMr?'संदेश':'Messages'}</div>${chatCard}</div></div>`;
+
+  // Scroll chat to bottom
+  const cm=document.getElementById('dr-chat-msgs');
+  if(cm) cm.scrollTop=cm.scrollHeight;
+}
+
+function drChangeDay(dir){
+  _drViewDate=new Date(_drViewDate);
+  _drViewDate.setDate(_drViewDate.getDate()+dir);
+  renderDailyReport();
+}
+function drGoToday(){ _drViewDate=new Date(); renderDailyReport(); }
+
+function drUpdateStock(itemId, val){
+  const key=_drKey();
+  if(!dailyReport[key]) dailyReport[key]={stock:{},chat:[],submitted:false,submittedAt:''};
+  dailyReport[key].stock[itemId]=val.trim();
+  dailyReport[key].submittedAt=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  saveToStorage(false);
+}
+
+function drSubmit(){
+  const key=_drKey();
+  if(!dailyReport[key]) dailyReport[key]={stock:{},chat:[],submitted:false,submittedAt:''};
+  dailyReport[key].submitted=true;
+  dailyReport[key].submittedAt=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  saveToStorage(false);
+  renderDailyReport();
+  showToast('✅ '+(isMarathi?'अहवाल पाठवला!':'Report submitted!'));
+}
+
+function drSendChat(key){
+  const inp=document.getElementById('dr-chat-inp-'+key);
+  const text=(inp?.value||'').trim();
+  if(!text) return;
+  if(!dailyReport[key]) dailyReport[key]={stock:{},chat:[],submitted:false,submittedAt:''};
+  if(!dailyReport[key].chat) dailyReport[key].chat=[];
+  const sender=(currentMode==='sham')?'sham':'admin';
+  const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  dailyReport[key].chat.push({id:Date.now()+'',sender,text,time});
+  inp.value='';
+  saveToStorage(false);
+  renderDailyReport();
+}
+
+function drAddItem(){
+  const en=(document.getElementById('dr-new-item-en')?.value||'').trim();
+  const mr=(document.getElementById('dr-new-item-mr')?.value||'').trim();
+  const unit=(document.getElementById('dr-new-item-unit')?.value||'').trim();
+  if(!en){showToast('⚠️ Enter item name');return;}
+  if(!opts.reportItems) opts.reportItems=JSON.parse(JSON.stringify(DEFAULT_STOCK_ITEMS));
+  const id='ri_'+Date.now();
+  opts.reportItems.push({id,name:en,nameMr:mr||en,unit});
+  saveToStorage(false); renderDailyReport();
+}
+function drRemoveItem(id){
+  if(!opts.reportItems) opts.reportItems=JSON.parse(JSON.stringify(DEFAULT_STOCK_ITEMS));
+  opts.reportItems=opts.reportItems.filter(i=>i.id!==id);
+  saveToStorage(false); renderDailyReport();
+}
+
 // ══════════════════════════════════════════════════
 // STAFF AVAILABILITY SYSTEM
 // ══════════════════════════════════════════════════
@@ -3476,6 +3977,23 @@ function hscalClearMember(dateKey, memberId){
   showToast('🗑 '+(isMarathi?'साफ केले':'Cleared'));
 }
 
+// Build the Hindu-calendar / festival / special-event bar for a given date key.
+// Shows on every Today's Menu card, in all modes. mrMode=true translates to Marathi.
+function buildDayEventBar(dateKey, mrMode){
+  const e=rcalData[dateKey]||{};
+  const af=(typeof rcalAutoFest==='function')?rcalAutoFest(dateKey):'';
+  const fest=(e.festivals&&e.festivals.length)?e.festivals.join(', '):af;
+  const tithi=e.tithi||'';
+  const note=e.menu||'';
+  if(!fest && !tithi && !note) return '';
+  const tr=(s)=>mrMode?mr(s):s;
+  const parts=[];
+  if(tithi) parts.push('🕉 '+escHtml(tr(tithi)));
+  if(fest)  parts.push('🪔 '+escHtml(tr(fest)));
+  if(note)  parts.push('📌 '+escHtml(tr(note)));
+  return '<div style="margin:6px 12px 0;padding:7px 11px;background:rgba(224,123,42,0.10);border-radius:8px;border-left:3px solid var(--carrot);font-size:12px;color:var(--text);line-height:1.55">'+parts.join('<br>')+'</div>';
+}
+
 function renderTodayMenu(){
   const body=document.getElementById('tm-body');if(!body)return;
   const isH=(currentMode==='helper');const labels=isH?ML_MR:ML_EN;
@@ -3539,7 +4057,25 @@ function renderTodayMenu(){
       const addWId='htw-'+dKey;const addBId='htb-'+dKey;
       const taskBlock='<div class="hlpr-meal-block"><div class="tm-tasks-title" style="margin-bottom:6px">📋 '+wLbl+'</div>'+dWorkHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWId+'" placeholder="काम लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'task\');this.value=\'\';}"><button class="tm-add-btn" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addWId+'\').value,\'task\');document.getElementById(\''+addWId+'\').value=\'\'">+ जोडा</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky);margin-bottom:6px">🛒 '+bLbl+'</div>'+dBuyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBId+'" placeholder="वस्तू लिहा…" onkeydown="if(event.key===\'Enter\'){addTask(\''+dKey+'\',this.value,\'buy\');this.value=\'\';}"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dKey+'\',document.getElementById(\''+addBId+'\').value,\'buy\');document.getElementById(\''+addBId+'\').value=\'\'">+ जोडा</button></div></div>';
       const staffBarHtml=buildStaffBar(dKey,false);
-      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+staffBarHtml+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
+      // Milk tracker row
+      const milkBlock=(()=>{
+        if(!s.milk_order && !s.milk_bought) return '';
+        const canEdit=window._lockedMode||isAdmin;
+        const orderLbl=isMarathi?'दूध आणायचे':'Milk to buy';
+        const boughtLbl=isMarathi?'आणले':'Bought';
+        const boughtInp=canEdit
+          ?'<input type="number" min="0" step="0.5" value="'+escHtml(s.milk_bought||'')+'" placeholder="0" style="width:56px;padding:3px 7px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none" onchange="updateMeal(\''+dayName+'\',\'milk_bought\',this.value);renderTodayMenu()">'
+          :'<strong style="font-size:13px">'+(s.milk_bought||'—')+'</strong>';
+        const diff=s.milk_order&&s.milk_bought&&parseFloat(s.milk_order)!==parseFloat(s.milk_bought)
+          ?'<span style="font-size:10px;background:rgba(220,60,60,0.12);color:#DC3C3C;padding:2px 6px;border-radius:10px;font-weight:600">Δ '+(parseFloat(s.milk_bought)-parseFloat(s.milk_order)).toFixed(1)+'L</span>':'';
+        return '<div style="margin:6px 12px 0;padding:8px 12px;background:rgba(46,111,168,0.07);border-radius:10px;border-left:3px solid var(--sky);display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+          +'<span style="font-size:19px">🥛</span>'
+          +'<span style="font-size:11px;color:var(--text3)">'+orderLbl+'</span><strong style="font-size:13px;color:var(--sky)">'+escHtml(s.milk_order||'0')+'L</strong>'
+          +'<span style="font-size:11px;color:var(--text3)">'+boughtLbl+'</span>'+boughtInp+'<span style="font-size:12px;color:var(--text2)">L</span>'
+          +diff+'</div>';
+      })();
+      const eventBar=buildDayEventBar(dKey,true);
+      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+eventBar+staffBarHtml+milkBlock+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
     };
     body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
     if(window._tmCI)clearInterval(window._tmCI);
@@ -3565,7 +4101,8 @@ function renderTodayMenu(){
     const di=dinnerSummary(s,isH);
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
     const calE=rcalData[dateKey]||{};const calM=calE.menu||'';
-    const calRow=calM?'<div class="tm-meal-row" style="background:var(--green-light);border-radius:6px;padding:5px 8px;margin-top:4px"><span class="tm-meal-icon">📌</span><div><div class="tm-meal-label">'+(isH?'विशेष':'Special')+'</div><div class="tm-meal-val">'+escHtml(calM)+'</div></div></div>':'';
+    const calRow='';  // replaced by buildDayEventBar (shows tithi + festival + note together)
+    const eventBar=buildDayEventBar(dateKey,isH);
     const tasks=dailyTasks[dateKey]||[];
     const taskItems=tasks.filter(t=>(t.type||'task')==='task');
     const buyItems=tasks.filter(t=>t.type==='buy');
@@ -3575,7 +4112,8 @@ function renderTodayMenu(){
     const addWorkId='tmw-'+dateKey;const addBuyId='tmb-'+dateKey;
     const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'आजचे काम':'Tasks')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWorkId+'" placeholder="'+(isH?'काम लिहा…':'Add task…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'task\');this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addWorkId+'\').value,\'task\');document.getElementById(\''+addWorkId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky)">🛒 '+(isH?'आज आणायचे':'To Buy')+'</div>'+buyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBuyId+'" placeholder="'+(isH?'वस्तू लिहा…':'Add item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'buy\');this.value=\'\';}\"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addBuyId+'\').value,\'buy\');document.getElementById(\''+addBuyId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
     const staffB=buildStaffBar(dateKey,false);
-    return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div>'+(staffB?'<div style="padding:0 10px">'+staffB+'</div>':'')+'<div class="tm-meals">'+mealRows+calRow+taskSec+'</div></div>';
+    const milkN=(s.milk_order||s.milk_bought)?'<div style="margin:4px 10px 0;padding:7px 10px;background:rgba(46,111,168,0.07);border-radius:8px;border-left:3px solid var(--sky);display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span>🥛</span><span style="font-size:11px;color:var(--text3)">'+(isH?'दूध आणायचे':'Milk to buy')+'</span><strong style="color:var(--sky)">'+(s.milk_order||'0')+'L</strong>'+(s.milk_bought?'<span style="font-size:11px;color:var(--text3)">·</span><span style="font-size:11px;color:var(--text3)">'+(isH?'आणले':'Bought')+'</span><strong>'+s.milk_bought+'L</strong>':'')+'</div>':'';
+    return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div>'+eventBar+(staffB?'<div style="padding:0 10px">'+staffB+'</div>':'')+milkN+'<div class="tm-meals">'+mealRows+calRow+taskSec+'</div></div>';
   }).join('');
   body.innerHTML=weekBar+dateBanner+'<div class="tm-week-grid">'+cards+'</div>';
   if(window._tmCI)clearInterval(window._tmCI);
@@ -3601,13 +4139,13 @@ function tmSwitchWeek(w){tmCurWeek=w;renderTodayMenu();}
 // ══════════════════════════════════════════════════
 const ADMIN_PIN='1234';
 const MODE_TABS={
-  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup','hlprschedule'],
-  family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials'],
-  helper:['todaymenu','hlprschedule','grocery','buyinglist','essentials'],
+  admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup','hlprschedule','milksummary'],
+  family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials','milksummary'],
+  helper:['todaymenu','milksummary','hlprschedule','grocery','buyinglist','essentials'],
 };
-const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',hlprschedule:'📅 वेळापत्रक',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
-const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup'};
-const ADMIN_LABELS=Object.assign({},FAMILY_LABELS,{hlprschedule:'📅 Helper Schedule'});
+const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',milksummary:'🥛 दूध नोंद',hlprschedule:'📅 वेळापत्रक',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
+const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup',milksummary:'🥛 Milk Summary'};
+const ADMIN_LABELS=Object.assign({},FAMILY_LABELS,{hlprschedule:'📅 Helper Schedule',milksummary:'🥛 Milk Summary'});
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
 function applyMode(mode){
   currentMode=mode;isAdmin=(mode==='admin');isMarathi=(mode==='helper');
