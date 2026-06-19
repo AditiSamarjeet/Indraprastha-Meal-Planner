@@ -4098,7 +4098,9 @@ function renderTodayMenu(){
       const bfTotalRow=bfTotal>0?'<div class="hlpr-bf-total"><span class="hlpr-bf-total-lbl">एकूण नियोजन</span><span class="hlpr-bf-total-val">'+bfTotal+' जण</span></div>':'';
       const mkSide=(lbl,val)=>val?'<div class="hlpr-side-row"><span class="hlpr-side-key">'+lbl+'</span><span class="hlpr-side-val">'+escHtml(mr(val))+'</span></div>':'';
       const bfSides=[mkSide('चटणी',s.chutney),mkSide('नाश्ता',s.bf_snack),mkSide('ज्यूस/पेय',s.drink)].filter(Boolean).join('');
-      const bfBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌅 न्याहारी</div>'+bfRow(1,s.breakfast,c1)+bfRow(2,s.bf2,c2)+bfRow(3,s.bf3,c3)+bfTotalRow+(bfSides?'<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'+bfSides+'</div>':'')+'</div>';
+      const _tw=(toddlerWeeks[tmCurWeek]||{})[dayName]||{};const _tm=[_tw.t_bf_main,_tw.t_bf_chutney,_tw.t_bf_snack].filter(Boolean);
+      const toddlerHlpr=_tm.length?'<div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.12);border:1.5px solid rgba(245,158,11,0.35);border-radius:8px"><div style="font-size:10px;font-weight:700;color:#d97706;margin-bottom:3px">🧒 शाळेचा नाश्ता</div><div style="font-size:12px;color:var(--text2)">'+_tm.map(x=>escHtml(mr(x))).join(' + ')+'</div></div>':'';
+      const bfBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌅 न्याहारी</div>'+bfRow(1,s.breakfast,c1)+bfRow(2,s.bf2,c2)+bfRow(3,s.bf3,c3)+bfTotalRow+(bfSides?'<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'+bfSides+'</div>':'')+toddlerHlpr+'</div>';
       // lunch
       const luItems=[mkSide('भाजी १',s.sabji),mkSide('भाजी २',s.sabji2),mkSide('भाकरी',s.bread),mkSide('डाळ',s.dal),mkSide('भात',s.rice),mkSide('कोशिंबीर',s.salad),mkSide('इतर',s.l_sides),mkSide('लोणचे',s.l_lonche),mkSide('पेय',s.l_drink)].filter(Boolean).join('');
       const luBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🥘 दुपारचे जेवण</div>'+(luItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
