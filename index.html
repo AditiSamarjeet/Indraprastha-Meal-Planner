@@ -1512,6 +1512,8 @@ const DEFAULT_OPTS={
   rice:['Rice','Jeera Rice','Masala Bhat','Pulao','Khichdi','Curd Rice','Lemon Rice','Methi Rice'],
   salad:['Koshimbir','Kakdi Koshimbir','Carrot Koshimbir','Sprouts','Beet Salad','Tomato Onion','Radish Salad','Mixed Sprouts'],
   bf_snack:['Fruit +','Makhana','Chivda','Peanuts','Sprouts Chaat','Roasted Chana','Murmura','Biscuit','Banana','Apple','Dates','Dry Fruits','Poha','Dhokla','Thalipeeth'],
+  fruit:['Banana','Apple','Papaya','Mango','Orange','Grapes','Pomegranate','Watermelon','Chikoo','Guava','Pear','Kiwi','Seasonal Fruit','Mixed Fruit','Dry Fruit Ladoo','Rajgira Ladoo'],
+  snack_fruit:['Banana','Apple','Papaya','Mango','Orange','Grapes','Pomegranate','Watermelon','Chikoo','Guava','Pear','Kiwi','Seasonal Fruit','Mixed Fruit'],
   snack:['Fruit +','Makhana','Chivda','Peanuts','Sprouts Chaat','Roasted Chana','Murmura','Lassi','Buttermilk','Poha','Usal','Sabudana Vada','Batata Vada','Bread Pakoda','Dhokla','Thalipeeth','Thepla','Sandesh'],
   d_sabji:['Cauliflower','Batata Bhaji','Vanga','Bhendi','Matki','Palak','Shimla Mirch','Tondli','Karela','Dudhi','Kanda Batata','Vangyache Bharit','Pithla','Val','Chawli','Kobi','Gajar','Matar Paneer','Zunka','Bharleli Vange'],
   d_bread:['Bhakari','Chapati','Puri','Paratha','Rice Bhakari','Loni Bhakari','Methi Paratha'],
@@ -2052,7 +2054,7 @@ function initState(){
     keys.forEach((k,i)=>{if(weeks[1]['Monday'][k]!==undefined)weeks[1]['Monday'][k]=seed[i];});
   }
 }
-function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',bf_snack:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:'',d_notes:'',milk_order:'',milk_bought:''};});}return w;}
+function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',bf_snack:'',fruit:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_fruit:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:'',d_notes:'',milk_order:'',milk_bought:''};});}return w;}
 function buildEmptyToddlerWeeks(){
   const SCHOOL_MENU={
     Monday:   {t_bf_main:'Idli',              t_bf_chutney:'Chutney',  t_bf_snack:'Seasonal Fruit'},
@@ -2196,7 +2198,7 @@ function renderPlanner(){
       <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span>${_staffDots}</td>
       <td>${buildBreakfastCell(day,s)}</td>
       <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
-      <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||''  ,day,'snack_drink')}</td>
+      <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Fruit</span><span class="mr">फळ</span></div>${mkSel('fruit',s.snack_fruit||'',day,'snack_fruit')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||'',day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
     </tr>
     <tr${_isToday?' style="background:var(--green-light)"':''}>
@@ -2235,18 +2237,21 @@ function buildBreakfastCell(day,s){
   const nm=isMarathi?'पदार्थाचे नाव':'Dish name';
   const totalLine=total>0
     ?`<div class="bf-total-row"><span>${isMarathi?'एकूण नियोजन:':'Total planning for'}</span><span class="bf-total-val">${total} ${isMarathi?'जण':'people'}</span></div>`:'';
+  const tw=(toddlerWeeks[curWeek]||{})[day]||{};
+  const mkToddlerChip=(val)=>val?`<div style="margin-top:4px;padding:3px 8px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);border-radius:6px;font-size:11px;color:#d97706">🧒 ${escHtml(val)}</div>`:'';
   return `<div class="bf-section">`
     +`<div class="bf-section-hd">🌅 ${isMarathi?'न्याहारी — मुख्य पदार्थ':'Breakfast — Main Dishes'}</div>`
     +`<div class="bf-col-hds"><span class="bfch-name">${nm}</span><span>${ppl}</span></div>`
     +dishRow(1,'breakfast','breakfast',s.breakfast||'','bf1_cnt',c1)
     +dishRow(2,'breakfast','bf2',s.bf2||'','bf2_cnt',c2)
     +dishRow(3,'breakfast','bf3',s.bf3||'','bf3_cnt',c3)
+    +mkToddlerChip(tw.t_bf_main)
     +totalLine
     +`</div>`
-    +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}`
-    +`<div class="sub-label"><span class="en">Snack</span><span class="mr">नाश्ता</span></div>${mkSel('bf_snack',s.bf_snack||'',day,'bf_snack')}`
-    +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`
-    +(()=>{const tw=(toddlerWeeks[curWeek]||{})[day]||{};const tm=[tw.t_bf_main,tw.t_bf_chutney,tw.t_bf_snack].filter(Boolean);if(!tm.length)return'';return`<div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);border-radius:8px;font-size:11px"><div style="font-weight:700;color:#d97706;margin-bottom:4px">🧒 School Meal</div><div style="color:var(--text2)">${tm.map(x=>escHtml(x)).join(' + ')}</div></div>`;})();
+    +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}${mkToddlerChip(tw.t_bf_chutney)}`
+    +`<div class="sub-label"><span class="en">Snack</span><span class="mr">नाश्ता</span></div>${mkSel('bf_snack',s.bf_snack||'',day,'bf_snack')}${mkToddlerChip(tw.t_bf_snack)}`
+    +`<div class="sub-label"><span class="en">Fruit</span><span class="mr">फळ</span></div>${mkSel('fruit',s.fruit||'',day,'fruit')}`
+    +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`;
 }
 function bfCnt(day,key,delta){
   if(!weeks[curWeek][day])weeks[curWeek][day]={};
@@ -2669,14 +2674,14 @@ function addBulkOpts(key){
 }
 
 const CAT_META={
-  breakfast:{label:'Breakfast items',color:'var(--sky)'},chutney:{label:'Chutney / sides',color:'var(--sky)'},bf_snack:{label:'Breakfast snack',color:'var(--sky)'},drink:{label:'Breakfast drinks',color:'var(--sky)'},
+  breakfast:{label:'Breakfast items',color:'var(--sky)'},chutney:{label:'Chutney / sides',color:'var(--sky)'},bf_snack:{label:'Breakfast snack',color:'var(--sky)'},fruit:{label:'Fruit',color:'var(--sky)'},drink:{label:'Breakfast drinks',color:'var(--sky)'},
   sabji:{label:'Lunch sabji',color:'var(--green)'},bread:{label:'Lunch bread',color:'var(--green)'},
   dal:{label:'Lunch dal',color:'var(--green)'},rice:{label:'Lunch rice',color:'var(--green)'},
   salad:{label:'Lunch salad / koshimbir',color:'var(--green)'},
   l_sides:{label:'Lunch sides (papad etc)',color:'var(--green)'},
   l_lonche:{label:'Lunch lonche / pickle',color:'var(--green)'},
   l_drink:{label:'Lunch drinks',color:'var(--green)'},
-  snack:{label:'Snacks',color:'var(--carrot)'},snack_drink:{label:'Snack drinks',color:'var(--carrot)'},
+  snack:{label:'Snacks',color:'var(--carrot)'},snack_fruit:{label:'Snack fruit',color:'var(--carrot)'},snack_drink:{label:'Snack drinks',color:'var(--carrot)'},
   d_sabji:{label:'Dinner sabji',color:'var(--aubergine)'},d_bread:{label:'Dinner bread',color:'var(--aubergine)'},
   d_dal:{label:'Dinner dal',color:'var(--aubergine)'},d_rice:{label:'Dinner rice',color:'var(--aubergine)'},
   d_salad:{label:'Dinner salad',color:'var(--aubergine)'},d_sides:{label:'Dinner sides',color:'var(--aubergine)'},
@@ -4097,7 +4102,7 @@ function renderTodayMenu(){
       const bfRow=(num,dish,cnt)=>{const d=dish?mr(dish):'';return'<div class="hlpr-bf-row"><span class="hlpr-bf-num">'+num+'</span>'+(d?'<span class="hlpr-bf-dish">'+escHtml(d)+'</span>':'<span class="hlpr-bf-dish empty">— नाही —</span>')+(d?'<span class="hlpr-bf-pill '+(cnt>0?'has-cnt':'zero-cnt')+'">'+cnt+' जण</span>':'')+'</div>';};
       const bfTotalRow=bfTotal>0?'<div class="hlpr-bf-total"><span class="hlpr-bf-total-lbl">एकूण नियोजन</span><span class="hlpr-bf-total-val">'+bfTotal+' जण</span></div>':'';
       const mkSide=(lbl,val)=>val?'<div class="hlpr-side-row"><span class="hlpr-side-key">'+lbl+'</span><span class="hlpr-side-val">'+escHtml(mr(val))+'</span></div>':'';
-      const bfSides=[mkSide('चटणी',s.chutney),mkSide('नाश्ता',s.bf_snack),mkSide('ज्यूस/पेय',s.drink)].filter(Boolean).join('');
+      const bfSides=[mkSide('चटणी',s.chutney),mkSide('नाश्ता',s.bf_snack),mkSide('फळ',s.fruit),mkSide('ज्यूस/पेय',s.drink)].filter(Boolean).join('');
       const _tw=(toddlerWeeks[tmCurWeek]||{})[dayName]||{};const _tm=[_tw.t_bf_main,_tw.t_bf_chutney,_tw.t_bf_snack].filter(Boolean);
       const toddlerHlpr=_tm.length?'<div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.12);border:1.5px solid rgba(245,158,11,0.35);border-radius:8px"><div style="font-size:10px;font-weight:700;color:#d97706;margin-bottom:3px">🧒 शाळेचा नाश्ता</div><div style="font-size:12px;color:var(--text2)">'+_tm.map(x=>escHtml(mr(x))).join(' + ')+'</div></div>':'';
       const bfBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🌅 न्याहारी</div>'+bfRow(1,s.breakfast,c1)+bfRow(2,s.bf2,c2)+bfRow(3,s.bf3,c3)+bfTotalRow+(bfSides?'<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'+bfSides+'</div>':'')+toddlerHlpr+'</div>';
@@ -4105,7 +4110,7 @@ function renderTodayMenu(){
       const luItems=[mkSide('भाजी १',s.sabji),mkSide('भाजी २',s.sabji2),mkSide('भाकरी',s.bread),mkSide('डाळ',s.dal),mkSide('भात',s.rice),mkSide('कोशिंबीर',s.salad),mkSide('इतर',s.l_sides),mkSide('लोणचे',s.l_lonche),mkSide('पेय',s.l_drink)].filter(Boolean).join('');
       const luBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🥘 दुपारचे जेवण</div>'+(luItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
       // snacks
-      const snItems=[mkSide('मुख्य नाश्ता',s.snack),mkSide('इतर',s.snack2),mkSide('पेय',s.snack_drink)].filter(Boolean).join('');
+      const snItems=[mkSide('मुख्य नाश्ता',s.snack),mkSide('इतर',s.snack2),mkSide('फळ',s.snack_fruit),mkSide('पेय',s.snack_drink)].filter(Boolean).join('');
       const snBlock='<div class="hlpr-meal-block"><div class="hlpr-meal-title">🍊 संध्याकाळचा नाश्ता</div>'+(snItems||'<div class="hlpr-meal-empty">काहीही नाही</div>')+'</div>';
       // dinner
       const cuisine=s.d_cuisine||'indian';const cSchema=DINNER_CUISINES[cuisine]||DINNER_CUISINES.indian;
@@ -4160,9 +4165,9 @@ function renderTodayMenu(){
     const s=W[day]||{};const dt=new Date(monday);dt.setDate(monday.getDate()+idx);
     const dateKey=tdKey(dt);const isToday=day===todayDayName;
     const dayLabel=isH?DAYS_MR[day]:day;const dateStr=safeLocale(dt,isH?'mr-IN':'en-IN',{day:'numeric',month:'short'});
-    const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
+    const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack,s.fruit].filter(Boolean).map(x=>isH?mr(x):x).join(' + ');
     const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad,s.l_sides,s.l_lonche,s.l_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
-    const sn=[s.snack,s.snack2,s.snack_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
+    const sn=[s.snack,s.snack2,s.snack_fruit,s.snack_drink].filter(Boolean).map(x=>isH?mr(x):x).join(', ');
     const di=dinnerSummary(s,isH);
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
     const tw=(toddlerWeeks[tmCurWeek]||{})[day]||{};
@@ -4481,9 +4486,9 @@ function updateCopyPreview(){
   const s  = weeks[fw] && weeks[fw][fd];
   if(!s){ document.getElementById('copy-preview').innerHTML = '<em>No data</em>'; return; }
   const fields = [
-    ['🌅 Breakfast', [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack].filter(Boolean).join(' + ')],
+    ['🌅 Breakfast', [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack, s.fruit].filter(Boolean).join(' + ')],
     ['🥘 Lunch',     [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ')],
-    ['🍊 Snacks',    [s.snack, s.snack2].filter(Boolean).join(', ')],
+    ['🍊 Snacks',    [s.snack, s.snack2, s.snack_fruit].filter(Boolean).join(', ')],
     ['🌙 Dinner',    dinnerSummary(s,false)],
   ];
   document.getElementById('copy-preview').innerHTML = fields.map(([l,v]) =>
@@ -4532,9 +4537,9 @@ function renderHistory(){
     const arDate = safeLocale(new Date(entry.archivedAt),'en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
     const dayCards = DAYS.map(day => {
       const s = entry.data[day] || {};
-      const bf = [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack].filter(Boolean).join(' + ');
+      const bf = [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack, s.fruit].filter(Boolean).join(' + ');
       const lu = [s.sabji, s.sabji2, s.bread, s.dal, s.rice].filter(Boolean).join(', ');
-      const sn = [s.snack, s.snack2].filter(Boolean).join(', ');
+      const sn = [s.snack, s.snack2, s.snack_fruit].filter(Boolean).join(', ');
       const di = dinnerSummary(s,false);
       return `<div class="history-day-cell">
         <div class="history-day-name">${DAY_EMOJI[day]||''} ${day}</div>
@@ -4783,9 +4788,9 @@ function whatsappTodayMenu(){
   const todayDay = DAYS[todayDow === 0 ? 6 : todayDow - 1];
   const s = weeks[tmCurWeek] && weeks[tmCurWeek][todayDay];
   if(!s){ showToast('⚠️ No meals for today'); return; }
-  const bf  = [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack].filter(Boolean).join(' + ');
+  const bf  = [s.breakfast, s.bf2, s.bf3, s.chutney, s.bf_snack, s.fruit].filter(Boolean).join(' + ');
   const lu  = [s.sabji, s.sabji2, s.bread, s.dal, s.rice, s.salad].filter(Boolean).join(', ');
-  const sn  = [s.snack, s.snack2].filter(Boolean).join(', ');
+  const sn  = [s.snack, s.snack2, s.snack_fruit].filter(Boolean).join(', ');
   const di  = dinnerSummary(s,false);
   const date = safeLocale(now,'en-IN', {weekday:'long', day:'numeric', month:'long'});
   let text = `🏠 *Indraprastha — ${date}*\n\n`;
