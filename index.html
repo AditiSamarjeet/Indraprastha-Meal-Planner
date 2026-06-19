@@ -18,10 +18,10 @@
   --text: #1C1A14;
   --text2: #5A5448;
   --text3: #9C9384;
-  --green: #6B8C5E;
-  --green2: #82A872;
-  --green-light: #EEF4EB;
-  --green-mid: #BDD0B4;
+  --green: #3D7A52;
+  --green2: #4E9468;
+  --green-light: #E8F5EE;
+  --green-mid: #A8CEBC;
   --gold: #C4963A;
   --gold2: #D4A84A;
   --gold-light: rgba(196,150,58,0.12);
@@ -62,7 +62,7 @@ body::before { display: none; }
   padding: 0 28px;
   display: flex; align-items: center; justify-content: space-between;
   height: 68px; position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 3px 16px rgba(107,140,94,0.35);
+  box-shadow: 0 3px 16px rgba(61,122,82,0.35);
   overflow: hidden;
 }
 .header::after {
@@ -111,7 +111,7 @@ body::before { display: none; }
 }
 .sidebar-banner {
   width:100%;
-  background:linear-gradient(135deg, #5A7A4E 0%, #6B8C5E 60%, #82A872 100%);
+  background:linear-gradient(135deg, #2D6844 0%, #3D7A52 60%, #4E9468 100%);
   padding:18px 0 14px;
   display:flex; flex-direction:column; align-items:center; gap:6px;
   position:relative; overflow:hidden;
@@ -152,7 +152,7 @@ body::before { display: none; }
 
 /* View hero banner */
 .view-hero {
-  background:linear-gradient(130deg, #5A7A4E 0%, #6B8C5E 50%, #82A872 100%);
+  background:linear-gradient(130deg, #2D6844 0%, #3D7A52 50%, #4E9468 100%);
   border-radius:var(--radius-xl); padding:22px 28px; margin-bottom:24px;
   display:flex; align-items:center; justify-content:space-between; gap:16px;
   position:relative; overflow:hidden; box-shadow:var(--shadow-md);
@@ -178,7 +178,7 @@ body::before { display: none; }
   cursor:pointer; transition:all 0.15s; font-family:'Plus Jakarta Sans',sans-serif;
 }
 .week-tab:hover { background:var(--green-light); border-color:var(--green-mid); color:var(--green); }
-.week-tab.active { background:var(--green); color:#fff; border-color:var(--gold); box-shadow:0 2px 8px rgba(107,140,94,0.3), 0 0 0 2px var(--gold-light); }
+.week-tab.active { background:var(--green); color:#fff; border-color:var(--gold); box-shadow:0 2px 8px rgba(61,122,82,0.3), 0 0 0 2px var(--gold-light); }
 .week-actions { margin-left:auto; display:flex; gap:6px; }
 
 /* Meal Table */
@@ -226,7 +226,7 @@ table.meal-table { border-collapse:collapse; width:100%; min-width:820px; }
 .meal-table tr.today-row:hover td { background:var(--today-row) !important; }
 .meal-table tr.today-row td:first-child { color:var(--green) !important; font-weight:700 !important; }
 .col-b { border-top:4px solid var(--sky); background:rgba(46,111,168,0.04); }
-.col-l { border-top:4px solid var(--green); background:rgba(107,140,94,0.04); }
+.col-l { border-top:4px solid var(--green); background:rgba(61,122,82,0.04); }
 .col-s { border-top:4px solid var(--carrot); background:rgba(224,123,42,0.04); }
 .col-d { border-top:4px solid var(--aubergine); background:rgba(123,63,160,0.04); }
 .col-b th, .col-l th, .col-s th, .col-d th { font-size:12px; font-weight:800; }
@@ -772,12 +772,12 @@ body.admin-mode .tm-add-task { display:flex;gap:6px; }
 body.dark-mode {
   --bg:#111111; --surface:#1C1C1C; --surface2:#242424; --border:#2E2E2E; --border2:#3A3A3A;
   --text:#F0F0F0; --text2:#B0B0B0; --text3:#707070;
-  --green-light:rgba(107,140,94,0.22); --green-mid:rgba(107,140,94,0.45);
+  --green-light:rgba(61,122,82,0.22); --green-mid:rgba(61,122,82,0.45);
   --sky-light:rgba(46,111,168,0.18); --lemon-light:rgba(212,160,23,0.15);
   --red-light:rgba(176,48,48,0.18); --carrot-light:rgba(224,123,42,0.15);
   --aubergine-light:rgba(123,63,160,0.15); --tomato-light:rgba(217,79,61,0.15);
   --surface-hover:#2C2C2C;
-  --today-row:rgba(107,140,94,0.14);
+  --today-row:rgba(61,122,82,0.14);
   --shadow:0 2px 8px rgba(0,0,0,0.35); --shadow-md:0 6px 24px rgba(0,0,0,0.45);
 }
 body:not(.dark-mode) {
@@ -812,7 +812,7 @@ body.dark-mode .meal-table tr.today-row td { color:var(--text); }
 /* ── Searchable Meal Dropdown (Admin) ── */
 .meal-dd { position:relative; }
 .meal-dd-input { width:100%; padding:6px 9px; border:1.5px solid var(--border2); border-radius:8px; background:var(--surface); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12.5px; cursor:text; outline:none; transition:border-color 0.15s, box-shadow 0.15s; box-sizing:border-box; }
-.meal-dd-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(107,140,94,0.15); }
+.meal-dd-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(61,122,82,0.15); }
 .meal-dd-input::placeholder { color:var(--text3); }
 .meal-dd-list { display:none; position:absolute; z-index:200; background:var(--surface); border:1.5px solid var(--border2); border-radius:10px; box-shadow:var(--shadow-md); max-height:200px; overflow-y:auto; width:max-content; min-width:100%; top:calc(100% + 4px); left:0; }
 .meal-dd-list.open { display:block; }
@@ -851,7 +851,7 @@ body.dark-mode .meal-table tr.today-row td { color:var(--text); }
 .dr-section-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--text3); margin:0 0 8px; }
 /* Stock card */
 .dr-stock-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:14px; }
-.dr-stock-hdr { background:linear-gradient(90deg,#5A7A4E,#6B8C5E); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; }
+.dr-stock-hdr { background:linear-gradient(90deg,#2D6844,#3D7A52); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; }
 .dr-stock-hdr-title { color:#fff; font-weight:700; font-size:13px; }
 .dr-stock-hdr-time  { color:rgba(255,255,255,0.75); font-size:11px; }
 .dr-stock-row { display:grid; grid-template-columns:1fr 1fr; gap:0; }
@@ -1315,7 +1315,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- DAILY REPORT & CHAT -->
     <div id="view-dailyreport" class="view">
-      <div class="view-hero" style="background:linear-gradient(130deg,#5A7A4E 0%,#6B8C5E 100%)">
+      <div class="view-hero" style="background:linear-gradient(130deg,#2D6844 0%,#3D7A52 100%)">
         <div class="view-hero-left">
           <div class="view-hero-title" style="color:#fff">📋 <span class="en">Daily Report</span><span class="mr">रोजचा अहवाल</span></div>
           <div class="view-hero-sub" style="color:rgba(255,255,255,0.85)"><span class="en">Stock update &amp; chat</span><span class="mr">साठा अपडेट आणि संदेश</span></div>
@@ -1340,7 +1340,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- TODAY'S MENU -->
     <div id="view-todaymenu" class="view">
-      <div class="view-hero" style="background:linear-gradient(130deg,#5A7A4E 0%,#6B8C5E 50%,#82A872 100%);overflow:visible">
+      <div class="view-hero" style="background:linear-gradient(130deg,#2D6844 0%,#3D7A52 50%,#4E9468 100%);overflow:visible">
         <span style="position:absolute;font-size:40px;right:140px;top:-12px;transform:rotate(-14deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🍛</span>
         <span style="position:absolute;font-size:32px;right:80px;bottom:-6px;transform:rotate(12deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🫕</span>
         <span style="position:absolute;font-size:36px;right:34px;top:4px;transform:rotate(6deg);opacity:0.6;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🥗</span>
@@ -1694,7 +1694,7 @@ const DEFAULT_OPTS={
 const DEFAULT_ESSENTIALS={categories:[
   {id:'dairy',name:'Dairy',color:'#2E6FA8',items:['Dahi','Ghee','Loni','Tak']},
   {id:'masalas',name:'Masalas',color:'#E07B2A',items:['Haldi','Mirchi','Jeera','Dhane','Goda Masala']},
-  {id:'oils',name:'Oils',color:'#6B8C5E',items:['Sunflower Oil','Coconut Oil']},
+  {id:'oils',name:'Oils',color:'#3D7A52',items:['Sunflower Oil','Coconut Oil']},
   {id:'grains',name:'Grains',color:'#7B3FA0',items:['Atta','Rice','Besan']},
 ]};
 
@@ -1742,7 +1742,7 @@ const CAT_ICONS={fruit:'🍎',vegetable:'🥦',veggie:'🥕',dairy:'🥛',egg:'�
 function getCatIcon(name){const l=name.toLowerCase();for(const[k,v]of Object.entries(CAT_ICONS)){if(l.includes(k))return v;}return'🛍';}
 
 const DEFAULT_GL_CATS=[
-  {id:'fruits',name:'Fruits & Vegetables',color:'#6B8C5E',items:[
+  {id:'fruits',name:'Fruits & Vegetables',color:'#3D7A52',items:[
     {id:'xl1',name:'Tomatoes',qty:'1 kg',brand:'',checked:false},
     {id:'xl2',name:'Onions',qty:'1 kg',brand:'',checked:false},
     {id:'xl3',name:'Potatoes',qty:'1 kg',brand:'',checked:false},
@@ -2000,7 +2000,7 @@ const DEFAULT_GL_CATS=[
     {id:'xl237',name:'Sanitary Pads / Tampons',qty:'',brand:'',checked:false},
     {id:'xl238',name:'Razor / Shaving Gel',qty:'',brand:'',checked:false}
   ]},
-  {id:'cleaning',name:'Home Cleaning & Utility',color:'#6B8C5E',items:[
+  {id:'cleaning',name:'Home Cleaning & Utility',color:'#3D7A52',items:[
     {id:'xl239',name:'Detergent Powder / Liquid',qty:'',brand:'',checked:false},
     {id:'xl240',name:'Dishwashing Liquid / Bar',qty:'',brand:'',checked:false},
     {id:'xl241',name:'Floor Cleaner (Phenyl, Lizol)',qty:'',brand:'',checked:false},
@@ -2045,7 +2045,7 @@ const DEFAULT_GL_CATS=[
     {id:'xl274',name:'Gloves (Latex/Plastic)',qty:'',brand:'',checked:false},
     {id:'xl275',name:'Cotton Pads / Swabs (if household use included)',qty:'',brand:'',checked:false}
   ]},
-  {id:'seeds',name:'Edible Seeds',color:'#6B8C5E',items:[
+  {id:'seeds',name:'Edible Seeds',color:'#3D7A52',items:[
     {id:'xl276',name:'Flax Seeds (Alsi)',qty:'',brand:'',checked:false},
     {id:'xl277',name:'Chia Seeds',qty:'',brand:'',checked:false},
     {id:'xl278',name:'Sunflower Seeds',qty:'',brand:'',checked:false},
@@ -2094,7 +2094,7 @@ const DEFAULT_GL_CATS=[
   ]}
 ];
 
-const CAT_COLORS=['#6B8C5E','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
+const CAT_COLORS=['#3D7A52','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
 function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
 let opts, essentials, weeks, toddlerWeeks={}, dietProfiles=[], groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, dailyReport={}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
@@ -2922,7 +2922,7 @@ function renderMobileNavBar(mode,activeView){
     recipes:'📝 Recipes',
     backup:'💾 Backup',
   };
-  const ac=mode==='helper'?'#E07B2A':mode==='admin'?'#6B8C5E':'#2E6FA8';
+  const ac=mode==='helper'?'#E07B2A':mode==='admin'?'#3D7A52':'#2E6FA8';
   bar.innerHTML=tabs.map(id=>{
     const active=id===activeView;
     const style=active?`background:${ac};color:#fff;border-color:${ac};`:'';
@@ -4005,7 +4005,7 @@ function drRemoveItem(id){
 // STAFF AVAILABILITY SYSTEM
 // ══════════════════════════════════════════════════
 let hscalYear=new Date().getFullYear(), hscalMonth=new Date().getMonth();
-const STAFF_COLORS=['#7B3F9E','#E07B2A','#2E6FA8','#6B8C5E','#C0392B','#16A085','#8E44AD','#D35400'];
+const STAFF_COLORS=['#7B3F9E','#E07B2A','#2E6FA8','#3D7A52','#C0392B','#16A085','#8E44AD','#D35400'];
 let _staffColorPick=STAFF_COLORS[0];
 
 function hscalKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -4752,7 +4752,7 @@ function renderRecipes(){
     body.innerHTML = `<div class="recipe-empty">📝 No recipes yet.<br><span style="font-size:12px;color:var(--text3)">Admin can add recipes using the "+ Add Recipe" button above. Helper can read them here.</span></div>`;
     return;
   }
-  const catColors = {Breakfast:'#2E6FA8',Lunch:'#6B8C5E',Dinner:'#7B3FA0',Snacks:'#E07B2A','Chutney / Side':'#D4A017',Dessert:'#D94F3D',Other:'#9C9384'};
+  const catColors = {Breakfast:'#2E6FA8',Lunch:'#3D7A52',Dinner:'#7B3FA0',Snacks:'#E07B2A','Chutney / Side':'#D4A017',Dessert:'#D94F3D',Other:'#9C9384'};
   body.innerHTML = `<div class="recipe-grid">${recipes.map(r => {
     const col = catColors[r.cat] || '#9C9384';
     return `<div class="recipe-card">
