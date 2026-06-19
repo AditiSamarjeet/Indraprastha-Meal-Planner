@@ -126,9 +126,12 @@ body::before { display: none; }
   color:rgba(255,255,255,0.9); letter-spacing:0.5px; position:relative; z-index:1;
 }
 .sidebar-section {
-  padding:6px 14px 4px 18px; font-size:10px; font-weight:600;
-  letter-spacing:1.1px; text-transform:uppercase; color:var(--text3); margin-top:8px;
+  font-size:9px; font-weight:900; letter-spacing:2px; color:var(--text3);
+  padding:18px 18px 6px; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
 }
+.sidebar-section::before { content:''; flex:1; height:1px; background:var(--border); }
+.sidebar-section::after { content:''; flex:1; height:1px; background:var(--border); }
 .nav-item {
   display:flex; align-items:center; gap:10px; padding:10px 18px;
   cursor:pointer; color:var(--text2); font-size:13px; font-weight:400;
@@ -215,12 +218,18 @@ table.meal-table { border-collapse:collapse; width:100%; min-width:820px; }
 .meal-table tr.today-row td { background:var(--today-row) !important; }
 .meal-table tr.today-row:hover td { background:var(--today-row) !important; }
 .meal-table tr.today-row td:first-child { color:var(--green) !important; font-weight:700 !important; }
-.col-b { border-top:3px solid var(--sky); }
-.col-l { border-top:3px solid var(--green); }
-.col-s { border-top:3px solid var(--carrot); }
-.col-d { border-top:3px solid var(--aubergine); }
+.col-b { border-top:4px solid var(--sky); background:rgba(46,111,168,0.04); }
+.col-l { border-top:4px solid var(--green); background:rgba(31,122,74,0.04); }
+.col-s { border-top:4px solid var(--carrot); background:rgba(224,123,42,0.04); }
+.col-d { border-top:4px solid var(--aubergine); background:rgba(123,63,160,0.04); }
+.col-b th, .col-l th, .col-s th, .col-d th { font-size:12px; font-weight:800; }
 .th-emoji { font-size:15px; margin-right:5px; }
-.sub-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.6px; margin:8px 0 3px; }
+.sub-label {
+  font-size:10px; font-weight:800; color:var(--green); text-transform:uppercase;
+  letter-spacing:0.8px; margin:10px 0 3px;
+  display:flex; align-items:center; gap:5px;
+}
+.sub-label::before { content:''; display:inline-block; width:3px; height:10px; background:var(--green); border-radius:2px; flex-shrink:0; }
 .sub-label:first-child { margin-top:0; }
 select.meal-select {
   width:100%; padding:5px 7px; border:1.5px solid var(--border); border-radius:8px;
@@ -240,7 +249,11 @@ select.meal-select:focus { border-color:var(--green2); }
 
 /* Breakfast — 3-dish table with headcount */
 .bf-section { background:var(--surface2); border-radius:8px; padding:8px 10px 6px; margin-bottom:6px; border:1px solid var(--border); }
-.bf-section-hd { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+.bf-section-hd {
+  font-size:11px; font-weight:800; color:var(--sky); text-transform:uppercase;
+  letter-spacing:0.8px; margin-bottom:8px;
+  border-left:3px solid var(--sky); padding-left:7px;
+}
 .bf-col-hds { display:flex; align-items:center; gap:6px; font-size:10px; font-weight:600; color:var(--text3); margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid var(--border); }
 .bf-col-hds .bfch-name { flex:1; }
 .bf-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
@@ -290,15 +303,15 @@ select.meal-select:focus { border-color:var(--green2); }
 .ess-bar-col { background:var(--bg); padding:14px 16px; }
 .ess-bar-col-hd { font-size:13px; font-weight:700; color:var(--text); padding-bottom:7px; margin-bottom:7px; border-bottom:2px solid var(--border2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ess-bar-col-hd-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; flex-shrink:0; vertical-align:middle; margin-top:-1px; }
-.ess-bar-item { font-size:13px; color:var(--text2); padding:3px 0; line-height:1.55; }
+.ess-bar-item { font-size:13px; color:var(--text2); padding:3px 0 3px 8px; line-height:1.55; border-left:3px solid var(--green-mid); margin-bottom:2px; }
 /* keep .pill for any legacy usage */
 .pill { padding:3px 11px; border-radius:20px; font-size:11px; background:var(--surface); border:1px solid var(--green-mid); color:var(--green); font-weight:500; }
 
 /* Summary cards */
 .summary-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
 .summary-card {
-  background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg);
-  padding:16px 18px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+  background:var(--surface); border:1.5px solid var(--border); border-left:3px solid var(--green-mid); border-radius:var(--radius-lg);
+  padding:16px 18px; box-shadow:0 4px 16px rgba(28,26,20,0.10); position:relative; overflow:hidden;
   transition:transform 0.15s, box-shadow 0.15s;
 }
 .summary-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
@@ -720,8 +733,12 @@ body.marathi-mode .en { display:none; }
 .tm-day-date   { font-size:11px;color:var(--text3); }
 .tm-today-badge { background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;text-transform:uppercase;letter-spacing:0.5px; }
 .tm-meals      { padding:10px 14px; }
-.tm-meal-row   { display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px; }
+.tm-meal-row   { display:flex;align-items:flex-start;gap:8px;padding:5px 0 5px 8px;border-bottom:1px solid var(--border);font-size:12px;border-left:3px solid transparent;border-radius:0 6px 6px 0; }
 .tm-meal-row:last-child { border-bottom:none; }
+.tm-meal-row:nth-child(1) { border-left-color:var(--sky); }
+.tm-meal-row:nth-child(2) { border-left-color:var(--green); }
+.tm-meal-row:nth-child(3) { border-left-color:var(--carrot); }
+.tm-meal-row:nth-child(4) { border-left-color:var(--aubergine); }
 .tm-meal-icon  { font-size:13px;flex-shrink:0;margin-top:1px; }
 .tm-meal-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3);margin-bottom:1px; }
 .tm-meal-val   { color:var(--text);font-size:12px; }
@@ -975,7 +992,7 @@ body:not(.admin-mode) #view-grocery .gl-col-labels .gl-col-label:last-child { di
 
 /* ── Backup ── */
 .backup-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin-bottom:24px; }
-.backup-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+.backup-card { background:var(--surface); border:1.5px solid var(--border); border-left:3px solid var(--green-mid); border-radius:var(--radius-lg); padding:24px; box-shadow:0 4px 16px rgba(28,26,20,0.10); display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
 .backup-icon { font-size:32px; }
 .backup-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:600; color:var(--text); }
 .backup-desc { font-size:12px; color:var(--text2); line-height:1.6; flex:1; }
@@ -1100,7 +1117,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- GROCERY LIST -->
     <div id="view-grocery" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:38px;right:130px;top:-8px;transform:rotate(-14deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🛒</span>
+        <span style="position:absolute;font-size:32px;right:68px;bottom:-6px;transform:rotate(10deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🧅</span>
+        <span style="position:absolute;font-size:36px;right:196px;bottom:-4px;transform:rotate(-8deg);opacity:0.48;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🥕</span>
         <div class="view-hero-left">
           <div class="view-hero-title">🛒 <span class="en">Grocery List</span><span class="mr">किराणा यादी</span></div>
           <div class="view-hero-sub"><span class="en">Organised by category — with quantity &amp; preferred brand</span><span class="mr">श्रेणीनुसार — प्रमाण व ब्रँडसह</span></div>
@@ -1111,6 +1131,9 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn btn-sm" onclick="printGroceryList()">🖨 <span class="en">Print</span><span class="mr">प्रिंट</span></button>
           <button class="btn btn-white btn-sm admin-only" onclick="openGlCatModal()">+ <span class="en">Category</span><span class="mr">श्रेणी</span></button>
         </div>
+      </div>
+      <div class="sticker-strip" style="padding:4px 0 12px">
+        <span>🥕</span><span>🧅</span><span>🥦</span><span>🌽</span><span>🧄</span><span>🫑</span><span>🍅</span><span>🥬</span><span>🧂</span><span>🫙</span>
       </div>
       <div class="gl-progress-label">
         <span>🥬 <span class="en">Shopping progress</span><span class="mr">खरेदी प्रगती</span></span>
@@ -1123,7 +1146,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- MEAL-DERIVED -->
     <div id="view-mealderived" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">📋</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🍽️</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🌿</span>
         <div class="view-hero-left">
           <div class="view-hero-title">📋 <span class="en">Meal-wise Summary</span><span class="mr">जेवण सारांश</span></div>
           <div class="view-hero-sub"><span class="en">Ingredients by day, derived from your weekly plan</span><span class="mr">साप्ताहिक योजनेतून दिवसनिहाय घटक</span></div>
@@ -1144,7 +1170,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- CUSTOMISE -->
     <div id="view-customise" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">✏️</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🍛</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🫕</span>
         <div class="view-hero-left">
           <div class="view-hero-title">✏️ <span class="en">Customise Options</span><span class="mr">पर्याय बदला</span></div>
           <div class="view-hero-sub"><span class="en">Add items to meal dropdowns</span><span class="mr">जेवणाच्या यादीत पदार्थ जोडा</span></div>
@@ -1173,7 +1202,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- ESSENTIALS -->
     <div id="view-essentials" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:140px;top:-6px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">⭐</span>
+        <span style="position:absolute;font-size:32px;right:78px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🫙</span>
+        <span style="position:absolute;font-size:30px;right:200px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🧂</span>
         <div class="view-hero-left">
           <div class="view-hero-title">⭐ <span class="en">Daily Essentials</span><span class="mr">रोजची गरज</span></div>
           <div class="view-hero-sub"><span class="en">Things you always need — organised by category</span><span class="mr">नेहमी लागणाऱ्या वस्तू — श्रेणीनुसार</span></div>
@@ -1181,6 +1213,9 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
         <div class="view-hero-right">
           <button class="btn btn-white btn-sm admin-only" onclick="openAddCatModal()">+ <span class="en">New category</span><span class="mr">नवीन श्रेणी</span></button>
         </div>
+      </div>
+      <div class="sticker-strip" style="padding:4px 0 12px">
+        <span>⭐</span><span>🫙</span><span>🧂</span><span>🥛</span><span>🫚</span><span>🧈</span><span>🍯</span><span>🫖</span><span>🌿</span><span>🧄</span>
       </div>
       <div class="ess-grid" id="ess-cat-grid"></div>
     </div>
@@ -1204,7 +1239,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- REAL-TIME MEAL CALENDAR -->
     <div id="view-rcalendar" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:38px;right:136px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">📆</span>
+        <span style="position:absolute;font-size:30px;right:74px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🌸</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-6deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🍃</span>
         <div class="view-hero-left">
           <div class="view-hero-title">📆 <span class="en">Meal Calendar</span><span class="mr">जेवण कॅलेंडर</span></div>
           <div class="view-hero-sub"><span class="en">Set menus &amp; mark festivals for any date</span><span class="mr">कोणत्याही तारखेसाठी मेनू सेट करा</span></div>
@@ -1237,7 +1275,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- BUYING LIST -->
     <div id="view-buyinglist" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:38px;right:140px;top:-7px;transform:rotate(-13deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🧾</span>
+        <span style="position:absolute;font-size:32px;right:76px;bottom:-6px;transform:rotate(10deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🛍️</span>
+        <span style="position:absolute;font-size:30px;right:202px;bottom:-4px;transform:rotate(-8deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🥬</span>
         <div class="view-hero-left">
           <div class="view-hero-title">🧾 <span class="en">Buying List</span><span class="mr">खरेदी यादी</span></div>
           <div class="view-hero-sub"><span class="en">All checked grocery items — ready for shopping</span><span class="mr">निवडलेल्या सर्व वस्तू — खरेदीसाठी तयार</span></div>
@@ -1247,6 +1288,9 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <button class="btn btn-sm" onclick="copyBuyingList()">📋 <span class="en">Copy</span><span class="mr">कॉपी</span></button>
           <button class="btn btn-sm" style="background:#25D366;color:#fff;border-color:#25D366" onclick="whatsappBuyingList()">💬 <span class="en">WhatsApp</span><span class="mr">व्हॉट्सअ‍ॅप</span></button>
         </div>
+      </div>
+      <div class="sticker-strip" style="padding:4px 0 12px">
+        <span>🧾</span><span>🛍️</span><span>🥬</span><span>🧅</span><span>🥕</span><span>🧂</span><span>🫙</span><span>🍅</span><span>🌽</span><span>🧄</span>
       </div>
       <div id="bl-body"></div>
     </div>
@@ -1275,7 +1319,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- HELPER SCHEDULE CALENDAR -->
     <div id="view-hlprschedule" class="view">
-      <div class="view-hero" style="background:linear-gradient(130deg,#7B3F9E 0%,#9B5FBE 100%)">
+      <div class="view-hero" style="background:linear-gradient(130deg,#7B3F9E 0%,#9B5FBE 100%);overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">📅</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🧹</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🌿</span>
         <div class="view-hero-left">
           <div class="view-hero-title" style="color:#fff">📅 <span class="en">Helper Schedule</span><span class="mr">वेळापत्रक</span></div>
           <div class="view-hero-sub" style="color:rgba(255,255,255,0.85)"><span class="en">Working days &amp; holidays</span><span class="mr">कामाचे दिवस आणि सुट्ट्या</span></div>
@@ -1302,7 +1349,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- MEAL HISTORY -->
     <div id="view-history" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">📖</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🍱</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🥗</span>
         <div class="view-hero-left">
           <div class="view-hero-title">📖 <span class="en">Meal History</span><span class="mr">जेवण इतिहास</span></div>
           <div class="view-hero-sub"><span class="en">Archived weekly meal plans</span><span class="mr">जतन केलेले आठवड्याचे जेवण</span></div>
@@ -1316,7 +1366,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- RECIPES -->
     <div id="view-recipes" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:140px;top:-7px;transform:rotate(-13deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">📝</span>
+        <span style="position:absolute;font-size:30px;right:78px;bottom:-5px;transform:rotate(8deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🍴</span>
+        <span style="position:absolute;font-size:32px;right:198px;bottom:-4px;transform:rotate(-9deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🫕</span>
         <div class="view-hero-left">
           <div class="view-hero-title">📝 <span class="en">Recipes</span><span class="mr">पाककृती</span></div>
           <div class="view-hero-sub"><span class="en">Add recipes for any dish — helper can read them here</span><span class="mr">कोणत्याही पदार्थाची कृती येथे जोडा</span></div>
@@ -1330,7 +1383,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- TODDLER MENU -->
     <div id="view-toddler" class="view">
-      <div class="view-hero" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+      <div class="view-hero" style="background:linear-gradient(135deg,#f59e0b,#d97706);overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🧒</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🍼</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🥛</span>
         <div class="view-hero-left">
           <div class="view-hero-title">🧒 Toddler's School Meal</div>
           <div class="view-hero-sub">School breakfast — main dish, chutney/dip &amp; snack per day</div>
@@ -1344,7 +1400,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- DIET PROFILES -->
     <div id="view-diet" class="view">
-      <div class="view-hero" style="background:linear-gradient(135deg,#10b981,#059669)">
+      <div class="view-hero" style="background:linear-gradient(135deg,#10b981,#059669);overflow:visible">
+        <span style="position:absolute;font-size:36px;right:138px;top:-7px;transform:rotate(-12deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🥗</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🫐</span>
+        <span style="position:absolute;font-size:28px;right:196px;bottom:-4px;transform:rotate(-7deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🍎</span>
         <div class="view-hero-left">
           <div class="view-hero-title">🥗 Diet Profiles</div>
           <div class="view-hero-sub">Family member diet notes &amp; restrictions for meal planning</div>
@@ -1356,7 +1415,10 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- BACKUP -->
     <div id="view-backup" class="view">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <span style="position:absolute;font-size:36px;right:136px;top:-7px;transform:rotate(-11deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">💾</span>
+        <span style="position:absolute;font-size:30px;right:76px;bottom:-5px;transform:rotate(9deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🌿</span>
+        <span style="position:absolute;font-size:32px;right:196px;bottom:-4px;transform:rotate(-8deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🧁</span>
         <div class="view-hero-left">
           <div class="view-hero-title">💾 <span class="en">Backup & Restore</span><span class="mr">बॅकअप</span></div>
           <div class="view-hero-sub"><span class="en">Export all your data or restore from a backup file</span></div>
@@ -4164,6 +4226,8 @@ function renderTodayMenu(){
     const dateBanner='<div class="tm-date-banner"><div><div class="tm-today-date">'+now.getDate()+' '+safeLocale(now,'mr-IN',{month:'long'})+'</div><div class="tm-today-sub">'+safeLocale(now,'mr-IN',{weekday:'long',year:'numeric'})+'</div>'+(fest?'<div class="tm-today-fest">🪔 '+escHtml(fest)+'</div>':'')+'</div><div style="text-align:right"><div class="tm-time-big" id="tm-clock">'+hh+':'+mm+':'+ss+'</div></div></div>';
     // helper to build one day card
     const buildCard=(s,dayName,date,isToday)=>{
+      const DAY_STICKERS={Monday:'🌿',Tuesday:'🌸',Wednesday:'☀️',Thursday:'🍋',Friday:'🌺',Saturday:'🫙',Sunday:'🌼'};
+      const daySticker=DAY_STICKERS[dayName]||'🌿';
       const dayMr=DAYS_MR[dayName]||dayName;
       const dateStr=safeLocale(date,'mr-IN',{day:'numeric',month:'long'});
       const hdrCls=isToday?'today-hd':'tmrw-hd';
@@ -4219,7 +4283,7 @@ function renderTodayMenu(){
           +diff+'</div>';
       })();
       const eventBar=buildDayEventBar(dKey,true);
-      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'</div>'+eventBar+staffBarHtml+milkBlock+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
+      return'<div class="hlpr-day-card"><div class="hlpr-day-hd '+hdrCls+'"><div class="hlpr-day-hd-text"><div class="hlpr-day-hd-name">'+escHtml(dayMr)+subLbl+'</div><div class="hlpr-day-hd-date">'+escHtml(dateStr)+'</div></div>'+badge+'<span style="font-size:28px;opacity:0.55;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));pointer-events:none;flex-shrink:0">'+daySticker+'</span></div>'+eventBar+staffBarHtml+milkBlock+bfBlock+luBlock+snBlock+diBlock+taskBlock+'</div>';
     };
     body.innerHTML=dateBanner+buildCard(sToday,todayName,now,true)+buildCard(sTomorrow,tomorrowName,tomorrowDate,false);
     if(window._tmCI)clearInterval(window._tmCI);
