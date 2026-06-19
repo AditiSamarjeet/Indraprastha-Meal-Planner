@@ -1286,7 +1286,11 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- TODAY'S MENU -->
     <div id="view-todaymenu" class="view">
-      <div class="view-hero" style="background:linear-gradient(130deg,#1F7A4A 0%,#2E8B57 50%,#3A9B68 100%)">
+      <div class="view-hero" style="background:linear-gradient(130deg,#1F7A4A 0%,#2E8B57 50%,#3A9B68 100%);overflow:visible">
+        <span style="position:absolute;font-size:40px;right:140px;top:-12px;transform:rotate(-14deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🍛</span>
+        <span style="position:absolute;font-size:32px;right:80px;bottom:-6px;transform:rotate(12deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🫕</span>
+        <span style="position:absolute;font-size:36px;right:34px;top:4px;transform:rotate(6deg);opacity:0.6;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🥗</span>
+        <span style="position:absolute;font-size:28px;right:188px;bottom:-2px;transform:rotate(-8deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🍃</span>
         <div class="view-hero-left">
           <div class="view-hero-title" id="tm-hero-title" style="color:#fff">🏠 Today's Menu</div>
           <div class="view-hero-sub" id="tm-hero-sub" style="color:rgba(255,255,255,0.8)">Full week plan &amp; daily tasks</div>
@@ -4255,9 +4259,16 @@ function renderTodayMenu(){
     const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'आजचे काम':'Tasks')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWorkId+'" placeholder="'+(isH?'काम लिहा…':'Add task…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'task\');this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addWorkId+'\').value,\'task\');document.getElementById(\''+addWorkId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky)">🛒 '+(isH?'आज आणायचे':'To Buy')+'</div>'+buyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBuyId+'" placeholder="'+(isH?'वस्तू लिहा…':'Add item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'buy\');this.value=\'\';}\"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addBuyId+'\').value,\'buy\');document.getElementById(\''+addBuyId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
     const staffB=buildStaffBar(dateKey,false);
     const milkN=(s.milk_order||s.milk_bought)?'<div style="margin:4px 10px 0;padding:7px 10px;background:rgba(46,111,168,0.07);border-radius:8px;border-left:3px solid var(--sky);display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span>🥛</span><span style="font-size:11px;color:var(--text3)">'+(isH?'दूध आणायचे':'Milk to buy')+'</span><strong style="color:var(--sky)">'+(s.milk_order||'0')+'L</strong>'+(s.milk_bought?'<span style="font-size:11px;color:var(--text3)">·</span><span style="font-size:11px;color:var(--text3)">'+(isH?'आणले':'Bought')+'</span><strong>'+s.milk_bought+'L</strong>':'')+'</div>':'';
-    return'<div class="tm-day-card'+(isToday?' is-today':'')+'"><div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div>'+eventBar+(staffB?'<div style="padding:0 10px">'+staffB+'</div>':'')+milkN+'<div class="tm-meals">'+mealRows+toddlerRow+calRow+taskSec+'</div></div>';
+    const dayStickers={Monday:'🌿',Tuesday:'🍋',Wednesday:'🥕',Thursday:'🌶️',Friday:'🫙',Saturday:'🌸',Sunday:'🍃'};
+    const ds=dayStickers[day]||'🌿';
+    return'<div class="tm-day-card'+(isToday?' is-today':'')+'" style="position:relative;overflow:visible">'
+      +'<span style="position:absolute;top:-12px;right:10px;font-size:26px;transform:rotate(14deg);pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2));z-index:5">'+ds+'</span>'
+      +'<div class="tm-day-header"><div><div class="tm-day-name">'+dayLabel+'</div><div class="tm-day-date">'+dateStr+'</div></div>'+(isToday?'<span class="tm-today-badge">'+(isH?'आज':'Today')+'</span>':'')+'</div>'+eventBar+(staffB?'<div style="padding:0 10px">'+staffB+'</div>':'')+milkN+'<div class="tm-meals">'+mealRows+toddlerRow+calRow+taskSec+'</div></div>';
   }).join('');
-  body.innerHTML=dateBanner+'<div class="tm-week-grid">'+cards+'</div>';
+  const stickerStrip='<div class="sticker-strip" style="padding:4px 0 14px">'
+    +'<span style="animation-delay:0s">🍅</span><span style="animation-delay:.2s">🧄</span><span style="animation-delay:.4s">🫑</span><span style="animation-delay:.6s">🥬</span><span style="animation-delay:.8s">🌽</span><span style="animation-delay:.1s">🫚</span><span style="animation-delay:.3s">🧅</span><span style="animation-delay:.5s">🍯</span><span style="animation-delay:.7s">🧂</span><span style="animation-delay:.9s">🥦</span><span style="animation-delay:.2s">🫓</span><span style="animation-delay:.4s">🥭</span>'
+    +'</div>';
+  body.innerHTML=dateBanner+stickerStrip+'<div class="tm-week-grid">'+cards+'</div>';
   if(window._tmCI)clearInterval(window._tmCI);
   window._tmCI=setInterval(()=>{const n=new Date();const ce=document.getElementById('tm-clock');if(ce)ce.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');},1000);
   // Task summary banner for admin and family
