@@ -172,6 +172,30 @@ body::before { display: none; }
 .week-actions { margin-left:auto; display:flex; gap:6px; }
 
 /* Meal Table */
+/* ── Pinterest sticker styles ────────────────────────────────────────────── */
+.sticker-strip {
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+  gap:6px; padding:4px 8px 16px; user-select:none; pointer-events:none;
+}
+.sticker-strip span {
+  display:inline-block; font-size:26px; line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+  animation: sticker-bob 3s ease-in-out infinite;
+}
+.sticker-strip span:nth-child(odd)  { transform:rotate(-9deg) translateY(2px); }
+.sticker-strip span:nth-child(even) { transform:rotate(7deg) translateY(-2px); }
+.sticker-strip span:nth-child(3n)   { transform:rotate(-3deg) scale(1.12); }
+.sticker-strip span:nth-child(5n)   { transform:rotate(12deg) translateY(3px); }
+@keyframes sticker-bob {
+  0%,100% { translate:0 0; } 50% { translate:0 -2px; }
+}
+.grid-sticker {
+  position:absolute; pointer-events:none; user-select:none; z-index:6;
+  filter:drop-shadow(1px 3px 5px rgba(0,0,0,0.2));
+  font-size:36px; line-height:1;
+}
+.grid-wrap-outer { position:relative; }
+/* ─────────────────────────────────────────────────────────────────────────── */
 .grid-wrap { overflow-x:auto; border-radius:var(--radius-lg); border:1.5px solid var(--border); background:var(--surface); box-shadow:var(--shadow-md); }
 table.meal-table { border-collapse:collapse; width:100%; min-width:820px; }
 .meal-table th {
@@ -1041,7 +1065,12 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
 
     <!-- PLANNER -->
     <div id="view-planner" class="view active">
-      <div class="view-hero">
+      <div class="view-hero" style="overflow:visible">
+        <!-- floating ingredient stickers in hero -->
+        <span style="position:absolute;font-size:42px;right:160px;top:-10px;transform:rotate(-18deg);opacity:0.55;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🫙</span>
+        <span style="position:absolute;font-size:34px;right:100px;bottom:-8px;transform:rotate(14deg);opacity:0.5;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2))">🌿</span>
+        <span style="position:absolute;font-size:38px;right:52px;top:6px;transform:rotate(8deg);opacity:0.6;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.25))">🍋</span>
+        <span style="position:absolute;font-size:30px;right:200px;bottom:-4px;transform:rotate(-10deg);opacity:0.45;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2))">🌶️</span>
         <div class="view-hero-left">
           <div class="view-hero-title">📅 <span class="en">Weekly Planner</span><span class="mr">साप्ताहिक जेवण योजना</span></div>
           <div class="view-hero-sub"><span class="en">Plan all meals — breakfast to dinner — across the week</span><span class="mr">संपूर्ण आठवड्याचे जेवण नियोजन करा</span></div>
@@ -1057,7 +1086,16 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
         <div id="planner-week-badge" style="display:inline-flex;align-items:center;gap:8px;padding:6px 18px;background:var(--green-light);border:1.5px solid var(--green-mid);border-radius:24px;font-size:13px;font-weight:600;color:var(--green);white-space:nowrap"></div>
         <button onclick="switchWeekNav(1)" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0">›</button>
       </div>
-      <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
+      <div class="sticker-strip" id="planner-sticker-strip">
+        <span style="animation-delay:0s">🌿</span><span style="animation-delay:.3s">🍋</span><span style="animation-delay:.6s">🥕</span><span style="animation-delay:.9s">🫙</span><span style="animation-delay:.2s">🍅</span><span style="animation-delay:.5s">🧄</span><span style="animation-delay:.8s">🌶️</span><span style="animation-delay:.1s">🫑</span><span style="animation-delay:.4s">🥦</span><span style="animation-delay:.7s">🌽</span><span style="animation-delay:.3s">🧅</span><span style="animation-delay:.6s">🫚</span><span style="animation-delay:.9s">🥬</span><span style="animation-delay:.2s">🧂</span><span style="animation-delay:.5s">🫓</span><span style="animation-delay:.8s">🍃</span><span style="animation-delay:.1s">🥭</span><span style="animation-delay:.4s">🍯</span>
+      </div>
+      <div class="grid-wrap-outer">
+        <span class="grid-sticker" style="top:-18px;right:18px;transform:rotate(15deg)">🥑</span>
+        <span class="grid-sticker" style="top:-18px;left:24px;transform:rotate(-12deg)">🌸</span>
+        <span class="grid-sticker" style="bottom:-18px;right:24px;transform:rotate(-10deg)">🫐</span>
+        <span class="grid-sticker" style="bottom:-18px;left:18px;transform:rotate(13deg)">🍓</span>
+        <div class="grid-wrap"><table class="meal-table" id="meal-table"></table></div>
+      </div>
     </div>
 
     <!-- GROCERY LIST -->
@@ -2187,10 +2225,10 @@ function renderPlanner(){
   const W=weeks[curWeek];
   let html=`<thead><tr>
     <th><span class="en">Day</span><span class="mr">दिवस</span></th>
-    <th class="col-b"><span class="th-emoji">🌅</span><span class="en">Breakfast</span><span class="mr">न्याहारी</span></th>
-    <th class="col-l"><span class="th-emoji">🥘</span><span class="en">Lunch</span><span class="mr">दुपारचे जेवण</span></th>
-    <th class="col-s"><span class="th-emoji">🍊</span><span class="en">Snacks</span><span class="mr">नाश्ता</span></th>
-    <th class="col-d"><span class="th-emoji">🌙</span><span class="en">Dinner</span><span class="mr">रात्रीचे जेवण</span></th>
+    <th class="col-b"><span class="th-emoji">🌅</span><span class="en">Breakfast</span><span class="mr">न्याहारी</span><span style="margin-left:6px;font-size:13px;opacity:0.7;display:inline-block;transform:rotate(-8deg)">🥐</span><span style="font-size:12px;opacity:0.6;display:inline-block;transform:rotate(6deg)">🍳</span></th>
+    <th class="col-l"><span class="th-emoji">🥘</span><span class="en">Lunch</span><span class="mr">दुपारचे जेवण</span><span style="margin-left:6px;font-size:13px;opacity:0.7;display:inline-block;transform:rotate(10deg)">🫕</span><span style="font-size:12px;opacity:0.6;display:inline-block;transform:rotate(-7deg)">🥗</span></th>
+    <th class="col-s"><span class="th-emoji">🍊</span><span class="en">Snacks</span><span class="mr">नाश्ता</span><span style="margin-left:6px;font-size:13px;opacity:0.7;display:inline-block;transform:rotate(-9deg)">🍎</span><span style="font-size:12px;opacity:0.6;display:inline-block;transform:rotate(8deg)">🥜</span></th>
+    <th class="col-d"><span class="th-emoji">🌙</span><span class="en">Dinner</span><span class="mr">रात्रीचे जेवण</span><span style="margin-left:6px;font-size:13px;opacity:0.7;display:inline-block;transform:rotate(11deg)">🍛</span><span style="font-size:12px;opacity:0.6;display:inline-block;transform:rotate(-6deg)">🕯️</span></th>
   </tr></thead><tbody>`;
   // Calculate dates for current week starting from Monday
   const _today=new Date();
