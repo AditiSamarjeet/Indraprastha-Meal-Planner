@@ -172,27 +172,31 @@ body::before { display: none; }
 .week-actions { margin-left:auto; display:flex; gap:6px; }
 
 /* Meal Table */
-.grid-wrap { overflow-x:auto; border-radius:var(--radius-lg); border:1.5px solid var(--border); background:var(--surface); box-shadow:var(--shadow); }
+.grid-wrap { overflow-x:auto; border-radius:var(--radius-lg); border:1.5px solid var(--border); background:var(--surface); box-shadow:var(--shadow-md); }
 table.meal-table { border-collapse:collapse; width:100%; min-width:820px; }
 .meal-table th {
-  padding:13px 10px; font-size:11px; font-weight:600; letter-spacing:0.6px;
-  text-transform:uppercase; color:var(--text3); background:var(--surface2);
-  border-bottom:1.5px solid var(--border); text-align:left;
+  padding:14px 10px; font-size:11px; font-weight:700; letter-spacing:0.7px;
+  text-transform:uppercase; color:var(--text2); background:var(--surface2);
+  border-bottom:2px solid var(--border); text-align:left;
 }
 .meal-table th:first-child { border-radius:var(--radius-lg) 0 0 0; padding-left:18px; }
 .meal-table th:last-child { border-radius:0 var(--radius-lg) 0 0; }
-.meal-table td { padding:10px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+.meal-table td { padding:12px 10px; border-bottom:1px solid var(--border); vertical-align:top; transition:background 0.15s; }
 .meal-table tr:last-child td { border-bottom:none; }
 .meal-table tr:last-child td:first-child { border-radius:0 0 0 var(--radius-lg); }
 .meal-table tr:last-child td:last-child { border-radius:0 0 var(--radius-lg) 0; }
-.meal-table td:first-child { font-family:'Playfair Display',serif; font-size:14px; font-weight:500; color:var(--text); width:92px; padding-left:18px; padding-top:14px; }
-.meal-table tr:hover td { background:#F6F2EA; }
+.meal-table td:first-child { font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--text); width:100px; padding-left:18px; padding-top:16px; }
+.meal-table tr:hover td { background:var(--surface-hover); }
+.meal-table tr:hover td:first-child { color:var(--text); }
+.meal-table tr.today-row td { background:var(--today-row) !important; }
+.meal-table tr.today-row:hover td { background:var(--today-row) !important; }
+.meal-table tr.today-row td:first-child { color:var(--green) !important; font-weight:700 !important; }
 .col-b { border-top:3px solid var(--sky); }
 .col-l { border-top:3px solid var(--green); }
 .col-s { border-top:3px solid var(--carrot); }
 .col-d { border-top:3px solid var(--aubergine); }
-.th-emoji { font-size:14px; margin-right:4px; }
-.sub-label { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px; margin:7px 0 2px; }
+.th-emoji { font-size:15px; margin-right:5px; }
+.sub-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.6px; margin:8px 0 3px; }
 .sub-label:first-child { margin-top:0; }
 select.meal-select {
   width:100%; padding:5px 7px; border:1.5px solid var(--border); border-radius:8px;
@@ -310,7 +314,7 @@ select.meal-select:focus { border-color:var(--green2); }
 .gl-col-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text3); }
 .gl-item-row { display:grid; grid-template-columns:1fr 90px 110px; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); transition:background 0.1s; }
 .gl-item-row:last-child { border-bottom:none; }
-.gl-item-row:hover { background:#F6F2EA; border-radius:6px; }
+.gl-item-row:hover { background:var(--surface-hover); border-radius:6px; }
 .item-checked .gl-item-text { text-decoration:line-through; color:var(--text3); }
 .gl-item-name { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); cursor:pointer; min-width:0; overflow:hidden; }
 .gl-item-text { min-width:0; overflow-wrap:break-word; }
@@ -634,7 +638,7 @@ body.marathi-mode .en { display:none; }
 .rcal-dlabel.wknd { color:var(--tomato); }
 .rcal-cell { border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:5px 6px;min-height:82px;cursor:pointer;background:var(--surface);position:relative;transition:background 0.12s; }
 .rcal-cell:nth-child(7n) { border-right:none; }
-.rcal-cell:hover { background:#F6F2EA; }
+.rcal-cell:hover { background:var(--surface-hover); }
 .rcal-cell.other { opacity:0.2;cursor:default;pointer-events:none; }
 .rcal-cell.is-today { background:var(--green-light); }
 .rcal-cell.is-sel { background:var(--sky-light);outline:2px solid var(--sky);outline-offset:-2px; }
@@ -719,12 +723,18 @@ body.admin-mode .tm-add-task { display:flex;gap:6px; }
 /* ── Dark Mode ── */
 body.dark-mode {
   --bg:#111111; --surface:#1C1C1C; --surface2:#242424; --border:#2E2E2E; --border2:#3A3A3A;
-  --text:#F0F0F0; --text2:#ABABAB; --text3:#686868;
-  --green-light:rgba(31,122,74,0.18); --sky-light:rgba(46,111,168,0.18);
-  --lemon-light:rgba(212,160,23,0.15); --red-light:rgba(176,48,48,0.18);
-  --carrot-light:rgba(224,123,42,0.15); --aubergine-light:rgba(123,63,160,0.15);
-  --tomato-light:rgba(217,79,61,0.15);
+  --text:#F0F0F0; --text2:#B0B0B0; --text3:#707070;
+  --green-light:rgba(31,122,74,0.22); --green-mid:rgba(31,122,74,0.45);
+  --sky-light:rgba(46,111,168,0.18); --lemon-light:rgba(212,160,23,0.15);
+  --red-light:rgba(176,48,48,0.18); --carrot-light:rgba(224,123,42,0.15);
+  --aubergine-light:rgba(123,63,160,0.15); --tomato-light:rgba(217,79,61,0.15);
+  --surface-hover:#2C2C2C;
+  --today-row:rgba(31,122,74,0.14);
   --shadow:0 2px 8px rgba(0,0,0,0.35); --shadow-md:0 6px 24px rgba(0,0,0,0.45);
+}
+body:not(.dark-mode) {
+  --surface-hover:#F0EAD8;
+  --today-row:#E8F7EF;
 }
 body.dark-mode .header { background:linear-gradient(135deg,#0F3D25 0%,#1A5C38 100%); }
 body.dark-mode .sidebar { background:#161616; border-color:#2A2A2A; }
@@ -732,6 +742,9 @@ body.dark-mode .meal-select { background:var(--surface); color:var(--text); }
 body.dark-mode .gl-brand-input { background:var(--surface); color:var(--text); }
 body.dark-mode .rcal-inp { background:var(--surface); color:var(--text); }
 body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
+/* Ensure today row text always visible on hover */
+body.dark-mode .meal-table tr.today-row:hover td,
+body.dark-mode .meal-table tr.today-row td { color:var(--text); }
 
 /* ── Grocery Search Bar ── */
 .gl-search-bar { display:flex; align-items:center; gap:8px; margin-bottom:16px; background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:10px 16px; box-shadow:var(--shadow); }
@@ -750,14 +763,15 @@ body.dark-mode .tm-add-input { background:var(--surface); color:var(--text); }
 
 /* ── Searchable Meal Dropdown (Admin) ── */
 .meal-dd { position:relative; }
-.meal-dd-input { width:100%; padding:5px 7px; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; cursor:text; outline:none; transition:border-color 0.15s; }
-.meal-dd-input:focus { border-color:var(--green2); }
-.meal-dd-list { display:none; position:absolute; z-index:200; background:var(--surface); border:1.5px solid var(--border2); border-radius:8px; box-shadow:var(--shadow-md); max-height:200px; overflow-y:auto; width:max-content; min-width:100%; top:calc(100% + 2px); left:0; }
+.meal-dd-input { width:100%; padding:6px 9px; border:1.5px solid var(--border2); border-radius:8px; background:var(--surface); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12.5px; cursor:text; outline:none; transition:border-color 0.15s, box-shadow 0.15s; box-sizing:border-box; }
+.meal-dd-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(31,122,74,0.12); }
+.meal-dd-input::placeholder { color:var(--text3); }
+.meal-dd-list { display:none; position:absolute; z-index:200; background:var(--surface); border:1.5px solid var(--border2); border-radius:10px; box-shadow:var(--shadow-md); max-height:200px; overflow-y:auto; width:max-content; min-width:100%; top:calc(100% + 4px); left:0; }
 .meal-dd-list.open { display:block; }
-.meal-dd-opt { padding:6px 12px; font-size:12px; cursor:pointer; color:var(--text); white-space:nowrap; }
-.meal-dd-opt:hover, .meal-dd-opt.focused { background:var(--green-light); color:var(--green); }
+.meal-dd-opt { padding:7px 13px; font-size:12.5px; cursor:pointer; color:var(--text); white-space:nowrap; }
+.meal-dd-opt:hover, .meal-dd-opt.focused { background:var(--green-light); color:var(--green); font-weight:500; }
 .meal-dd-opt.hidden { display:none; }
-.meal-dd-save { padding:6px 12px 7px; font-size:12px; cursor:pointer; color:var(--green); white-space:nowrap; border-top:1px dashed var(--border); display:none; font-weight:500; }
+.meal-dd-save { padding:7px 13px 8px; font-size:12px; cursor:pointer; color:var(--green); white-space:nowrap; border-top:1px dashed var(--border); display:none; font-weight:600; }
 .meal-dd-save:hover { background:var(--green-light); }
 .meal-dd-save.visible { display:block; }
 
@@ -2194,14 +2208,14 @@ function renderPlanner(){
     const _isToday=day===_todayDayName;
     const _dKey=_dt?tdKey(_dt):'';
     const _staffDots=_dKey?buildStaffBar(_dKey,true):'';
-    html+=`<tr${_isToday?' style="background:var(--green-light)"':''}>
+    html+=`<tr${_isToday?' class="today-row"':''}>
       <td style="min-width:90px"><div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.3px;margin-bottom:2px">${_dateStr}</div>${_isToday?'<span style="display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px;margin-bottom:3px">TODAY</span><br>':''}${DAY_EMOJI[day]||''} <span class="en" style="font-weight:${_isToday?'700':'500'}">${day}</span><span class="mr">${DAYS_MR[day]||day}</span>${_staffDots}</td>
       <td>${buildBreakfastCell(day,s)}</td>
       <td><div class="sub-label"><span class="en">Sabji 1</span><span class="mr">भाजी १</span></div>${mkSel('sabji',s.sabji,day,'sabji')}<div class="sub-label"><span class="en">Sabji 2</span><span class="mr">भाजी २</span></div>${mkSel('sabji',s.sabji2||'',day,'sabji2')}<div class="sub-label"><span class="en">Bread</span><span class="mr">भाकरी/रोटी</span></div>${mkSel('bread',s.bread,day,'bread')}<div class="sub-label"><span class="en">Dal</span><span class="mr">डाळ</span></div>${mkSel('dal',s.dal,day,'dal')}<div class="sub-label"><span class="en">Rice</span><span class="mr">भात</span></div>${mkSel('rice',s.rice,day,'rice')}<div class="sub-label"><span class="en">Salad</span><span class="mr">कोशिंबीर</span></div>${mkSel('salad',s.salad,day,'salad')}<div class="sub-label"><span class="en">Sides</span><span class="mr">इतर</span></div>${mkSel('l_sides',s.l_sides||'',day,'l_sides')}<div class="sub-label"><span class="en">Lonche</span><span class="mr">लोणचे</span></div>${mkSel('l_lonche',s.l_lonche||'',day,'l_lonche')}<div class="sub-label"><span class="en">Drink</span><span class="mr">पेय</span></div>${mkSel('l_drink',s.l_drink||'',day,'l_drink')}</td>
       <td><div class="sub-label"><span class="en">Main Dish</span><span class="mr">मुख्य पदार्थ</span></div>${mkSel('snack',s.snack,day,'snack')}<div class="sub-label"><span class="en">Side Snack</span><span class="mr">इतर नाश्ता</span></div>${mkSel('snack',s.snack2,day,'snack2')}<div class="sub-label"><span class="en">Fruit</span><span class="mr">फळ</span></div>${mkSel('fruit',s.snack_fruit||'',day,'snack_fruit')}<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('snack_drink',s.snack_drink||'',day,'snack_drink')}</td>
       <td>${buildDinnerCell(day,s)}</td>
     </tr>
-    <tr${_isToday?' style="background:var(--green-light)"':''}>
+    <tr${_isToday?' class="today-row"':''}>
       <td colspan="5" style="padding:4px 8px 8px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span style="font-size:10px;font-weight:700;color:var(--sky);white-space:nowrap">🥛 Milk to buy</span>
