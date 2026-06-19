@@ -1276,8 +1276,8 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
     <div id="view-toddler" class="view">
       <div class="view-hero" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
         <div class="view-hero-left">
-          <div class="view-hero-title">🧒 Toddler's Menu</div>
-          <div class="view-hero-sub">Weekly meal plan for the little one</div>
+          <div class="view-hero-title">🧒 Toddler's School Meal</div>
+          <div class="view-hero-sub">School breakfast — main dish, chutney/dip &amp; snack per day</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <div id="toddler-week-label" style="color:rgba(255,255,255,0.9);font-size:13px;font-weight:600"></div>
@@ -2021,6 +2021,8 @@ function initState(){
     staffSchedule=s.staffSchedule||{members:[],dates:{}};
     dailyReport=s.dailyReport||{};
     toddlerWeeks=s.toddlerWeeks||buildEmptyToddlerWeeks();
+    // Re-seed school menu if Monday week 1 is still blank (old empty data)
+    if(!toddlerWeeks[1]||!toddlerWeeks[1]['Monday']||!toddlerWeeks[1]['Monday'].t_bf_main) toddlerWeeks=buildEmptyToddlerWeeks();
     dietProfiles=s.dietProfiles||[];
     // Migrate old helperSchedule into staffSchedule if needed
     if(staffSchedule.members.length===0 && Object.keys(helperSchedule).length>0){
@@ -2051,7 +2053,20 @@ function initState(){
   }
 }
 function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',bf_snack:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:'',d_notes:'',milk_order:'',milk_bought:''};});}return w;}
-function buildEmptyToddlerWeeks(){const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={t_bf:'',t_lunch:'',t_snack:'',t_dinner:''};});}return w;}
+function buildEmptyToddlerWeeks(){
+  const SCHOOL_MENU={
+    Monday:   {t_bf_main:'Idli',              t_bf_chutney:'Chutney',  t_bf_snack:'Seasonal Fruit'},
+    Tuesday:  {t_bf_main:'Thepla',            t_bf_chutney:'Dip',      t_bf_snack:'Dry Fruit Ladoo'},
+    Wednesday:{t_bf_main:'Vegetable Pulao',   t_bf_chutney:'',         t_bf_snack:'Salad'},
+    Thursday: {t_bf_main:'Appe',              t_bf_chutney:'Chutney',  t_bf_snack:'Rajgira Ladoo'},
+    Friday:   {t_bf_main:'Vermicelli Upma',   t_bf_chutney:'',         t_bf_snack:'Murmura / Popcorn'},
+    Saturday: {t_bf_main:'',                  t_bf_chutney:'',         t_bf_snack:''},
+    Sunday:   {t_bf_main:'',                  t_bf_chutney:'',         t_bf_snack:''},
+  };
+  const w={};
+  for(let i=1;i<=4;i++){w[i]={};Object.keys(SCHOOL_MENU).forEach(d=>{w[i][d]=Object.assign({},SCHOOL_MENU[d]);});}
+  return w;
+}
 initState();
 
 // ── Dinner Cuisine Schemas ──────────────────────────
@@ -2230,7 +2245,8 @@ function buildBreakfastCell(day,s){
     +`</div>`
     +`<div class="sub-label"><span class="en">Chutney/side</span><span class="mr">चटणी/साईड</span></div>${mkSel('chutney',s.chutney||'',day,'chutney')}`
     +`<div class="sub-label"><span class="en">Snack</span><span class="mr">नाश्ता</span></div>${mkSel('bf_snack',s.bf_snack||'',day,'bf_snack')}`
-    +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`;
+    +`<div class="sub-label"><span class="en">Juice/Drink</span><span class="mr">ज्यूस/पेय</span></div>${mkSel('drink',s.drink||'',day,'drink')}`
+    +(()=>{const tw=(toddlerWeeks[curWeek]||{})[day]||{};const tm=[tw.t_bf_main,tw.t_bf_chutney,tw.t_bf_snack].filter(Boolean);if(!tm.length)return'';return`<div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);border-radius:8px;font-size:11px"><div style="font-weight:700;color:#d97706;margin-bottom:4px">🧒 School Meal</div><div style="color:var(--text2)">${tm.map(x=>escHtml(x)).join(' + ')}</div></div>`;})();
 }
 function bfCnt(day,key,delta){
   if(!weeks[curWeek][day])weeks[curWeek][day]={};
@@ -4148,7 +4164,7 @@ function renderTodayMenu(){
     const di=dinnerSummary(s,isH);
     const mealRows=['bf','lu','sn','di'].map(k=>{const val={bf,lu,sn,di}[k];return'<div class="tm-meal-row"><span class="tm-meal-icon">'+MI[k]+'</span><div><div class="tm-meal-label">'+labels[k]+'</div>'+(val?'<div class="tm-meal-val">'+escHtml(val)+'</div>':'<div class="tm-meal-empty">'+(isH?'काहीही नाही':'Nothing planned')+'</div>')+'</div></div>';}).join('');
     const tw=(toddlerWeeks[tmCurWeek]||{})[day]||{};
-    const tBf=[tw.t_bf,tw.t_lunch,tw.t_snack,tw.t_dinner].filter(Boolean).join(' · ');
+    const tBf=[tw.t_bf_main,tw.t_bf_chutney,tw.t_bf_snack].filter(Boolean).join(' + ');
     const toddlerRow=tBf?'<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:12px;color:var(--text2)"><span style="font-weight:600">🧒 Toddler:</span> '+escHtml(tBf)+'</div>':'';
     const calE=rcalData[dateKey]||{};const calM=calE.menu||'';
     const calRow='';  // replaced by buildDayEventBar (shows tithi + festival + note together)
@@ -4197,10 +4213,9 @@ function renderToddlerView(){
   grid.innerHTML=DAYS.map(day=>{
     const s=W[day]||{};
     const fields=[
-      {key:'t_bf',label:'🌅 Breakfast'},
-      {key:'t_lunch',label:'🥘 Lunch'},
-      {key:'t_snack',label:'🍊 Snack'},
-      {key:'t_dinner',label:'🌙 Dinner'},
+      {key:'t_bf_main',label:'🍽 Main Dish'},
+      {key:'t_bf_chutney',label:'🥣 Chutney / Side / Dip'},
+      {key:'t_bf_snack',label:'🍪 Snack'},
     ];
     const rows=fields.map(f=>`
       <div style="margin-bottom:8px">
