@@ -2920,6 +2920,8 @@ function _applyServerData(json){
     helperSchedule=s.helperSchedule||helperSchedule;
     staffSchedule=s.staffSchedule||staffSchedule;
     dailyReport=s.dailyReport||dailyReport;
+    if(s.toddlerWeeks) toddlerWeeks=s.toddlerWeeks;
+    if(s.dietProfiles) dietProfiles=s.dietProfiles;
     localStorage.setItem('indraprastha-v2',json);
     // If user is actively typing/selecting, queue the render for when they stop
     if(_isUserTyping()){
@@ -2993,6 +2995,21 @@ function _firebaseConnect(){
 // Start whichever backend is configured
 if(_useFirebase) _firebaseConnect();
 else setTimeout(_syncConnect,500);
+
+// ── Polling fallback: re-fetch data.json every 8s as backup for SSE ─────────
+// Ensures phone→laptop sync works even if SSE connection drops or misses events
+let _lastPollJson='';
+setInterval(()=>{
+  if(_useFirebase) return;
+  if(_isUserTyping()) return;
+  fetch('/sync/data').then(r=>r.text()).then(json=>{
+    if(!json||json==='{}'||json===_lastPollJson) return;
+    _lastPollJson=json;
+    // Only apply if this is newer data (not our own write echoed back)
+    if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
+    _applyServerData(json);
+  }).catch(()=>{});
+}, 8000);
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
