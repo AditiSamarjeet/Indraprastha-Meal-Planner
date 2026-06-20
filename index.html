@@ -1555,7 +1555,8 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       <button class="mmode-btn" id="mmode-admin"  onclick="setMode('admin')">🔐 Admin</button>
     </div>
     <div id="mode-status-bar" style="font-size:11px;color:var(--text3)"></div>
-    <button id="modebar-export-btn" onclick="exportData()" style="display:none;padding:5px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">💾 Export</button>
+    <button id="modebar-export-btn" onclick="publishDataJson()" style="display:none;padding:5px 14px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.3px">💾 Save & Publish</button>
+    <button id="modebar-git-btn" onclick="publishGitPush()" style="display:none;padding:5px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0.3px">🚀 Push to GitHub</button>
   </div>
 </div>
 <!-- ── Admin PIN Modal ── -->
@@ -4488,6 +4489,8 @@ function applyMode(mode){
   // Show/hide mode-bar Export button (admin only)
   const modeExportBtn=document.getElementById('modebar-export-btn');
   if(modeExportBtn)modeExportBtn.style.display=mode==='admin'?'inline-block':'none';
+  const modeGitBtn=document.getElementById('modebar-git-btn');
+  if(modeGitBtn)modeGitBtn.style.display='none';
   const msgs={admin:'🔓 Admin mode enabled',family:'👨‍👩‍👧 Family mode',helper:'🧑‍🍳 Helper mode — मराठी'};
   if(window._lockedMode) return; // no toast for locked named-staff links
   showToast(msgs[mode]||'');
@@ -4843,14 +4846,16 @@ async function publishDataJson(){
   const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if(isLocal){
     try{
-      // Save data.json to disk via local server
       const r = await fetch('/publish/save', {method:'POST', headers:{'Content-Type':'application/json'}, body:data});
       if(!r.ok) throw new Error('save failed');
-      showToast('✅ data.json saved! Click "Push to GitHub" to publish.');
-      document.getElementById('publish-git-btn').style.display = 'inline-block';
+      showToast('✅ Saved! Now click "🚀 Push to GitHub" to go live.');
+      // Show Push button in both the backup card and the bottom mode bar
+      const backupBtn=document.getElementById('publish-git-btn');
+      if(backupBtn) backupBtn.style.display='inline-block';
+      const modebarBtn=document.getElementById('modebar-git-btn');
+      if(modebarBtn) modebarBtn.style.display='inline-block';
     } catch(e){ showToast('⚠️ Could not save — is the server running?'); }
   } else {
-    // On GitHub Pages — fallback to download
     const blob = new Blob([data], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'data.json'; a.click();
     showToast('✅ data.json downloaded — replace the file & push to publish!');
@@ -4861,8 +4866,13 @@ async function publishGitPush(){
   try{
     const r = await fetch('/publish/git', {method:'POST', headers:{'Content-Type':'text/plain'}, body:'Update meal planner data'});
     const t = await r.text();
-    if(t === 'pushed'){ showToast('🚀 Pushed! GitHub Pages will update in ~1 min.'); document.getElementById('publish-git-btn').style.display='none'; }
-    else showToast('⚠️ Git error — check terminal: ' + t);
+    if(t === 'pushed'){
+      showToast('🚀 Pushed! GitHub Pages will update in ~1 min.');
+      const backupBtn=document.getElementById('publish-git-btn');
+      if(backupBtn) backupBtn.style.display='none';
+      const modebarBtn=document.getElementById('modebar-git-btn');
+      if(modebarBtn) modebarBtn.style.display='none';
+    } else showToast('⚠️ Git error — check terminal: ' + t);
   } catch(e){ showToast('⚠️ Could not reach server.'); }
 }
 function exportBackup(){
