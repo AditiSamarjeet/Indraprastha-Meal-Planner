@@ -3802,10 +3802,16 @@ function renderMilkSummary(){
     </div>`;
 
     const inpBase='padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;outline:none;text-align:center;width:65px;transition:border-color 0.15s,box-shadow 0.15s';
-    const ordInp=`<input type="number" min="0" step="0.5" value="${order||''}" placeholder="—"
-      style="${inpBase}" onchange="updateMilkData('${dk}','order',this.value)"
-      onfocus="this.style.borderColor='${accentColor}';this.style.boxShadow='0 0 0 3px ${accentColor}22'"
-      onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">`;
+
+    // Ordered: editable for admin/family, read-only for helper
+    const ordInp=isMr
+      ? `<div style="display:inline-flex;align-items:center;justify-content:center;min-width:65px;padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface2);font-size:13px;font-weight:700;color:var(--text2)">${order?order+'L':'—'}</div>`
+      : `<input type="number" min="0" step="0.5" value="${order||''}" placeholder="—"
+          style="${inpBase}" onchange="updateMilkData('${dk}','order',this.value)"
+          onfocus="this.style.borderColor='${accentColor}';this.style.boxShadow='0 0 0 3px ${accentColor}22'"
+          onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">`;
+
+    // Bought: always editable for all modes
     const bgtInp=`<input type="number" min="0" step="0.5" value="${bought||''}" placeholder="—"
       style="${inpBase};${bought?`background:${accentColor}18;border-color:${accentColor}60`:''}"
       onchange="updateMilkData('${dk}','bought',this.value)"
@@ -3825,8 +3831,8 @@ function renderMilkSummary(){
 
   const thead=`<tr>
     <th>${isMr?'तारीख':'Date'}</th>
-    <th>${isMr?'मागवले':'Ordered'}</th>
-    <th>${isMr?'आणले':'Bought'}</th>
+    <th>${isMr?'मागवले (Admin)':'Ordered'}</th>
+    <th style="color:var(--green)">${isMr?'✏️ आणले (Helper)':'✏️ Bought'}</th>
     <th>${isMr?'फरक':'Diff'}</th>
   </tr>`;
 
@@ -3844,27 +3850,30 @@ function renderMilkSummary(){
     <button class="milk-nav-btn" onclick="milkChangeMonth(1)"${_milkYear===new Date().getFullYear()&&_milkMonth===new Date().getMonth()?' disabled style="opacity:0.4"':''}>›</button>
   </div>`;
 
-  const summaryCards=`<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
-      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'मागवले':'Ordered'}</div>
-      <div style="font-size:22px;font-weight:700;color:var(--sky)">${totalOrder.toFixed(1)}<span style="font-size:13px">L</span></div>
-    </div>
-    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
-      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'आणले':'Bought'}</div>
-      <div style="font-size:22px;font-weight:700;color:var(--green)">${totalBought.toFixed(1)}<span style="font-size:13px">L</span></div>
-    </div>
-    <div style="flex:1;min-width:100px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
-      <div style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">${isMr?'फरक':'Difference'}</div>
-      <div style="font-size:22px;font-weight:700;color:${totalDiff>0?'#DC3C3C':totalDiff<0?'var(--carrot)':'var(--green)'}">${totalDiff>0?'+':''}${totalDiff.toFixed(1)}<span style="font-size:13px">L</span></div>
-    </div>
-  </div>`;
+  const summaryCards=`
+    <div style="background:linear-gradient(130deg,#1A6EA8 0%,#2E8BB0 100%);border-radius:16px;padding:16px 20px;margin-bottom:14px;color:#fff">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.75;margin-bottom:10px">
+        📊 ${monthNames[_milkMonth]} ${_milkYear} — ${isMr?'महिना एकूण':'Monthly Total'}
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:90px;text-align:center;background:rgba(255,255,255,0.12);border-radius:12px;padding:10px 8px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.8px;opacity:0.8;margin-bottom:4px">${isMr?'मागवले':'ORDERED'}</div>
+          <div style="font-size:26px;font-weight:800;line-height:1">${totalOrder.toFixed(1)}<span style="font-size:14px">L</span></div>
+        </div>
+        <div style="flex:1;min-width:90px;text-align:center;background:rgba(255,255,255,0.18);border-radius:12px;padding:10px 8px;border:2px solid rgba(255,255,255,0.35)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.8px;opacity:0.9;margin-bottom:4px">${isMr?'✏️ आणले':'✏️ BOUGHT'}</div>
+          <div style="font-size:26px;font-weight:800;line-height:1">${totalBought.toFixed(1)}<span style="font-size:14px">L</span></div>
+        </div>
+        <div style="flex:1;min-width:90px;text-align:center;background:${totalDiff>0?'rgba(220,60,60,0.25)':totalDiff<0?'rgba(224,123,42,0.25)':'rgba(61,122,82,0.25)'};border-radius:12px;padding:10px 8px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.8px;opacity:0.8;margin-bottom:4px">${isMr?'फरक':'DIFF'}</div>
+          <div style="font-size:26px;font-weight:800;line-height:1">${totalDiff>0?'+':''}${totalDiff.toFixed(1)}<span style="font-size:14px">L</span></div>
+        </div>
+      </div>
+      ${isMr?'<div style="font-size:11px;opacity:0.7;margin-top:10px">📌 फक्त "आणले" स्तंभ भरा — मागवलेले Admin ने सेट केले आहे</div>':'<div style="font-size:11px;opacity:0.7;margin-top:10px">📌 Helper fills "Bought" column · Admin/Family set "Ordered"</div>'}
+    </div>`;
 
-  body.innerHTML=`<div class="milk-wrap">${navHtml}${summaryCards}
-    ${hasAnyData
-      ?`<table class="milk-table"><thead>${thead}</thead><tbody>${rows.join('')}${totalRow}</tbody></table>`
-      :`<div class="milk-empty">🥛 ${isMr?'अजून नोंद नाही — नियोजकात दूध भरा':'No data yet — fill milk quantities in the Weekly Planner'}</div>`
-    }
-  </div>`;
+  const emptyNote=!hasAnyData?`<div class="milk-empty" style="margin-top:8px">🥛 ${isMr?'अजून नोंद नाही — खाली "आणले" मध्ये भरा':'No entries yet — fill in the Bought column above'}</div>`:'';
+  body.innerHTML=`<div class="milk-wrap">${navHtml}${summaryCards}<table class="milk-table"><thead>${thead}</thead><tbody>${rows.join('')}${totalRow}</tbody></table>${emptyNote}</div>`;
 }
 
 function updateMilkData(dateKey, field, val){
