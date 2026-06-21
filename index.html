@@ -3848,10 +3848,12 @@ function renderMilkSummary(){
     <td><span class="milk-diff ${totalDiff>0?'over':totalDiff<0?'under':'exact'}">${totalDiff>0?'+':''}${totalDiff.toFixed(1)}L</span></td>
   </tr>`;
 
-  const navHtml=`<div class="milk-month-nav">
+  const fillBtnHtml=isAdmin?`<button onclick="fillMonthMilkOrder(2)" style="padding:5px 14px;background:var(--sky);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🥛 Set all to 2L</button>`:'';
+  const navHtml=`<div class="milk-month-nav" style="gap:8px">
     <button class="milk-nav-btn" onclick="milkChangeMonth(-1)">‹</button>
     <span class="milk-month-title">${monthNames[_milkMonth]} ${_milkYear}</span>
     <button class="milk-nav-btn" onclick="milkChangeMonth(1)"${_milkYear===new Date().getFullYear()&&_milkMonth===new Date().getMonth()?' disabled style="opacity:0.4"':''}>›</button>
+    ${fillBtnHtml}
   </div>`;
 
   const summaryCards=`
@@ -3880,6 +3882,17 @@ function renderMilkSummary(){
   body.innerHTML=`<div class="milk-wrap">${navHtml}${summaryCards}<table class="milk-table"><thead>${thead}</thead><tbody>${rows.join('')}${totalRow}</tbody></table>${emptyNote}</div>`;
 }
 
+function fillMonthMilkOrder(litres){
+  const dim=new Date(_milkYear,_milkMonth+1,0).getDate();
+  for(let d=1;d<=dim;d++){
+    const dk=tdKey(new Date(_milkYear,_milkMonth,d));
+    if(!milkData[dk]) milkData[dk]={order:0,bought:0};
+    milkData[dk].order=litres;
+  }
+  saveToStorage(false);
+  renderMilkSummary();
+  showToast(`✅ All ${dim} days set to ${litres}L ordered`);
+}
 function updateMilkData(dateKey, field, val){
   if(!milkData[dateKey]) milkData[dateKey]={order:0,bought:0};
   milkData[dateKey][field]=parseFloat(val)||0;
