@@ -3755,6 +3755,12 @@ function renderMilkSummary(){
   const dim=new Date(_milkYear,_milkMonth+1,0).getDate();
   let rows=[], totalOrder=0, totalBought=0, hasAnyData=false;
 
+  // Per-day accent colours (Mon–Sun)
+  const DAY_COLORS=['#2E6FA8','#E07B2A','#3D7A52','#7B3FA0','#C4963A','#D94F3D','#B03060'];
+  const DAY_EMOJIS=['🌅','🌤','☀️','🌈','🎉','🌸','🌻'];
+  const DAY_NAMES_EN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const DAY_NAMES_MR=['सोम','मंगळ','बुध','गुरू','शुक्र','शनि','रवि'];
+
   for(let d=1;d<=dim;d++){
     const dt=new Date(_milkYear,_milkMonth,d);
     const dk=tdKey(dt);
@@ -3763,17 +3769,57 @@ function renderMilkSummary(){
     const bought=parseFloat(md.bought)||0;
     if(order||bought) hasAnyData=true;
     totalOrder+=order; totalBought+=bought;
+
+    const dow=dt.getDay(); // 0=Sun
+    const dayIdx=dow===0?6:dow-1; // Mon=0…Sun=6
+    const isWeekend=(dow===0||dow===6);
+    const isPast=dt.getTime()<today.getTime();
     const isT=dt.getTime()===today.getTime();
+    const isFuture=dt.getTime()>today.getTime();
+
+    const accentColor=DAY_COLORS[dayIdx];
+    const dayEmoji=DAY_EMOJIS[dayIdx];
+    const dayLabel=isMr?DAY_NAMES_MR[dayIdx]:DAY_NAMES_EN[dayIdx];
+
     const diff=bought-order;
     const diffCls=diff>0?'over':diff<0?'under':'exact';
     const diffStr=(order||bought)?(diff>0?'+':'')+diff.toFixed(1)+'L':'—';
-    const dateStr=safeLocale(dt,isMr?'mr-IN':'en-IN',{weekday:'short',day:'numeric'});
-    const inpStyle='width:62px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;font-weight:600;outline:none;text-align:center';
-    rows.push(`<tr${isT?' class="today-row"':''}>
-      <td style="font-weight:${isT?'700':'400'}">${isT?'👉 ':''} ${dateStr}</td>
-      <td><input type="number" min="0" step="0.5" value="${order||''}" placeholder="0" style="${inpStyle}" onchange="updateMilkData('${dk}','order',this.value)" onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'"> L</td>
-      <td><input type="number" min="0" step="0.5" value="${bought||''}" placeholder="0" style="${inpStyle};${bought?'background:rgba(61,122,82,0.06)':''}" onchange="updateMilkData('${dk}','bought',this.value)" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"> L</td>
-      <td><span class="milk-diff ${(order||bought)?diffCls:''}">${diffStr}</span></td>
+
+    // Row background
+    let rowBg='';
+    if(isT) rowBg='background:rgba(196,150,58,0.08);';
+    else if(isWeekend) rowBg='background:rgba(176,48,96,0.04);';
+    else if(isPast) rowBg='background:var(--surface2);opacity:0.85;';
+
+    // Date cell badge
+    const dateBadge=`<div style="display:flex;align-items:center;gap:8px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${accentColor};color:#fff;font-size:13px;font-weight:800;flex-shrink:0">${d}</span>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:${accentColor};letter-spacing:0.5px">${dayEmoji} ${dayLabel}${isWeekend?' 🌟':''}</div>
+        ${isT?'<div style="font-size:9px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1px">TODAY ←</div>':''}
+        ${isPast&&!isT?'<div style="font-size:9px;color:var(--text3)">past</div>':''}
+      </div>
+    </div>`;
+
+    const inpBase='padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;outline:none;text-align:center;width:65px;transition:border-color 0.15s,box-shadow 0.15s';
+    const ordInp=`<input type="number" min="0" step="0.5" value="${order||''}" placeholder="—"
+      style="${inpBase}" onchange="updateMilkData('${dk}','order',this.value)"
+      onfocus="this.style.borderColor='${accentColor}';this.style.boxShadow='0 0 0 3px ${accentColor}22'"
+      onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">`;
+    const bgtInp=`<input type="number" min="0" step="0.5" value="${bought||''}" placeholder="—"
+      style="${inpBase};${bought?`background:${accentColor}18;border-color:${accentColor}60`:''}"
+      onchange="updateMilkData('${dk}','bought',this.value)"
+      onfocus="this.style.borderColor='var(--green)';this.style.boxShadow='0 0 0 3px rgba(61,122,82,0.15)'"
+      onblur="this.style.borderColor='${bought?accentColor+'60':'var(--border)'}';this.style.boxShadow='none'">`;
+
+    // Week separator before Monday (except first row)
+    if(dayIdx===0 && d>1) rows.push(`<tr><td colspan="4" style="padding:2px 0;border:none"><div style="height:2px;background:linear-gradient(90deg,var(--gold-border),transparent);border-radius:2px;margin:2px 8px"></div></td></tr>`);
+
+    rows.push(`<tr style="border-left:3px solid ${accentColor};${rowBg}">
+      <td style="padding:8px 10px">${dateBadge}</td>
+      <td style="text-align:center">${ordInp} <span style="font-size:11px;color:var(--text3)">L</span></td>
+      <td style="text-align:center">${bgtInp} <span style="font-size:11px;color:var(--text3)">L</span></td>
+      <td style="text-align:center"><span class="milk-diff ${(order||bought)?diffCls:''}" style="font-size:13px">${diffStr}</span></td>
     </tr>`);
   }
 
