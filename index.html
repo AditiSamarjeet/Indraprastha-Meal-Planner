@@ -2098,7 +2098,7 @@ const DEFAULT_GL_CATS=[
 const CAT_COLORS=['#3D7A52','#2E6FA8','#D94F3D','#E07B2A','#7B3FA0','#D4A017','#B03030','#4A7A4A','#2A7A7A','#8A5C2B'];
 let selectedColor=CAT_COLORS[0], glSelectedColor=CAT_COLORS[0];
 function getWeekOfMonth(){ return Math.min(Math.ceil(new Date().getDate()/7),4); }
-let opts, essentials, weeks, toddlerWeeks={}, dietProfiles=[], groceryList, rcalData={}, dailyTasks={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, dailyReport={}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
+let opts, essentials, weeks, toddlerWeeks={}, dietProfiles=[], groceryList, rcalData={}, dailyTasks={}, milkData={}, mealHistory=[], recipes=[], helperSchedule={}, staffSchedule={members:[],dates:{}}, dailyReport={}, curWeek=getWeekOfMonth(), currentMode='family', isAdmin=false, isMarathi=false, tmCurWeek=getWeekOfMonth();
 
 // Default stock items Sham reports on each day
 const DEFAULT_STOCK_ITEMS=[
@@ -2149,6 +2149,7 @@ function initState(){
     staffSchedule=s.staffSchedule||{members:[],dates:{}};
     dailyReport=s.dailyReport||{};
     toddlerWeeks=s.toddlerWeeks||buildEmptyToddlerWeeks();
+    milkData=s.milkData||{};
     // Re-seed school menu if Monday week 1 is still blank (old empty data)
     if(!toddlerWeeks[1]||!toddlerWeeks[1]['Monday']||!toddlerWeeks[1]['Monday'].t_bf_main) toddlerWeeks=buildEmptyToddlerWeeks();
     dietProfiles=s.dietProfiles||[];
@@ -2166,6 +2167,7 @@ function initState(){
     essentials=JSON.parse(JSON.stringify(DEFAULT_ESSENTIALS));
     weeks=buildEmptyWeeks();
     toddlerWeeks=buildEmptyToddlerWeeks();
+    milkData={};
     dietProfiles=[];
     groceryList=JSON.parse(JSON.stringify(DEFAULT_GL_CATS));
     rcalData={};
@@ -2993,7 +2995,7 @@ function _setSyncDot(state){ // 'on' | 'flash' | 'off'
 }
 
 function saveToStorage(toast=true){
-  const payload=JSON.stringify({opts,essentials,weeks,toddlerWeeks,dietProfiles,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
+  const payload=JSON.stringify({opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
   // 1. Always save locally — instant, works offline
   try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
   // 2. Debounced push to cloud/server (800ms after last change — no spam while typing)
@@ -3048,6 +3050,7 @@ function _applyServerData(json){
     dailyReport=s.dailyReport||dailyReport;
     if(s.toddlerWeeks) toddlerWeeks=s.toddlerWeeks;
     if(s.dietProfiles) dietProfiles=s.dietProfiles;
+    if(s.milkData) milkData=s.milkData;
     localStorage.setItem('indraprastha-v2',json);
     // If user is actively typing/selecting, queue the render for when they stop
     if(_isUserTyping()){
@@ -3754,18 +3757,10 @@ function renderMilkSummary(){
 
   for(let d=1;d<=dim;d++){
     const dt=new Date(_milkYear,_milkMonth,d);
-    const dow=dt.getDay(); // 0=Sun
-    // Map to our DAYS array (Mon=0 … Sun=6)
-    const dayIdx=dow===0?6:dow-1;
-    const dayName=DAYS[dayIdx];
-    // Figure out which week number this date falls in (week of month)
-    const firstOfMonth=new Date(_milkYear,_milkMonth,1);
-    const firstDow=firstOfMonth.getDay()===0?6:firstOfMonth.getDay()-1; // Mon-based
-    const weekNum=Math.ceil((d+firstDow)/7); // 1-4
-    const wk=Math.min(weekNum,4);
-    const s=(weeks[wk]&&weeks[wk][dayName])||{};
-    const order=parseFloat(s.milk_order)||0;
-    const bought=parseFloat(s.milk_bought)||0;
+    const dk=tdKey(dt);
+    const md=milkData[dk]||{};
+    const order=parseFloat(md.order)||0;
+    const bought=parseFloat(md.bought)||0;
     if(order||bought) hasAnyData=true;
     totalOrder+=order; totalBought+=bought;
     const isT=dt.getTime()===today.getTime();
@@ -3773,10 +3768,11 @@ function renderMilkSummary(){
     const diffCls=diff>0?'over':diff<0?'under':'exact';
     const diffStr=(order||bought)?(diff>0?'+':'')+diff.toFixed(1)+'L':'—';
     const dateStr=safeLocale(dt,isMr?'mr-IN':'en-IN',{weekday:'short',day:'numeric'});
+    const inpStyle='width:62px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:inherit;font-size:13px;font-weight:600;outline:none;text-align:center';
     rows.push(`<tr${isT?' class="today-row"':''}>
-      <td>${dateStr}</td>
-      <td>${order?order+'L':'—'}</td>
-      <td>${bought?'<strong>'+bought+'L</strong>':'—'}</td>
+      <td style="font-weight:${isT?'700':'400'}">${isT?'👉 ':''} ${dateStr}</td>
+      <td><input type="number" min="0" step="0.5" value="${order||''}" placeholder="0" style="${inpStyle}" onchange="updateMilkData('${dk}','order',this.value)" onfocus="this.style.borderColor='var(--sky)'" onblur="this.style.borderColor='var(--border)'"> L</td>
+      <td><input type="number" min="0" step="0.5" value="${bought||''}" placeholder="0" style="${inpStyle};${bought?'background:rgba(61,122,82,0.06)':''}" onchange="updateMilkData('${dk}','bought',this.value)" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"> L</td>
       <td><span class="milk-diff ${(order||bought)?diffCls:''}">${diffStr}</span></td>
     </tr>`);
   }
@@ -3825,6 +3821,14 @@ function renderMilkSummary(){
   </div>`;
 }
 
+function updateMilkData(dateKey, field, val){
+  if(!milkData[dateKey]) milkData[dateKey]={order:0,bought:0};
+  milkData[dateKey][field]=parseFloat(val)||0;
+  saveToStorage(false);
+  // Re-render just the summary cards + totals without rebuilding the whole table
+  // (avoids losing focus while typing — only totals update)
+  renderMilkSummary();
+}
 function milkChangeMonth(dir){
   _milkMonth+=dir;
   if(_milkMonth>11){_milkMonth=0;_milkYear++;}
