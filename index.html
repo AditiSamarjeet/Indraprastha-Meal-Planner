@@ -3022,20 +3022,20 @@ function saveToStorage(toast=true){
   const payload=JSON.stringify({opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
   // 1. Always save locally — instant, works offline
   try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
-  // 2. Debounced push to cloud/server (800ms after last change — no spam while typing)
-  if(window._syncAvailable){
-    clearTimeout(_syncDebounceTimer);
-    _syncDebounceTimer = setTimeout(()=>{
-      if(_useFirebase && _fbRef){
-        _lastWrittenJson = payload;          // remember, so we ignore the echo
-        _fbRef.set(payload).catch(()=>{ _setSyncDot('off'); });
-      } else {
-        window._syncIgnoreNext++;
-        fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
-          .catch(()=>{window._syncAvailable=false;_setSyncDot('off');});
-      }
-    }, 800);
-  }
+  // 2. Always attempt server push (debounced) — don't block on SSE state
+  //    This ensures laptop→phone sync even if SSE dropped after a server restart
+  clearTimeout(_syncDebounceTimer);
+  _syncDebounceTimer = setTimeout(()=>{
+    if(_useFirebase && _fbRef){
+      _lastWrittenJson = payload;
+      _fbRef.set(payload).catch(()=>{ _setSyncDot('off'); });
+    } else {
+      window._syncIgnoreNext++;
+      fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
+        .then(()=>{ window._syncAvailable=true; _setSyncDot('on'); })
+        .catch(()=>{ window._syncAvailable=false; _setSyncDot('off'); window._syncIgnoreNext=Math.max(0,window._syncIgnoreNext-1); });
+    }
+  }, 800);
   if(toast)showToast('💾 Saved!');
 }
 
