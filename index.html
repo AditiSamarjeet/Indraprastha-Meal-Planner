@@ -1061,6 +1061,7 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
       Save
     </button>
     <span id="sync-dot" title="Connecting…" style="width:9px;height:9px;border-radius:50%;background:#ccc;display:inline-block;flex-shrink:0;cursor:default;transition:background 0.4s"></span>
+    <button onclick="forceSync()" title="Force sync — pull latest data from server" style="padding:3px 8px;font-size:10px;font-weight:700;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text2);cursor:pointer;font-family:inherit;letter-spacing:0.3px">⟳ Sync</button>
   </div>
 </header>
 
@@ -3102,6 +3103,23 @@ document.addEventListener('focusout',()=>{
 });
 
 // ── Local laptop server (Server-Sent Events) ──────────────────────────────
+function forceSync(){
+  const btn=document.querySelector('[onclick="forceSync()"]');
+  if(btn){btn.textContent='⟳ …';btn.disabled=true;}
+  fetch('/sync/data',{cache:'no-store'})
+    .then(r=>r.text())
+    .then(json=>{
+      if(json&&json!=='{}'){
+        _applyServerData(json);
+        localStorage.setItem('indraprastha-v2',json);
+        showToast('✅ Synced — data is up to date');
+      } else {
+        showToast('ℹ️ Nothing to sync yet');
+      }
+    })
+    .catch(()=>showToast('⚠️ Server not reachable — check Wi-Fi'))
+    .finally(()=>{if(btn){btn.textContent='⟳ Sync';btn.disabled=false;}});
+}
 function _syncConnect(){
   if(typeof EventSource==='undefined')return;
   const es=new EventSource('/sync/events');
@@ -3167,7 +3185,7 @@ setInterval(()=>{
     if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
     _applyServerData(json);
   }).catch(()=>{});
-}, 8000);
+}, 3000);
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
