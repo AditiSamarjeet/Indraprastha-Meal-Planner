@@ -3752,10 +3752,21 @@ function updateGlItem(ci,ii,field,val){groceryList[ci].items[ii][field]=val;if(f
 // ══════════════════════════════════════════════════
 function tdKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function carryOverTasks(){
-  const todayKey=tdKey(new Date());
+  const now=new Date(); now.setHours(0,0,0,0);
+  const todayKey=tdKey(now);
+  const yesterday=new Date(now); yesterday.setDate(now.getDate()-1);
+  const yesterdayKey=tdKey(yesterday);
+  // Only carry undone tasks from yesterday — purge everything older without carrying
   Object.keys(dailyTasks).filter(k=>k<todayKey).sort().forEach(pk=>{
-    const undone=(dailyTasks[pk]||[]).filter(t=>!t.done);
-    if(undone.length){if(!dailyTasks[todayKey])dailyTasks[todayKey]=[];undone.forEach(t=>{if(!dailyTasks[todayKey].some(x=>x.text===t.text))dailyTasks[todayKey].push({id:Date.now()+'_'+Math.random(),text:t.text,done:false,type:t.type||'task'});});}
+    if(pk>=yesterdayKey){
+      // Yesterday only: carry undone tasks to today
+      const undone=(dailyTasks[pk]||[]).filter(t=>!t.done);
+      if(undone.length){
+        if(!dailyTasks[todayKey])dailyTasks[todayKey]=[];
+        undone.forEach(t=>{if(!dailyTasks[todayKey].some(x=>x.text===t.text))dailyTasks[todayKey].push({id:Date.now()+'_'+Math.random(),text:t.text,done:false,type:t.type||'task'});});
+      }
+    }
+    // Delete all past entries (yesterday and older)
     delete dailyTasks[pk];
   });
 }
