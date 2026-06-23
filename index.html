@@ -3048,7 +3048,12 @@ function _applyServerData(json){
     helperSchedule=s.helperSchedule||helperSchedule;
     staffSchedule=s.staffSchedule||staffSchedule;
     dailyReport=s.dailyReport||dailyReport;
-    if(s.toddlerWeeks) toddlerWeeks=s.toddlerWeeks;
+    if(s.toddlerWeeks){
+      toddlerWeeks=s.toddlerWeeks;
+      // Re-seed if any week is missing the school menu fields
+      const hasSchoolMenu=toddlerWeeks[1]&&toddlerWeeks[1]['Monday']&&toddlerWeeks[1]['Monday'].t_bf_main;
+      if(!hasSchoolMenu) toddlerWeeks=buildEmptyToddlerWeeks();
+    }
     if(s.dietProfiles) dietProfiles=s.dietProfiles;
     if(s.milkData) milkData=s.milkData;
     localStorage.setItem('indraprastha-v2',json);
