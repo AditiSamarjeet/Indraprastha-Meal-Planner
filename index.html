@@ -3754,19 +3754,28 @@ function tdKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'
 function carryOverTasks(){
   const now=new Date(); now.setHours(0,0,0,0);
   const todayKey=tdKey(now);
-  const yesterday=new Date(now); yesterday.setDate(now.getDate()-1);
-  const yesterdayKey=tdKey(yesterday);
-  // Only carry undone tasks from yesterday — purge everything older without carrying
+  const cutoff=new Date(now); cutoff.setDate(now.getDate()-7); // carry up to 7 days back
+  const cutoffKey=tdKey(cutoff);
   Object.keys(dailyTasks).filter(k=>k<todayKey).sort().forEach(pk=>{
-    if(pk>=yesterdayKey){
-      // Yesterday only: carry undone tasks to today
+    if(pk>=cutoffKey){
+      // Within the last 7 days: carry undone tasks forward, tagged with original date
       const undone=(dailyTasks[pk]||[]).filter(t=>!t.done);
       if(undone.length){
         if(!dailyTasks[todayKey])dailyTasks[todayKey]=[];
-        undone.forEach(t=>{if(!dailyTasks[todayKey].some(x=>x.text===t.text))dailyTasks[todayKey].push({id:Date.now()+'_'+Math.random(),text:t.text,done:false,type:t.type||'task'});});
+        undone.forEach(t=>{
+          if(!dailyTasks[todayKey].some(x=>x.text===t.text&&x.type===t.type)){
+            dailyTasks[todayKey].push({
+              id:Date.now()+'_'+Math.random(),
+              text:t.text,
+              done:false,
+              type:t.type||'task',
+              carriedFrom:t.carriedFrom||pk  // preserve original date
+            });
+          }
+        });
       }
     }
-    // Delete all past entries (yesterday and older)
+    // Delete the old entry regardless (within range or older)
     delete dailyTasks[pk];
   });
 }
@@ -4382,7 +4391,12 @@ function renderTodayMenu(){
       const dayTasks=dailyTasks[dKey]||[];
       const dWorkItems=dayTasks.filter(t=>(t.type||'task')==='task');
       const dBuyItems=dayTasks.filter(t=>t.type==='buy');
-      const mkDRow=(t)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dKey+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(mr(t.text))+'</span><button class="tm-task-del" onclick="deleteTask(\''+dKey+'\',\''+t.id+'\')">✕</button></div>';
+      const mkDRow=(t)=>{
+        const isCarried=!!t.carriedFrom;
+        const carriedLbl=isCarried?'<div style="font-size:9px;color:var(--carrot);font-weight:600;margin-top:1px">↩ मागील '+(() => {try{const d=new Date(t.carriedFrom);return safeLocale(d,'mr-IN',{weekday:'short',day:'numeric',month:'short'});}catch(e){return t.carriedFrom;}})()+'</div>':'';
+        const rs=isCarried?'background:rgba(224,123,42,0.07);border:1px solid rgba(224,123,42,0.2);border-radius:6px;padding:4px 6px;margin-bottom:2px':'';
+        return'<div class="tm-task-row" style="'+rs+';align-items:flex-start"><input type="checkbox" class="tm-task-cb" style="margin-top:3px"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dKey+'\',\''+t.id+'\',this.checked)"><div style="flex:1;min-width:0"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(mr(t.text))+'</span>'+carriedLbl+'</div><button class="tm-task-del" onclick="deleteTask(\''+dKey+'\',\''+t.id+'\')">✕</button></div>';
+      };
       const dWorkHtml=dWorkItems.length?dWorkItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">काम नाही</div>';
       const dBuyHtml=dBuyItems.length?dBuyItems.map(mkDRow).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">वस्तू नाही</div>';
       const wLbl=isToday?'आजचे काम':'उद्याचे काम';const bLbl=isToday?'आज आणायचे':'उद्या आणायचे';
@@ -4440,9 +4454,21 @@ function renderTodayMenu(){
     const tasks=dailyTasks[dateKey]||[];
     const taskItems=tasks.filter(t=>(t.type||'task')==='task');
     const buyItems=tasks.filter(t=>t.type==='buy');
-    const mkTRow=(t,dk)=>'<div class="tm-task-row"><input type="checkbox" class="tm-task-cb"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dk+'\',\''+t.id+'\',this.checked)"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(t.text)+'</span><button class="tm-task-del" onclick="deleteTask(\''+dk+'\',\''+t.id+'\')">✕</button></div>';
-    const taskHtml=taskItems.length?taskItems.map(t=>mkTRow(t,dateKey)).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'काम नाही':'No tasks')+'</div>';
-    const buyHtml=buyItems.length?buyItems.map(t=>mkTRow(t,dateKey)).join(''):'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'वस्तू नाही':'Nothing to buy')+'</div>';
+    const fmtCarriedDate=(dk)=>{try{const d=new Date(dk);return safeLocale(d,isH?'mr-IN':'en-IN',{weekday:'short',day:'numeric',month:'short'});}catch(e){return dk;}};
+    const mkTRow=(t,dk)=>{
+      const isCarried=!!t.carriedFrom;
+      const carriedLabel=isCarried?'<div style="font-size:9px;color:var(--carrot);font-weight:600;margin-top:1px">↩ '+(isH?'मागील':'from')+' '+fmtCarriedDate(t.carriedFrom)+'</div>':'';
+      const rowStyle=isCarried?'background:rgba(224,123,42,0.07);border:1px solid rgba(224,123,42,0.2);border-radius:6px;padding:4px 6px;margin-bottom:2px':'';
+      return'<div class="tm-task-row" style="'+rowStyle+';align-items:flex-start"><input type="checkbox" class="tm-task-cb" style="margin-top:3px"'+(t.done?' checked':'')+' onchange="toggleTask(\''+dk+'\',\''+t.id+'\',this.checked)"><div style="flex:1;min-width:0"><span class="tm-task-text'+(t.done?' done':'')+'">'+escHtml(isH?mr(t.text):t.text)+'</span>'+carriedLabel+'</div><button class="tm-task-del" onclick="deleteTask(\''+dk+'\',\''+t.id+'\')">✕</button></div>';
+    };
+    const freshTasks=taskItems.filter(t=>!t.carriedFrom);
+    const carriedTasks=taskItems.filter(t=>t.carriedFrom);
+    const freshBuy=buyItems.filter(t=>!t.carriedFrom);
+    const carriedBuy=buyItems.filter(t=>t.carriedFrom);
+    const carriedTaskHtml=carriedTasks.length?'<div style="font-size:9px;font-weight:700;color:var(--carrot);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 3px">↩ '+(isH?'मागील आठवड्यातून':'Carried from last week')+'</div>'+carriedTasks.map(t=>mkTRow(t,dateKey)).join(''):'';
+    const carriedBuyHtml=carriedBuy.length?'<div style="font-size:9px;font-weight:700;color:var(--carrot);text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 3px">↩ '+(isH?'मागील आठवड्यातून':'Carried from last week')+'</div>'+carriedBuy.map(t=>mkTRow(t,dateKey)).join(''):'';
+    const taskHtml=(freshTasks.length?freshTasks.map(t=>mkTRow(t,dateKey)).join(''):'')+carriedTaskHtml||(taskItems.length?'':'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'काम नाही':'No tasks')+'</div>');
+    const buyHtml=(freshBuy.length?freshBuy.map(t=>mkTRow(t,dateKey)).join(''):'')+carriedBuyHtml||(buyItems.length?'':'<div style="font-size:11px;color:var(--text3);font-style:italic">'+(isH?'वस्तू नाही':'Nothing to buy')+'</div>');
     const addWorkId='tmw-'+dateKey;const addBuyId='tmb-'+dateKey;
     const taskSec='<div class="tm-tasks-section"><div class="tm-tasks-title">📋 '+(isH?'आजचे काम':'Tasks')+'</div>'+taskHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addWorkId+'" placeholder="'+(isH?'काम लिहा…':'Add task…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'task\');this.value=\'\';}\"><button class="tm-add-btn" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addWorkId+'\').value,\'task\');document.getElementById(\''+addWorkId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div><div style="border-top:1px solid var(--border);margin:8px 0 6px"></div><div class="tm-tasks-title" style="color:var(--sky)">🛒 '+(isH?'आज आणायचे':'To Buy')+'</div>'+buyHtml+'<div class="tm-add-task"><input class="tm-add-input" type="text" id="'+addBuyId+'" placeholder="'+(isH?'वस्तू लिहा…':'Add item…')+'" onkeydown="if(event.key===\'Enter\'){addTask(\''+dateKey+'\',this.value,\'buy\');this.value=\'\';}\"><button class="tm-add-btn" style="background:var(--sky)" onclick="addTask(\''+dateKey+'\',document.getElementById(\''+addBuyId+'\').value,\'buy\');document.getElementById(\''+addBuyId+'\').value=\'\'">+'+(isH?' जोडा':' Add')+'</button></div></div>';
     const staffB=buildStaffBar(dateKey,false);
