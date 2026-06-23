@@ -4480,22 +4480,94 @@ function updateToddlerMeal(day,field,val){
 function renderDietProfiles(){
   const list=document.getElementById('diet-profiles-list');
   if(!list)return;
-  if(!dietProfiles.length){list.innerHTML='<div style="color:var(--text3);padding:24px;grid-column:1/-1">No profiles yet. Click &quot;+ Add Profile&quot; to add a family member\'s diet plan.</div>';return;}
-  list.innerHTML=dietProfiles.map((p,i)=>`
-    <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+  const isMr=isMarathi;
+  if(!dietProfiles.length){
+    list.innerHTML=`<div style="color:var(--text3);padding:24px;grid-column:1/-1">${isMr?'अजून प्रोफाइल नाही':'No profiles yet. Click "+ Add Profile" to add a family member\'s diet plan.'}</div>`;
+    return;
+  }
+  list.innerHTML=dietProfiles.map((p,i)=>{
+    // ── Meal Plan Table ──────────────────────────────
+    const mealTableRows=(p.mealPlan||[]).map(row=>{
+      const time=escHtml(isMr&&row.timeMr?row.timeMr:row.time||'');
+      const food=escHtml(isMr&&row.foodMr?row.foodMr:row.food||'');
+      const qty=escHtml(row.qty||'');
+      return`<tr>
+        <td style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--sky);white-space:nowrap;min-width:130px">${time}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)">${food}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);white-space:nowrap;text-align:right">${qty}</td>
+      </tr>`;
+    }).join('');
+    const mealTable=mealTableRows?`
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:flex;align-items:center;gap:5px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--green);border-radius:2px"></span>
+          ${isMr?'🍽 दैनिक आहार तक्का':'🍽 Daily Meal Plan'}
+        </div>
+        <div style="overflow-x:auto;border-radius:10px;border:1.5px solid var(--gold-border)">
+          <table style="width:100%;border-collapse:collapse;background:var(--surface)">
+            <thead><tr style="background:var(--surface2)">
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:left;border-bottom:2px solid var(--gold-border)">${isMr?'वेळ':'Time'}</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:left;border-bottom:2px solid var(--gold-border)">${isMr?'अन्न':'Food'}</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;border-bottom:2px solid var(--gold-border)">${isMr?'प्रमाण':'Qty'}</th>
+            </tr></thead>
+            <tbody>${mealTableRows}</tbody>
+          </table>
+        </div>
+      </div>`:'';
+
+    // ── Avoid ────────────────────────────────────────
+    const avoidList=(isMr&&p.avoidMr?p.avoidMr:p.avoid)||[];
+    const avoidHtml=avoidList.length?`
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--tomato,#D94F3D);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--tomato,#D94F3D);border-radius:2px"></span>
+          ${isMr?'❌ टाळणे':'❌ Avoid'}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${avoidList.map(a=>`<span style="padding:3px 9px;border-radius:20px;font-size:11px;background:rgba(217,79,61,0.1);border:1px solid rgba(217,79,61,0.3);color:var(--tomato,#D94F3D)">${escHtml(a)}</span>`).join('')}</div>
+      </div>`:'';
+
+    // ── Instructions ─────────────────────────────────
+    const instrList=(isMr&&p.instructionsMr?p.instructionsMr:p.instructions)||[];
+    const instrHtml=instrList.length?`
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--lemon,#D4A017);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--lemon,#D4A017);border-radius:2px"></span>
+          ${isMr?'📌 सूचना':'📌 Instructions'}
+        </div>
+        <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:3px">${instrList.map(s=>`<li style="font-size:12px;color:var(--text2)">${escHtml(s)}</li>`).join('')}</ul>
+      </div>`:'';
+
+    // ── Recommend ────────────────────────────────────
+    const recList=(isMr&&p.recommendMr?p.recommendMr:p.recommend)||[];
+    const recHtml=recList.length?`
+      <div>
+        <div style="font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:flex;align-items:center;gap:5px">
+          <span style="display:inline-block;width:3px;height:10px;background:var(--green);border-radius:2px"></span>
+          ${isMr?'✅ शिफारशीत फळे':'✅ Recommended'}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${recList.map(r=>`<span style="padding:3px 9px;border-radius:20px;font-size:11px;background:var(--green-light);border:1px solid var(--green-mid);color:var(--green)">${escHtml(r)}</span>`).join('')}</div>
+      </div>`:'';
+
+    // ── Simple text fields fallback ───────────────────
+    const simpleRestr=(!p.mealPlan&&p.restrictions)?`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:3px">❌ ${isMr?'टाळणे':'Restrictions / Avoid'}</div><div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escHtml(p.restrictions)}</div></div>`:'';
+    const simpleGoals=(!p.mealPlan&&p.goals)?`<div><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:3px">✅ ${isMr?'ध्येय':'Goals / Notes'}</div><div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escHtml(p.goals)}</div></div>`:'';
+
+    const editBtns=isAdmin?`<div style="display:flex;gap:6px">
+      <button onclick="editDietProfile(${i})" style="padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer">✏️ ${isMr?'बदला':'Edit'}</button>
+      <button onclick="deleteDietProfile(${i})" style="padding:4px 10px;border-radius:8px;border:1.5px solid var(--red,#ef4444);background:transparent;color:var(--red,#ef4444);font-size:12px;cursor:pointer">🗑</button>
+    </div>`:'';
+
+    return`<div style="background:var(--surface);border:1.5px solid var(--gold-border);border-radius:16px;padding:18px;box-shadow:var(--shadow),0 0 0 1px var(--gold-light)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px">
         <div>
-          <div style="font-weight:700;font-size:15px;color:var(--text)">${escHtml(p.name)}</div>
-          <div style="font-size:12px;color:var(--text3)">${escHtml(p.relation||'')}</div>
+          <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:17px;color:var(--text)">${escHtml(p.name)}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">${escHtml(isMr&&p.relationMr?p.relationMr:p.relation||'')}</div>
         </div>
-        <div style="display:flex;gap:6px">
-          <button onclick="editDietProfile(${i})" style="padding:4px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;cursor:pointer">✏️ Edit</button>
-          <button onclick="deleteDietProfile(${i})" style="padding:4px 10px;border-radius:8px;border:1.5px solid var(--red,#ef4444);background:transparent;color:var(--red,#ef4444);font-size:12px;cursor:pointer">🗑</button>
-        </div>
+        ${editBtns}
       </div>
-      ${p.restrictions?`<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:3px">❌ Restrictions / Avoid</div><div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escHtml(p.restrictions)}</div></div>`:''}
-      ${p.goals?`<div><div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:3px">✅ Diet Goals / Notes</div><div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escHtml(p.goals)}</div></div>`:''}
-    </div>`).join('');
+      ${mealTable}${avoidHtml}${instrHtml}${recHtml}${simpleRestr}${simpleGoals}
+    </div>`;
+  }).join('');
 }
 function addDietProfile(){
   const name=prompt('Family member name:');if(!name)return;
@@ -4526,9 +4598,9 @@ const ADMIN_PIN='1234';
 const MODE_TABS={
   admin: ['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','customise','essentials','recipes','backup','hlprschedule','milksummary','toddler','diet'],
   family:['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','essentials','milksummary','toddler','diet'],
-  helper:['todaymenu','milksummary','hlprschedule','grocery','buyinglist','essentials'],
+  helper:['todaymenu','milksummary','hlprschedule','grocery','buyinglist','essentials','diet'],
 };
-const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',milksummary:'🥛 दूध नोंद',hlprschedule:'📅 वेळापत्रक',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज'};
+const HELPER_LABELS={todaymenu:'🏠 आजचा मेनू',milksummary:'🥛 दूध नोंद',hlprschedule:'📅 वेळापत्रक',grocery:'🛒 किराणा यादी',buyinglist:'🧾 खरेदी यादी',essentials:'⭐ रोजची गरज',diet:'🥗 आहार योजना'};
 const FAMILY_LABELS={todaymenu:"🏠 Today's Menu",planner:'📅 Weekly Planner',rcalendar:'📆 Meal Calendar',grocery:'🛒 Grocery List',buyinglist:'🧾 Buying List',mealderived:'📋 Meal-wise Summary',customise:'✏️ Customise Options',essentials:'⭐ Daily Essentials',history:'📖 Meal History',recipes:'📝 Recipes',backup:'💾 Backup',milksummary:'🥛 Milk Summary',toddler:"🧒 Toddler's Menu",diet:'🥗 Diet Profiles'};
 const ADMIN_LABELS=Object.assign({},FAMILY_LABELS,{hlprschedule:'📅 Helper Schedule',milksummary:'🥛 Milk Summary'});
 function setMode(m){if(m==='admin'){openAdminPin();}else{applyMode(m);}}
@@ -4553,7 +4625,7 @@ function applyMode(mode){
     const ps=document.createElement('div');ps.className='sidebar-section';
     ps.innerHTML=mode==='helper'?'<span>नियोजन</span>':'<span class="en">Plan</span><span class="mr">नियोजन</span>';
     nav.appendChild(ps);
-    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','hlprschedule','toddler','diet']:mode==='family'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','toddler','diet']:['todaymenu','hlprschedule','grocery','buyinglist'];
+    const planTabs=mode==='admin'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','history','hlprschedule','toddler','diet']:mode==='family'?['todaymenu','planner','rcalendar','grocery','buyinglist','mealderived','toddler','diet']:['todaymenu','hlprschedule','grocery','buyinglist','diet'];
     planTabs.forEach(id=>{if(!tabs.includes(id))return;const d=document.createElement('div');d.className='nav-item';d.innerHTML=labels[id]||id;d.onclick=()=>{nav.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));d.classList.add('active');showView(id,null);};nav.appendChild(d);});
     // Settings section
     const setTabs=mode==='admin'?['customise','essentials','recipes','backup']:['essentials'];
