@@ -2153,6 +2153,7 @@ function initState(){
     // Re-seed school menu if Monday week 1 is still blank (old empty data)
     if(!toddlerWeeks[1]||!toddlerWeeks[1]['Monday']||!toddlerWeeks[1]['Monday'].t_bf_main) toddlerWeeks=buildEmptyToddlerWeeks();
     dietProfiles=s.dietProfiles||[];
+    seedBuiltInDietProfiles();
     // Migrate old helperSchedule into staffSchedule if needed
     if(staffSchedule.members.length===0 && Object.keys(helperSchedule).length>0){
       const defMember={id:'m_migrated',name:'मदतनीस',role:'Helper',color:'#7B3F9E',emoji:'🧹'};
@@ -2169,6 +2170,7 @@ function initState(){
     toddlerWeeks=buildEmptyToddlerWeeks();
     milkData={};
     dietProfiles=[];
+    seedBuiltInDietProfiles();
     groceryList=JSON.parse(JSON.stringify(DEFAULT_GL_CATS));
     rcalData={};
     dailyTasks={};
@@ -2183,6 +2185,28 @@ function initState(){
   }
 }
 function buildEmptyWeeks(){const w={};for(let i=1;i<=4;i++){w[i]={};DAYS.forEach(d=>{w[i][d]={breakfast:'',bf2:'',bf3:'',bf1_cnt:0,bf2_cnt:0,bf3_cnt:0,chutney:'',bf_snack:'',fruit:'',drink:'',sabji:'',sabji2:'',bread:'',dal:'',rice:'',salad:'',l_sides:'',l_lonche:'',l_drink:'',snack:'',snack2:'',snack_fruit:'',snack_drink:'',d_sabji:'',d_bread:'',d_dal:'',d_rice:'',d_salad:'',d_sides:'',lonche:'',d_drink:'',chi_soup:'',chi_main:'',chi_starter:'',chi_gravy:'',chi_drink:'',cus_item1:'',cus_item2:'',cus_side:'',cus_soup:'',cus_drink:'',cus_notes:'',d_notes:'',milk_order:'',milk_bought:''};});}return w;}
+function seedBuiltInDietProfiles(){
+  const SANYOGITA={
+    id:'dp_sanyogita',name:'Sanyogita Chavan',relation:'Family Member',relationMr:'कुटुंब सदस्य',
+    mealPlan:[
+      {time:'Morning 7:00 AM',timeMr:'सकाळ ७:०० वा.',food:'Lukewarm water / Soaked fenugreek seeds',foodMr:'कोमट पाणी / भिजवलेल्या मेथ्या',qty:'1 glass / 1 tsp'},
+      {time:'Morning 7:30 AM',timeMr:'सकाळ ७:३० वा.',food:'Tea (without sugar)',foodMr:'चहा (साखरेशिवाय)',qty:'1 cup'},
+      {time:'Morning 9:00 AM',timeMr:'सकाळ ९:०० वा.',food:'Dalia / Thalipeeth / Paratha / Bread + Sandwich (brown) / Uppit / Shevya Uppit / Pohe / Phulka + Vegetable + Flaxseed Chutney',foodMr:'दलिया / थालीपीठ / पराठा / ब्रेड + सँडविच / उपीट / शेव्यांचे उपीट / पोहे / फुलका + भाजी + जवस चटणी',qty:'1 bowl / 1 tsp'},
+      {time:'11:00–12:00 AM',timeMr:'सकाळ ११ ते १२',food:'Fruit (medium size) / Bitter gourd juice / Cucumber water',foodMr:'फळ (मध्यम) / कारल्याचा रस / काकडीचे पाणी',qty:'1'},
+      {time:'Lunch 1:00 PM',timeMr:'दुपार १:०० वा.',food:'Salad (Cucumber, Tomato, Onion, Radish) + Phulka / Chapati + Vegetable (leafy, lentils) + Curd / Buttermilk (no salt) + Flaxseed Chutney',foodMr:'सलाड (काकडी, टोमॅटो, कांदा, मुळा) + फुलका / चपाती + भाजी (पालेभाजी, डाळ) + दही / ताक (मीठ नाही) + जवस चटणी',qty:'1 plate / 2½ / ½ bowl / 1 bowl / 1 tsp'},
+      {time:'Afternoon 4:00 PM',timeMr:'दुपार ४:०० वा.',food:'Milk / Tea (no sugar) / Buttermilk / Fruit / Snack / Soup',foodMr:'दूध / चहा (साखरेशिवाय) / ताक / फळ / नाश्ता / सूप',qty:'1 cup / 1'},
+      {time:'Night 8:00 PM',timeMr:'रात्री ८:०० वा.',food:'Same as Lunch',foodMr:'दुपारच्या जेवणासारखेच',qty:''}
+    ],
+    avoid:['Sweet items','Bakery products','Dry fruits','Potato','Brinjal','Jaggery','Juice','Honey','Banana','Mutton','Bhakri','Rice','Chikoo','Grapes','Mango','Pineapple','Watermelon'],
+    avoidMr:['गोड पदार्थ','बेकरी पदार्थ','सुकामेवा','बटाटा','वांगे','गूळ','ज्यूस','मध','केळी','मटण','भाकरी','भात','चिकू','द्राक्षे','आंबा','अननस','टरबूज'],
+    instructions:['Eat in 3–4 small meals throughout the day','Leafy vegetables, pulses, curd, and coriander are essential','10–12 glasses of water daily are essential','Exercise is necessary','Avoid fasting','Avoid skipping meals','Avoid a sedentary lifestyle','Avoid addiction'],
+    instructionsMr:['दिवसभरात ३ ते ४ छोट्या जेवणात खा','पालेभाजी, डाळ, दही आणि कोथिंबीर आवश्यक','दररोज १०–१२ ग्लास पाणी आवश्यक','व्यायाम आवश्यक','उपवास टाळा','जेवण वगळणे टाळा','बैठी जीवनशैली टाळा','व्यसन टाळा'],
+    recommend:['Sapota (Chikoo)','Orange','Mosambi','Guava','Papaya'],
+    recommendMr:['चिकू','संत्री','मोसंबी','पेरू','पपई'],
+    restrictions:'',goals:''
+  };
+  if(!dietProfiles.some(p=>p.id==='dp_sanyogita')) dietProfiles.unshift(SANYOGITA);
+}
 function buildEmptyToddlerWeeks(){
   const SCHOOL_MENU={
     Monday:   {t_bf_main:'Idli',              t_bf_chutney:'Chutney',  t_bf_snack:'Seasonal Fruit'},
@@ -3054,7 +3078,7 @@ function _applyServerData(json){
       const hasSchoolMenu=toddlerWeeks[1]&&toddlerWeeks[1]['Monday']&&toddlerWeeks[1]['Monday'].t_bf_main;
       if(!hasSchoolMenu) toddlerWeeks=buildEmptyToddlerWeeks();
     }
-    if(s.dietProfiles) dietProfiles=s.dietProfiles;
+    if(s.dietProfiles) { dietProfiles=s.dietProfiles; seedBuiltInDietProfiles(); }
     if(s.milkData) milkData=s.milkData;
     localStorage.setItem('indraprastha-v2',json);
     // If user is actively typing/selecting, queue the render for when they stop
