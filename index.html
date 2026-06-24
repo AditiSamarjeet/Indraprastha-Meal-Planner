@@ -3477,10 +3477,21 @@ function _phoneticDev(w){
 // mr() — always returns Marathi: dict lookup → word-by-word → phonetic Devanagari
 function mr(s){
   if(!s)return s;
+  // Exact match first
   if(MR_MAP[s])return MR_MAP[s];
+  // Case-insensitive match (handles PARATHA, butter chicken, etc.)
+  const sl=s.toLowerCase();
+  const ciKey=Object.keys(MR_MAP).find(k=>k.toLowerCase()===sl);
+  if(ciKey)return MR_MAP[ciKey];
+  // Multi-word: translate word by word
   if(/\s/.test(s.trim()))
     return s.trim().split(/\s+/)
-      .map(w=>MR_MAP[w]!=null?MR_MAP[w]:_phoneticDev(w))
+      .map(w=>{
+        if(MR_MAP[w])return MR_MAP[w];
+        const wl=w.toLowerCase();
+        const wk=Object.keys(MR_MAP).find(k=>k.toLowerCase()===wl);
+        return wk?MR_MAP[wk]:_phoneticDev(w);
+      })
       .filter(w=>w.length>0)
       .join(' ');
   return _phoneticDev(s);
