@@ -3020,7 +3020,7 @@ function _setSyncDot(state){ // 'on' | 'flash' | 'off'
 }
 
 function saveToStorage(toast=true){
-  const payload=JSON.stringify({opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
+  const payload=JSON.stringify({_savedAt:Date.now(),opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
   // 1. Always save locally — instant, works offline
   try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
   // 2. Always attempt server push (debounced) — don't block on SSE state
@@ -3175,17 +3175,43 @@ else setTimeout(_syncConnect,500);
 // ── Polling fallback: re-fetch data.json every 8s as backup for SSE ─────────
 // Ensures phone→laptop sync works even if SSE connection drops or misses events
 let _lastPollJson='';
+function _isServerNewer(serverJson){
+  try{
+    const s=JSON.parse(serverJson);
+    const local=JSON.parse(localStorage.getItem('indraprastha-v2')||'{}');
+    // If server has no timestamp, it's old/stale — never overwrite local
+    if(!s._savedAt) return false;
+    // If local has no timestamp, server wins
+    if(!local._savedAt) return true;
+    return s._savedAt > local._savedAt;
+  }catch(e){return false;}
+}
 setInterval(()=>{
   if(_useFirebase) return;
   if(_isUserTyping()) return;
-  fetch('/sync/data').then(r=>r.text()).then(json=>{
+  fetch('/sync/data',{cache:'no-store'}).then(r=>r.text()).then(json=>{
     if(!json||json==='{}'||json===_lastPollJson) return;
     _lastPollJson=json;
-    // Only apply if this is newer data (not our own write echoed back)
     if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
-    _applyServerData(json);
+    // Only apply server data if it's actually newer than what we have locally
+    if(_isServerNewer(json)) _applyServerData(json);
   }).catch(()=>{});
 }, 3000);
+// On startup: if local data is newer than server, push it up immediately
+(function _pushLocalIfNewer(){
+  setTimeout(()=>{
+    const local=localStorage.getItem('indraprastha-v2');
+    if(!local) return;
+    fetch('/sync/data',{cache:'no-store'}).then(r=>r.text()).then(serverJson=>{
+      if(_isServerNewer(serverJson)) return; // server is newer, skip
+      // Local is newer — push to server so all devices get it
+      window._syncIgnoreNext++;
+      fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:local})
+        .then(()=>{ window._syncAvailable=true; _setSyncDot('on'); })
+        .catch(()=>{ window._syncIgnoreNext=Math.max(0,window._syncIgnoreNext-1); });
+    }).catch(()=>{});
+  }, 2000);
+})();
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
 function showToast(msg){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className='toast';t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),2700);}
