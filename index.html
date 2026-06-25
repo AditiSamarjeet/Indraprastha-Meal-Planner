@@ -3005,12 +3005,11 @@ const FIREBASE_CONFIG = {
 const _useFirebase = !!FIREBASE_CONFIG.databaseURL;
 
 // ── Real-time sync state ──────────────────────────────────────────────────
-window._syncAvailable  = false;
-window._syncIgnoreNext = 0;      // (local server) skip our own broadcasts
-let   _syncDebounceTimer = null;  // debounce outgoing writes
-let   _pendingSyncJson   = null;  // queued incoming data waiting for idle
-let   _lastWrittenJson   = null;  // (firebase) skip echo of our own write
-let   _fbRef             = null;  // firebase database ref
+let _syncDebounceTimer = null;
+let _pendingSyncJson   = null;
+let _lastWrittenJson   = null;  // firebase echo skip
+let _fbRef             = null;
+let _lastAppliedAt     = 0;     // timestamp of last data we applied from server
 
 function _setSyncDot(state){ // 'on' | 'flash' | 'off'
   const d=document.getElementById('sync-dot'); if(!d) return;
@@ -3020,23 +3019,22 @@ function _setSyncDot(state){ // 'on' | 'flash' | 'off'
 }
 
 function saveToStorage(toast=true){
-  const payload=JSON.stringify({_savedAt:Date.now(),opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
-  // 1. Always save locally — instant, works offline
+  const now=Date.now();
+  const payload=JSON.stringify({_savedAt:now,opts,essentials,weeks,toddlerWeeks,dietProfiles,milkData,groceryList,rcalData,dailyTasks,mealHistory,recipes,helperSchedule,staffSchedule,dailyReport});
   try{localStorage.setItem('indraprastha-v2',payload);}catch(e){showToast('⚠️ Storage full');return;}
-  // 2. Always attempt server push (debounced) — don't block on SSE state
-  //    This ensures laptop→phone sync even if SSE dropped after a server restart
+  // Mark this as data we wrote so incoming sync doesn't re-render needlessly
+  _lastAppliedAt=now;
   clearTimeout(_syncDebounceTimer);
-  _syncDebounceTimer = setTimeout(()=>{
-    if(_useFirebase && _fbRef){
-      _lastWrittenJson = payload;
-      _fbRef.set(payload).catch(()=>{ _setSyncDot('off'); });
+  _syncDebounceTimer=setTimeout(()=>{
+    if(_useFirebase&&_fbRef){
+      _lastWrittenJson=payload;
+      _fbRef.set(payload).catch(()=>_setSyncDot('off'));
     } else {
-      window._syncIgnoreNext++;
       fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:payload})
-        .then(()=>{ window._syncAvailable=true; _setSyncDot('on'); })
-        .catch(()=>{ window._syncAvailable=false; _setSyncDot('off'); window._syncIgnoreNext=Math.max(0,window._syncIgnoreNext-1); });
+        .then(()=>_setSyncDot('on'))
+        .catch(()=>_setSyncDot('off'));
     }
-  }, 800);
+  },300);
   if(toast)showToast('💾 Saved!');
 }
 
@@ -3102,115 +3100,110 @@ document.addEventListener('focusout',()=>{
   }
 });
 
-// ── Local laptop server (Server-Sent Events) ──────────────────────────────
+// ── Sync helpers ─────────────────────────────────────────────────────────────
 function forceSync(){
   const btn=document.querySelector('[onclick="forceSync()"]');
   if(btn){btn.textContent='⟳ …';btn.disabled=true;}
   fetch('/sync/data',{cache:'no-store'})
     .then(r=>r.text())
     .then(json=>{
-      if(json&&json!=='{}'){
-        _applyServerData(json);
-        localStorage.setItem('indraprastha-v2',json);
-        showToast('✅ Synced — data is up to date');
-      } else {
-        showToast('ℹ️ Nothing to sync yet');
-      }
+      if(json&&json!=='{}'){_applyServerData(json);showToast('✅ Synced');}
+      else showToast('ℹ️ Nothing to sync yet');
     })
-    .catch(()=>showToast('⚠️ Server not reachable — check Wi-Fi'))
+    .catch(()=>showToast('⚠️ Server not reachable'))
     .finally(()=>{if(btn){btn.textContent='⟳ Sync';btn.disabled=false;}});
 }
+
+function _fetchAndApply(){
+  fetch('/sync/data',{cache:'no-store'}).then(r=>r.text()).then(json=>{
+    if(!json||json==='{}') return;
+    try{
+      const s=JSON.parse(json);
+      // Skip if this is data we just wrote ourselves (within last 2s)
+      if(s._savedAt && s._savedAt===_lastAppliedAt) return;
+      if(s._savedAt) _lastAppliedAt=s._savedAt;
+    }catch(e){}
+    if(!_isUserTyping()) _applyServerData(json);
+    else _pendingSyncJson=json;
+    _setSyncDot('flash');
+  }).catch(()=>{});
+}
+
+// ── SSE real-time connection ──────────────────────────────────────────────────
 function _syncConnect(){
   if(typeof EventSource==='undefined')return;
   const es=new EventSource('/sync/events');
   es.addEventListener('connected',()=>{
-    window._syncAvailable=true; _setSyncDot('on');
-    fetch('/sync/data').then(r=>r.text()).then(json=>{
-      if(json&&json!=='{}') _applyServerData(json);
-    }).catch(()=>{});
+    _setSyncDot('on');
+    _fetchAndApply(); // pull latest on connect
   });
-  es.addEventListener('update',()=>{
-    if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
-    fetch('/sync/data').then(r=>r.text()).then(json=>{
-      if(json) _applyServerData(json);
-    }).catch(()=>{});
-  });
+  es.addEventListener('update',()=>_fetchAndApply()); // another device saved
   es.onerror=()=>{
-    window._syncAvailable=false; _setSyncDot('off');
-    es.close(); setTimeout(_syncConnect,5000);
+    _setSyncDot('off');
+    es.close();
+    setTimeout(_syncConnect,4000); // reconnect after 4s
   };
 }
 
-// ── Firebase cloud (works without the laptop, auto-offline-queue) ──────────
+// ── Firebase cloud ────────────────────────────────────────────────────────────
 function _firebaseConnect(){
-  // Dynamically load the Firebase SDK, then attach a realtime listener
-  const load=(src)=>new Promise((res,rej)=>{
-    const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej;
-    document.head.appendChild(s);
-  });
+  const load=(src)=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
   load('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js')
     .then(()=>load('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js'))
     .then(()=>{
       firebase.initializeApp(FIREBASE_CONFIG);
       const db=firebase.database();
       _fbRef=db.ref('appDataJson');
-      window._syncAvailable=true; _setSyncDot('on');
-      // Realtime listener — fires on first load AND on every remote change
+      _setSyncDot('on');
       _fbRef.on('value',snap=>{
-        const json=snap.val();
-        if(!json) return;
-        if(json===_lastWrittenJson){ _lastWrittenJson=null; return; } // skip our own echo
+        const json=snap.val(); if(!json) return;
+        if(json===_lastWrittenJson){_lastWrittenJson=null;return;}
         _applyServerData(json);
       });
-      // Show offline state if connection drops
-      db.ref('.info/connected').on('value',s=>{ _setSyncDot(s.val()?'on':'off'); window._syncAvailable=!!s.val()||true; });
+      db.ref('.info/connected').on('value',s=>_setSyncDot(s.val()?'on':'off'));
     })
-    .catch(()=>{ _setSyncDot('off'); /* offline — localStorage still works */ });
+    .catch(()=>_setSyncDot('off'));
 }
 
-// Start whichever backend is configured
+// ── Start sync ────────────────────────────────────────────────────────────────
 if(_useFirebase) _firebaseConnect();
 else setTimeout(_syncConnect,500);
 
-// ── Polling fallback: re-fetch data.json every 8s as backup for SSE ─────────
-// Ensures phone→laptop sync works even if SSE connection drops or misses events
-let _lastPollJson='';
-function _isServerNewer(serverJson){
-  try{
-    const s=JSON.parse(serverJson);
-    const local=JSON.parse(localStorage.getItem('indraprastha-v2')||'{}');
-    // If server has no timestamp, it's old/stale — never overwrite local
-    if(!s._savedAt) return false;
-    // If local has no timestamp, server wins
-    if(!local._savedAt) return true;
-    return s._savedAt > local._savedAt;
-  }catch(e){return false;}
-}
+// ── Polling fallback every 3s (catches missed SSE events) ────────────────────
+let _lastPollHash='';
 setInterval(()=>{
-  if(_useFirebase) return;
-  if(_isUserTyping()) return;
+  if(_useFirebase||_isUserTyping()) return;
   fetch('/sync/data',{cache:'no-store'}).then(r=>r.text()).then(json=>{
-    if(!json||json==='{}'||json===_lastPollJson) return;
-    _lastPollJson=json;
-    if(window._syncIgnoreNext>0){window._syncIgnoreNext--;return;}
-    // Only apply server data if it's actually newer than what we have locally
-    if(_isServerNewer(json)) _applyServerData(json);
+    if(!json||json==='{}') return;
+    // Use savedAt as a cheap change-detection hash
+    let hash=json.length+'|'+(json.match(/"_savedAt":(\d+)/)||['','0'])[1];
+    if(hash===_lastPollHash) return;
+    _lastPollHash=hash;
+    try{
+      const s=JSON.parse(json);
+      if(s._savedAt && s._savedAt===_lastAppliedAt) return; // our own data
+      if(s._savedAt) _lastAppliedAt=s._savedAt;
+    }catch(e){}
+    _applyServerData(json);
   }).catch(()=>{});
-}, 3000);
-// On startup: if local data is newer than server, push it up immediately
-(function _pushLocalIfNewer(){
+},3000);
+
+// ── On startup: push local data to server if newer (handles server restart) ──
+(function(){
   setTimeout(()=>{
     const local=localStorage.getItem('indraprastha-v2');
     if(!local) return;
+    let localTs=0;
+    try{localTs=JSON.parse(local)._savedAt||0;}catch(e){}
     fetch('/sync/data',{cache:'no-store'}).then(r=>r.text()).then(serverJson=>{
-      if(_isServerNewer(serverJson)) return; // server is newer, skip
-      // Local is newer — push to server so all devices get it
-      window._syncIgnoreNext++;
+      let serverTs=0;
+      try{serverTs=JSON.parse(serverJson)._savedAt||0;}catch(e){}
+      if(localTs<=serverTs) return; // server already has newer or same data
+      // Local is newer — push to server
       fetch('/sync/data',{method:'POST',headers:{'Content-Type':'application/json'},body:local})
-        .then(()=>{ window._syncAvailable=true; _setSyncDot('on'); })
-        .catch(()=>{ window._syncIgnoreNext=Math.max(0,window._syncIgnoreNext-1); });
+        .then(()=>_setSyncDot('on')).catch(()=>{});
     }).catch(()=>{});
-  }, 2000);
+  },1500);
 })();
 function copyPlan(){const W=weeks[curWeek];let text=`🌿 Indraprastha — Week ${curWeek}\n${'━'.repeat(40)}\n\n`;DAYS.forEach(day=>{const s=W[day];const bf=[s.breakfast,s.bf2,s.bf3,s.chutney,s.bf_snack].filter(Boolean).join(' + ');const lu=[s.sabji,s.sabji2,s.bread,s.dal,s.rice,s.salad].filter(Boolean).join(', ');const sn=[s.snack,s.snack2].filter(Boolean).join(', ');const di=dinnerSummary(s,false);text+=`${DAY_EMOJI[day]} ${day}\n  🌅 Breakfast: ${bf||'—'}\n  🥘 Lunch: ${lu||'—'}\n  🍊 Snacks: ${sn||'—'}\n  🌙 Dinner: ${di||'—'}\n\n`;});text+=`⭐ Essentials: ${essentials.categories.flatMap(c=>c.items).join(', ')}`;navigator.clipboard.writeText(text).then(()=>showToast('📋 Copied!')).catch(()=>showToast('⚠️ Copy failed'));}
 function exportCSV(){const W=weeks[curWeek];const rows=[['Day','Breakfast','Chutney','Sabji','Bread','Dal','Rice','Salad','Snack1','Snack2','Din Sabji','Din Dal','Din Bread','Lonche']];DAYS.forEach(day=>{const s=W[day];rows.push([day,s.breakfast,s.chutney,s.sabji,s.bread,s.dal,s.rice,s.salad,s.snack,s.snack2,s.d_sabji,s.d_dal,s.d_bread,s.lonche]);});const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`indraprastha-week${curWeek}.csv`;a.click();showToast('📥 CSV downloaded!');}
