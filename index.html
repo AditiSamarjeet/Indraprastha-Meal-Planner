@@ -1403,7 +1403,14 @@ textarea.rcal-inp { font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; 
           <div id="toddler-week-label" style="color:rgba(255,255,255,0.9);font-size:13px;font-weight:600"></div>
         </div>
       </div>
-      <div id="toddler-week-grid" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
+      <!-- Visual poster board -->
+      <div id="toddler-poster" style="padding:16px 16px 0"></div>
+      <!-- Edit inputs -->
+      <div style="padding:8px 16px 4px 16px;display:flex;align-items:center;gap:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.7px">✏️ Edit Weekly Menu</div>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <div id="toddler-week-grid" style="padding:8px 16px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px"></div>
     </div>
 
     <!-- DIET PROFILES -->
@@ -4554,19 +4561,93 @@ let toddlerCurWeek=1;
 function renderToddlerView(){
   const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   const DAY_EMOJI={Monday:'🌅',Tuesday:'🌤',Wednesday:'☀️',Thursday:'🌈',Friday:'🎉',Saturday:'🌸',Sunday:'🌻'};
+  const DAY_MR={Monday:'सोमवार',Tuesday:'मंगळवार',Wednesday:'बुधवार',Thursday:'गुरुवार',Friday:'शुक्रवार',Saturday:'शनिवार',Sunday:'रविवार'};
+  const FOOD_EMOJI={
+    'Vegetable Poha':'🥗','Roti with Vegetables':'🫓','Dal Khichdi':'🥣','Mini Uttapam':'🥞',
+    'Matki / Mung Sprouts Bhel':'🌱','Idli':'🍚','Upma':'🥣','Appe':'🥮','Thepla':'🫓',
+    'Vermicelli Upma':'🍝','Vegetable Pulao':'🍛','Any One Fruit':'🍎','Dry Fruits':'🥜',
+    'Peanut / Rajgira Ladoo':'🍡','Seasonal Fruit':'🍊','Vegetable Salad':'🥗',
+    'Chutney':'🥬','Dry Fruit Ladoo':'🍡','Salad':'🥗','Rajgira Ladoo':'🍡',
+  };
+  const DAY_COLORS=['#2D6A4F','#1B4332','#40916C','#074F31','#52B788'];
+
   toddlerCurWeek=curWeek;
   const lbl=document.getElementById('toddler-week-label');
   if(lbl)lbl.textContent='Week '+toddlerCurWeek;
+  const W=toddlerWeeks[toddlerCurWeek]||{};
+
+  // ── Poster board ────────────────────────────────────────────
+  const poster=document.getElementById('toddler-poster');
+  if(poster){
+    const now=new Date();
+    const monthName=now.toLocaleString('en-IN',{month:'long'});
+    const year=now.getFullYear();
+    const schoolDays=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const tableRows=schoolDays.map((day,i)=>{
+      const s=W[day]||{};
+      const main=s.t_bf_main||'—';
+      const side=s.t_bf_chutney||'';
+      const snack=s.t_bf_snack||'';
+      const foodEmoji=FOOD_EMOJI[main]||'🍽';
+      const snackEmoji=FOOD_EMOJI[snack]||'🍪';
+      const bg=DAY_COLORS[i];
+      const foodText=[main,side?'+ '+side:''].filter(Boolean).join(' ');
+      const snackText=snack?'+ '+snack:'';
+      return`<tr>
+        <td style="padding:10px 14px;border-bottom:1px solid rgba(45,106,79,0.25)">
+          <div style="display:inline-block;background:${bg};color:#fff;font-size:13px;font-weight:800;padding:5px 12px;border-radius:20px;letter-spacing:0.3px;font-family:inherit">${DAY_MR[day]}</div>
+        </td>
+        <td style="padding:10px 14px;border-bottom:1px solid rgba(45,106,79,0.25)">
+          <div style="font-size:15px;margin-bottom:2px">${foodEmoji} <span style="font-size:13px;font-weight:600;color:#1B4332">${escHtml(foodText)}</span></div>
+          ${snack?`<div style="font-size:12px;color:#40916C;font-weight:500">${snackEmoji} ${escHtml(snackText)}</div>`:''}
+        </td>
+      </tr>`;
+    }).join('');
+
+    poster.innerHTML=`
+      <div style="background:linear-gradient(145deg,#f8fdf3,#e8f5e0);border:2.5px solid #2D6A4F;border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(45,106,79,0.15),0 2px 6px rgba(0,0,0,0.08);position:relative;margin-bottom:6px">
+        <!-- Decorative corner leaves -->
+        <span style="position:absolute;top:8px;left:10px;font-size:22px;opacity:0.35;transform:rotate(-30deg);pointer-events:none">🌿</span>
+        <span style="position:absolute;top:8px;right:10px;font-size:22px;opacity:0.35;transform:rotate(30deg);pointer-events:none">🌿</span>
+        <span style="position:absolute;bottom:10px;left:12px;font-size:18px;opacity:0.25;pointer-events:none">🥕</span>
+        <span style="position:absolute;bottom:10px;right:14px;font-size:18px;opacity:0.25;transform:scaleX(-1);pointer-events:none">🌱</span>
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#2D6A4F,#40916C);padding:14px 20px;text-align:center;position:relative">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">Seven Sages Preschool 🌳</div>
+          <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:0.3px">${monthName} ${year} — आहार तक्का</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">शाळेचा नाश्ता • School Breakfast Menu</div>
+          <!-- Fruit decorations -->
+          <span style="position:absolute;right:22px;top:50%;transform:translateY(-50%);font-size:28px;opacity:0.7">🍎</span>
+          <span style="position:absolute;left:22px;top:50%;transform:translateY(-50%);font-size:24px;opacity:0.6">🍌</span>
+        </div>
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:160px 1fr;background:#D8F3DC;border-bottom:2px solid #2D6A4F">
+          <div style="padding:8px 14px;font-size:11px;font-weight:800;color:#1B4332;text-transform:uppercase;letter-spacing:0.8px">📅 वार</div>
+          <div style="padding:8px 14px;font-size:11px;font-weight:800;color:#1B4332;text-transform:uppercase;letter-spacing:0.8px">🍽 आहार</div>
+        </div>
+        <!-- Menu table -->
+        <table style="width:100%;border-collapse:collapse;background:transparent">
+          <tbody>${tableRows}</tbody>
+        </table>
+        <!-- Footer -->
+        <div style="background:#D8F3DC;padding:7px 16px;text-align:center;border-top:1.5px solid rgba(45,106,79,0.3)">
+          <span style="font-size:18px">🥦</span>
+          <span style="font-size:10px;color:#2D6A4F;font-weight:600;margin:0 8px">पौष्टिक • निरोगी • आनंदी</span>
+          <span style="font-size:18px">🥕</span>
+        </div>
+      </div>`;
+  }
+
+  // ── Edit grid ────────────────────────────────────────────────
   const grid=document.getElementById('toddler-week-grid');
   if(!grid)return;
-  const W=toddlerWeeks[toddlerCurWeek]||{};
+  const fields=[
+    {key:'t_bf_main',label:'🍽 Main Dish'},
+    {key:'t_bf_chutney',label:'🥣 Chutney / Side / Dip'},
+    {key:'t_bf_snack',label:'🍪 Snack'},
+  ];
   grid.innerHTML=DAYS.map(day=>{
     const s=W[day]||{};
-    const fields=[
-      {key:'t_bf_main',label:'🍽 Main Dish'},
-      {key:'t_bf_chutney',label:'🥣 Chutney / Side / Dip'},
-      {key:'t_bf_snack',label:'🍪 Snack'},
-    ];
     const rows=fields.map(f=>`
       <div style="margin-bottom:8px">
         <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px">${f.label}</div>
