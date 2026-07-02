@@ -2209,14 +2209,15 @@ function seedBuiltInDietProfiles(){
   if(!dietProfiles.some(p=>p.id==='dp_sanyogita')) dietProfiles.unshift(SANYOGITA);
 }
 function buildEmptyToddlerWeeks(){
+  // July 2026 — Seven Sages Preschool menu
   const SCHOOL_MENU={
-    Monday:   {t_bf_main:'Idli',              t_bf_chutney:'Chutney',  t_bf_snack:'Seasonal Fruit'},
-    Tuesday:  {t_bf_main:'Thepla',            t_bf_chutney:'Dip',      t_bf_snack:'Dry Fruit Ladoo'},
-    Wednesday:{t_bf_main:'Vegetable Pulao',   t_bf_chutney:'',         t_bf_snack:'Salad'},
-    Thursday: {t_bf_main:'Appe',              t_bf_chutney:'Chutney',  t_bf_snack:'Rajgira Ladoo'},
-    Friday:   {t_bf_main:'Vermicelli Upma',   t_bf_chutney:'',         t_bf_snack:'Murmura / Popcorn'},
-    Saturday: {t_bf_main:'',                  t_bf_chutney:'',         t_bf_snack:''},
-    Sunday:   {t_bf_main:'',                  t_bf_chutney:'',         t_bf_snack:''},
+    Monday:   {t_bf_main:'Vegetable Poha',            t_bf_chutney:'',               t_bf_snack:'Any One Fruit'},
+    Tuesday:  {t_bf_main:'Roti with Vegetables',      t_bf_chutney:'Vegetable Salad',t_bf_snack:''},
+    Wednesday:{t_bf_main:'Dal Khichdi',               t_bf_chutney:'',               t_bf_snack:'Dry Fruits'},
+    Thursday: {t_bf_main:'Mini Uttapam',              t_bf_chutney:'Chutney',        t_bf_snack:'Peanut / Rajgira Ladoo'},
+    Friday:   {t_bf_main:'Matki / Mung Sprouts Bhel', t_bf_chutney:'',               t_bf_snack:'Seasonal Fruit'},
+    Saturday: {t_bf_main:'',                          t_bf_chutney:'',               t_bf_snack:''},
+    Sunday:   {t_bf_main:'',                          t_bf_chutney:'',               t_bf_snack:''},
   };
   const w={};
   for(let i=1;i<=4;i++){w[i]={};Object.keys(SCHOOL_MENU).forEach(d=>{w[i][d]=Object.assign({},SCHOOL_MENU[d]);});}
